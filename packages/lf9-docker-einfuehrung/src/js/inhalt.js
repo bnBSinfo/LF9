@@ -165,6 +165,9 @@ var RAEUME = [
     ],
     selbsterklaerung: ['Warum ist die Liste bei <code>docker ps</code> leer, obwohl Docker den Container gerade gestartet hat?', 'Warum ist die Liste bei <code>docker ps</code> leer? Docker hat den Container doch gerade gestartet.'],
     satzanfaenge: ['Die Liste ist leer, weil der Container …', '„docker ps“ zeigt nur …'],
+    begruessung: ['Willkommen im Serverraum 0. Jana zeigt dir den ersten Befehl.', 'Willkommen. Jana zeigt dir den 1. Befehl.'],
+    demoText: ['Schau zu, wie Jana den ersten Container startet. Danach bist du dran.', 'Schau zu. Jana startet den 1. Container. Dann bist du dran.'],
+    geschafftText: ['Schloss 1 ist offen: Du unterscheidest Image und Container.', 'Schloss 1 ist offen.'],
     faelle: [
       { id: 'r1a', typ: 'befehl', auftrag: ['Starte <code>hello-world</code> ein zweites Mal.', 'Starte <code>hello-world</code> noch einmal.'],
         loesung: ['docker run hello-world'],
@@ -185,6 +188,7 @@ var RAEUME = [
       { id: 'r1d', typ: 'befehl', auftrag: ['Starte zwei Container aus <code>hello-world</code> mit den Namen <code>hallo1</code> und <code>hallo2</code>.', 'Starte 2 Container aus <code>hello-world</code>. Sie heißen <code>hallo1</code> und <code>hallo2</code>.'],
         loesung: ['docker run --name hallo1 hello-world', 'docker run --name hallo2 hello-world'],
         ziel: function (h) { return hatName(h, 'hallo1') && hatName(h, 'hallo2'); },
+        teil: function (h, r, z) { return r.gestartet && /--name\s+hallo[12]/.test(z) ? ['Ein Container steht. Jetzt der zweite.', '1 Container ist da. Jetzt der 2.'] : null; },
         tipp: ['Den Namen gibst du mit <code>--name</code> vor dem Image an.', 'Schreibe <code>--name hallo1</code> vor das Image.'] },
       { id: 'r1e', typ: 'befehl', auftrag: ['Zeige alle <b>Images</b>, die auf dem Host liegen.', 'Zeige alle <b>Images</b> auf dem Rechner.'],
         loesung: ['docker images'],
@@ -199,6 +203,7 @@ var RAEUME = [
       { id: 'r1g', typ: 'befehl', auftrag: ['Räum auf: Lösche die Container <code>hallo1</code> und <code>hallo2</code>.', 'Räum auf. Lösche die Container <code>hallo1</code> und <code>hallo2</code>.'],
         loesung: ['docker rm hallo1 hallo2'],
         ziel: function (h) { return !hatName(h, 'hallo1') && !hatName(h, 'hallo2'); },
+        teil: function (h, r) { return r.geloescht && r.geloescht.length && !r.fehler ? ['Einer ist weg. Lösche auch den anderen.', '1 ist weg. Lösche auch den anderen.'] : null; },
         falsch: function (r, zeile) { return /\brmi\b/.test(zeile) ? ['<code>rmi</code> löscht <b>Images</b> – und das klappt nicht, solange noch Container aus dem Image bestehen. Für Container nimmst du <code>docker rm</code>.', '<code>rmi</code> löscht <b>Images</b>. Für Container nimmst du <code>docker rm</code>.'] : null; },
         tipp: ['Container löscht <code>docker rm</code>, du kannst mehrere Namen hintereinander schreiben.', 'Schreibe <code>docker rm hallo1 hallo2</code>.'] },
       { id: 'r1h', typ: 'wahl', auftrag: ['Zum Schluss: Ein Image verhält sich zu einem Container wie …', 'Zum Schluss: Ein Image ist für einen Container wie …'],
@@ -321,22 +326,31 @@ function serverraum(box, api) {
     k.querySelectorAll('button.primaer').forEach(function (b) { b.classList.remove('primaer'); });
   }
 
-  /* --- Raum starten: Host leeren, Vorführung anbieten --- */
+  /* --- Raum starten: Host vorbereiten, Vorführung anbieten --- */
   function raumStart(behalten) {
-    host = neuerHost(); verlauf = []; nr = 0; fehlversuche = 0; letzteFehler = null;
-    faelle = R.faelle.concat(P([], R.ticket));
-    phase = 'demo';
+    host = neuerHost(); if (R.setup) R.setup(host);
+    verlauf = []; nr = 0; fehlversuche = 0; letzteFehler = null; selbstText = '';
+    faelle = R.faelle.concat(P([], R.ticket || []));
+    phase = 'demo'; api.speicher('r', R.nr);
     zeichne();
-    if (!behalten) terminal('# ' + L('Willkommen im Serverraum 0. Jana zeigt dir den ersten Befehl.', 'Willkommen. Jana zeigt dir den 1. Befehl.'), 'sr-ko');
+    if (!behalten) terminal('# ' + T(R.begruessung || ['Jana zeigt dir zuerst, wie es geht.', 'Jana zeigt es dir zuerst.']), 'sr-ko');
   }
+  function demoTun(d, still) {
+    if (d.cmd) return ausfuehren(d.cmd, still);
+    if (d.tun) d.tun(host);
+    if (!still) serverZeichnen();
+  }
+  function nachDemo() { if (R.demoReset) { host = neuerHost(); if (R.setup) R.setup(host); terminal('# ' + L('Janas Beispiel ist abgebaut. Jetzt der Server des TSV.', 'Janas Beispiel ist weg. Jetzt der Server vom Verein.'), 'sr-ko'); } }
   function demoUeberspringen() {
-    R.demo.forEach(function (d) { ausfuehren(d.cmd, true); });
-    terminal('# ' + L('Jana hat hello-world schon einmal gestartet.', 'Jana hat hello-world schon gestartet.'), 'sr-ko');
+    R.demo.forEach(function (d) { demoTun(d, true); });
+    nachDemo();
+    terminal('# ' + L('Vorführung übersprungen.', 'Vorführung übersprungen.'), 'sr-ko');
     phase = 'spiel'; zeichne();
   }
 
   /* --- Terminal --- */
-  var ausgabeEl = null, eingabeEl = null, serverEl = null, fallEl = null;
+  var ausgabeEl = null, eingabeEl = null, serverEl = null, fallEl = null, extraEl = null;
+  function eingabeZeichen() { return host && host.shell ? 'root@' + host.shell.id + ':' + (host.shell.cwd || '/') + '# ' : 'azubi@tsv-server:~$ '; }
   function terminal(text, art) { verlauf.push({ t: text, art: art || '' }); if (ausgabeEl) zeileAnzeigen({ t: text, art: art || '' }); }
   function zeileAnzeigen(z) {
     var d = E('div', { class: z.art });
@@ -344,15 +358,16 @@ function serverraum(box, api) {
     ausgabeEl.appendChild(d); ausgabeEl.scrollTop = ausgabeEl.scrollHeight;
   }
   function ausfuehren(zeile, still) {
-    var r = hostAusfuehren(host, zeile);
+    var pr = eingabeZeichen(), r = hostAusfuehren(host, zeile);
     if (r.leeren) { verlauf = []; if (ausgabeEl) ausgabeEl.innerHTML = ''; return r; }
-    terminal('azubi@tsv-server:~$ ' + zeile, 'sr-ein');
+    terminal(pr + zeile, 'sr-ein');
     r.aus.forEach(function (z) { terminal(z.t, z.art); });
-    if (!still) serverZeichnen();
+    if (!still) { serverZeichnen(); var pe = wurzel.querySelector('.sr-eingabe span'); if (pe) pe.textContent = host.shell ? '#' : '$'; }
     return r;
   }
 
   /* --- Ansicht des Hosts („Server“) --- */
+  function karte(kl, sym, titel, unter) { return E('div', { class: 'sr-karte ' + kl }, [E('span', { class: 'sym', text: sym }), E('div', {}, [E('b', { text: titel }), E('small', { text: unter })])]); }
   function serverZeichnen() {
     if (!serverEl) return;
     serverEl.innerHTML = '';
@@ -360,10 +375,17 @@ function serverraum(box, api) {
     serverEl.appendChild(E('div', { class: 'leer', text: L('Images (Baupläne)', 'Images (Baupläne)') }));
     var ims = Object.keys(host.images);
     if (!ims.length) serverEl.appendChild(E('div', { class: 'leer', text: L('– noch keine –', '– keine –') }));
-    ims.forEach(function (k) { var b = host.images[k]; serverEl.appendChild(E('div', { class: 'sr-karte image' + (b.neu ? ' neu' : ''), 'data-art': 'image' }, [E('span', { class: 'sym', text: '📄' }), E('div', {}, [E('b', { text: b.name + ':' + b.tag }), E('small', { text: b.groesse })])])); b.neu = false; });
+    ims.forEach(function (k) { var b = host.images[k]; serverEl.appendChild(karte('image' + (b.neu ? ' neu' : ''), '📄', b.name + ':' + b.tag, b.groesse)); b.neu = false; });
     serverEl.appendChild(E('div', { class: 'leer', text: L('Container (laufen oder beendet)', 'Container') }));
     if (!host.container.length) serverEl.appendChild(E('div', { class: 'leer', text: L('– noch keine –', '– keine –') }));
-    host.container.forEach(function (c) { serverEl.appendChild(E('div', { class: 'sr-karte ' + c.status + (c.neu ? ' neu' : ''), 'data-art': 'container' }, [E('span', { class: 'sym', text: '🐳' }), E('div', {}, [E('b', { text: c.name }), E('small', { text: c.image + ' · ' + (c.status === 'up' ? L('läuft', 'läuft') : L('beendet (Exited)', 'beendet')) })])])); c.neu = false; });
+    host.container.forEach(function (c) {
+      var u = c.image + ' · ' + (c.status === 'up' ? (c.gesund === false ? L('startet …', 'startet …') : L('läuft', 'läuft')) : L('beendet (Exited)', 'beendet')) + (c.ports && c.ports.length ? ' · 🔌 ' + c.ports.map(function (p) { return p.replace(':', ' → '); }).join(', ') : '');
+      serverEl.appendChild(karte(c.status + (c.neu ? ' neu' : ''), '🐳', c.name, u)); c.neu = false;
+    });
+    var vols = Object.keys(host.volumes || {}), ord = Object.keys(host.ordner || {});
+    if (vols.length || ord.length) serverEl.appendChild(E('div', { class: 'leer', text: L('Speicher außerhalb der Container', 'Speicher') }));
+    vols.forEach(function (v) { serverEl.appendChild(karte('image', '🗄️', 'Volume ' + v, Object.keys(host.volumes[v]).join(', ') || L('leer', 'leer'))); });
+    ord.forEach(function (o) { serverEl.appendChild(karte('exited', '📁', o.replace('/home/azubi/', './'), Object.keys(host.ordner[o]).join(', ') || L('leer', 'leer'))); });
   }
 
   /* --- Fall-Karte --- */
@@ -373,11 +395,19 @@ function serverraum(box, api) {
     if (knopf) { var b = E('button', { type: 'button', text: knopf, onclick: function () { d.remove(); if (danach) danach(); } }); d.appendChild(E('div', {}, [b])); setTimeout(function () { b.focus(); }, 0); }
     fallEl.appendChild(d);
   }
+  var ctx = {
+    host: function () { return host; },
+    ausfuehren: function (z) { return ausfuehren(z); },
+    ok: function () { fehlversuche = 0; geschafft(); },
+    fehl: function (html) { fehlversuche++; rueck('bad', html); if (fehlversuche === 3) { var b = E('button', { type: 'button', class: 'rm', text: '💡 ' + L('Jana, mach es mir vor', 'Jana, zeig mir die Lösung'), onclick: vormachen }); fallEl.appendChild(b); } },
+    teil: function (html) { rueck('ok', html); },
+    neu: function () { serverZeichnen(); }
+  };
   function fallZeichnen() {
-    fallEl.innerHTML = '';
+    fallEl.innerHTML = ''; if (extraEl) { extraEl.innerHTML = ''; extraEl.hidden = true; }
     if (phase === 'demo') {
-      fallEl.appendChild(E('div', { class: 'nr', text: L('Vorführung · Jana tippt vor', 'Jana zeigt es dir') }));
-      fallEl.appendChild(E('p', { html: L('Schau zu, wie Jana den ersten Container startet. Danach bist du dran.', 'Schau zu. Jana startet den 1. Container. Dann bist du dran.') }));
+      fallEl.appendChild(E('div', { class: 'nr', text: L('Vorführung · Jana macht es vor', 'Jana zeigt es dir') }));
+      fallEl.appendChild(E('p', { html: T(R.demoText || ['Schau zu, wie Jana es an einem anderen Beispiel macht. Danach bist du dran.', 'Schau zu. Jana zeigt ein Beispiel. Dann bist du dran.']) }));
       fallEl.appendChild(E('div', { class: 'opt' }, [
         E('button', { type: 'button', class: 'sr-demo', text: '▶ ' + L('Zeig’s mir', 'Zeig es mir'), onclick: function () { demoSchritt(0); } }),
         E('button', { type: 'button', text: '⏭ ' + L('Überspringen – ich kann das schon', 'Überspringen'), onclick: demoUeberspringen })]));
@@ -391,8 +421,13 @@ function serverraum(box, api) {
       var o = E('div', { class: 'opt', role: 'group' });
       f.optionen.forEach(function (op, i) { o.appendChild(E('button', { type: 'button', 'data-opt': String(i), html: T(op.t), onclick: function () { waehle(i); } })); });
       fallEl.appendChild(o);
-    } else {
+    } else if (f.typ === 'befehl') {
       fallEl.appendChild(E('p', { class: 'nr', html: P(L('Tippe den Befehl ins Terminal oder setze ihn aus den Bausteinen zusammen. Dann ⏎ Enter.', 'Tippe den Befehl. Oder nimm die Bausteine. Dann ⏎ Enter.'), L('Tippe den Befehl ins Terminal und drück Enter.', 'Tippe den Befehl. Dann Enter.')) }));
+    }
+    if (f.zeichne) {
+      var ziel = f.breit && extraEl ? extraEl : fallEl;
+      if (ziel === extraEl) extraEl.hidden = false;
+      var w = E('div', { class: 'sr-widget' }); ziel.appendChild(w); f.zeichne(w, ctx);
     }
     if (fehlversuche >= 3) fallEl.appendChild(E('button', { type: 'button', class: 'rm', text: '💡 ' + L('Jana, mach es mir vor', 'Jana, zeig mir die Lösung'), onclick: vormachen }));
   }
@@ -400,22 +435,23 @@ function serverraum(box, api) {
   /* --- Vorführung (geführter erster Fall) --- */
   function demoSchritt(i) {
     var d = R.demo[i];
-    if (!d) { phase = 'spiel'; zeichne(); return; }
-    var r = ausfuehren(d.cmd); void r;
+    if (!d) { nachDemo(); phase = 'spiel'; zeichne(); return; }
+    demoTun(d);
     fallEl.innerHTML = '';
     fallEl.appendChild(E('div', { class: 'nr', text: L('Vorführung · Schritt ', 'Jana zeigt es · Schritt ') + (i + 1) + ' / ' + R.demo.length }));
-    fallEl.appendChild(E('p', { html: '<code>' + d.cmd + '</code>' }));
+    fallEl.appendChild(E('p', { html: d.cmd ? '<code>' + KIT.esc(d.cmd) + '</code>' : '<b>' + T(d.text) + '</b>' }));
+    if (d.zeige) { var zw = E('div', { class: 'sr-widget' }); fallEl.appendChild(zw); d.zeige(zw, host); }
     var weiter = E('button', { type: 'button', class: 'sr-demo', text: i + 1 < R.demo.length ? L('Nächster Schritt →', 'Weiter →') : L('Jetzt bin ich dran →', 'Jetzt ich →'), onclick: function () { demoSchritt(i + 1); } });
+    fallEl.appendChild(E('p', { html: T(d.warum) }));
     if (d.selbst) {
-      var se = E('div', { class: 'sr-selbst' }, [E('b', { html: '🤔 ' + T(R.selbsterklaerung) }), STUFEN.satzanfaenge(R.satzanfaenge)]);
+      var se = E('div', { class: 'sr-selbst' }, [E('b', { html: '🤔 ' + T(R.selbsterklaerung) }), STUFEN.satzanfaenge(R.satzanfaenge.map(T))]);
       var ta = E('textarea', { 'aria-label': L('Deine Erklärung', 'Deine Antwort'), oninput: function () { selbstText = ta.value; } });
       ta.value = selbstText;
       se.appendChild(ta);
-      var zeig = E('button', { type: 'button', text: L('Begründung zeigen', 'Lösung zeigen'), onclick: function () { zeig.replaceWith(E('p', { html: '✔ ' + T(R.demo[i + 1].warum) })); } });
+      var zeig = E('button', { type: 'button', text: L('Begründung zeigen', 'Lösung zeigen'), onclick: function () { zeig.replaceWith(E('p', { html: '✔ ' + T(d.antwort || R.demo[i + 1].warum) })); } });
       se.appendChild(zeig);
-      fallEl.appendChild(E('p', { html: T(d.warum) }));
       fallEl.appendChild(se);
-    } else fallEl.appendChild(E('p', { html: T(d.warum) }));
+    }
     fallEl.appendChild(E('div', { class: 'opt' }, [weiter]));
   }
 
@@ -426,13 +462,13 @@ function serverraum(box, api) {
     var f = fall(), r = ausfuehren(zeile);
     if (r.leeren) return;
     letzteFehler = r.fehler || null;
-    if (f.typ !== 'befehl') { if (r.fehler) erklaereFehler(r.fehler); return; }
+    if (f.typ !== 'befehl') { if (r.fehler) erklaereFehler(r.fehler); if (f.nachBefehl) f.nachBefehl(r, zeile, ctx); return; }
     if (f.ziel(host, r, zeile)) { fehlversuche = 0; return geschafft(); }
-    // Teilschritt richtig (z. B. erst hallo1, dann hallo2): kein Fehlversuch
-    if (f.id === 'r1d' && r.gestartet && /--name\s+hallo[12]\b/.test(zeile)) { rueck('ok', L('👍 Ein Container steht. Jetzt der zweite.', '👍 1 Container ist da. Jetzt der 2.')); return; }
-    if (f.id === 'r1g' && r.geloescht && r.geloescht.length && !r.fehler) { rueck('ok', L('👍 Einer ist weg. Lösche auch den anderen.', '👍 1 ist weg. Lösche auch den anderen.')); return; }
+    var teil = f.teil && f.teil(host, r, zeile);
+    if (teil) { rueck('ok', '👍 ' + T(teil)); return; }
+    var text = (f.falsch && f.falsch(r, zeile, host)) ? T(f.falsch(r, zeile, host)) : null;
+    if (!text && !r.fehler && r.neutral) return;  // z. B. cat, ls, echo im Container: kein Fehlversuch
     fehlversuche++;
-    var text = (f.falsch && f.falsch(r, zeile)) ? T(f.falsch(r, zeile)) : null;
     if (r.fehler) erklaereFehler(r.fehler);
     if (!text) text = fehlversuche >= 2 || PFAD.stufe === 'basis' ? T(f.tipp) : L('Das war noch nicht der richtige Befehl. Lies die Ausgabe im Terminal genau.', 'Das war noch nicht richtig. Lies die Ausgabe im Terminal.');
     rueck('bad', text + (fehlversuche >= 3 ? ' ' + L('Unten kann dir Jana die Lösung vormachen.', 'Jana kann dir die Lösung zeigen.') : ''));
@@ -454,43 +490,52 @@ function serverraum(box, api) {
   function vormachen() {
     var f = fall();
     if (f.typ === 'wahl') { rueck('tut', '💡 ' + T(f.optionen.filter(function (o) { return o.richtig; })[0].t)); return; }
-    rueck('tut', L('Jana tippt: ', 'Jana tippt: ') + f.loesung.map(function (c) { return '<code>' + c + '</code>'; }).join(' · '));
-    f.loesung.forEach(function (c) { ausfuehren(c); });
-    if (f.ziel(host, { ps: { alle: true, anzahl: host.container.length }, images: true, gestartet: host.container[host.container.length - 1] }, f.loesung.join(' '))) setTimeout(geschafft, 900);
+    if (f.typ === 'eigen') { f.loese(host, ctx); serverZeichnen(); rueck('tut', '💡 ' + L('Jana hat es eingetragen. Schau es dir genau an.', 'Jana hat es eingetragen. Schau genau hin.'), L('Nächste Aufgabe →', 'Nächste Aufgabe →'), naechster); return; }
+    rueck('tut', L('Jana tippt: ', 'Jana tippt: ') + f.loesung.map(function (c) { return '<code>' + KIT.esc(c) + '</code>'; }).join(' · '));
+    var r = null; f.loesung.forEach(function (c) { r = ausfuehren(c); });
+    if (f.ziel(host, r, f.loesung[f.loesung.length - 1])) setTimeout(geschafft, 900);
+  }
+  function notizSchreiben(f) {
+    if (f.notiz === true) api.notiere(R.id, L('Meine Ausgabe von docker ps -a', 'Meine Ausgabe von docker ps -a'), '<pre>' + KIT.esc(verlauf.slice(-1 - host.container.length).map(function (z) { return z.t; }).join('\n')) + '</pre>');
+    else if (typeof f.notiz === 'function') { var n = f.notiz(host, verlauf); if (n) api.notiere(R.id, T(n[0]), n[1]); }
   }
   function geschafft(sofort) {
     var f = fall();
-    if (f.notiz) api.notiere(R.id, L('Meine Ausgabe von docker ps -a', 'Meine Ausgabe von docker ps -a'), '<pre>' + KIT.esc(verlauf.slice(-1 - host.container.length).map(function (z) { return z.t; }).join('\n')) + '</pre>');
+    notizSchreiben(f);
     if (sofort) return naechster();
-    rueck('ok', '✔ ' + L('Richtig!', 'Richtig!') + (f.typ === 'wahl' ? ' ' + T(f.optionen.filter(function (o) { return o.richtig; })[0].t) : ''), L('Nächste Aufgabe →', 'Nächste Aufgabe →'), naechster);
+    rueck('ok', '✔ ' + L('Richtig!', 'Richtig!') + (f.typ === 'wahl' ? ' ' + T(f.optionen.filter(function (o) { return o.richtig; })[0].t) : (f.lob ? ' ' + T(f.lob) : '')), L('Nächste Aufgabe →', 'Nächste Aufgabe →'), naechster);
   }
+  function vorbereiten(f) { (f.vorher || []).forEach(function (c) { hostAusfuehren(host, c); }); if (f.vorherTun) f.vorherTun(host); }
   function naechster() {
     nr++; fehlversuche = 0;
-    if (f2()) { // nächster Fall bereitet den Host vor (Ticket)
-      (fall().vorher || []).forEach(function (c) { hostAusfuehren(host, c); });
-      zeichne();
-    } else ende();
-    function f2() { return nr < faelle.length; }
+    if (nr < faelle.length) { vorbereiten(fall()); zeichne(); }
+    else ende();
   }
 
   /* --- Raum geschafft --- */
   function ende(still) {
-    api.notiere(R.id, L('Meine Erklärung: Warum ist docker ps leer?', 'Meine Antwort: Warum ist docker ps leer?'), selbstText ? KIT.esc(selbstText) : '<i>' + L('(nicht ausgefüllt)', '(leer)') + '</i>');
-    api.level(R.id, L('Schloss 1 ist offen: Du unterscheidest Image und Container.', 'Schloss 1 ist offen.'));
+    api.notiere(R.id, L('Meine Erklärung: ', 'Meine Antwort: ') + T(R.selbsterklaerung).replace(/<[^>]+>/g, ''), selbstText ? KIT.esc(selbstText) : '<i>' + L('(nicht ausgefüllt)', '(leer)') + '</i>');
+    api.level(R.id, T(R.geschafftText));
+    phase = 'fertig';
     if (still) return;
     zeichneEnde();
   }
   function zeichneEnde() {
     wurzel.innerHTML = ''; wurzel.appendChild(tuer());
-    var vmOk = !!api.speicher('vm1');
-    var haken = E('input', { type: 'checkbox', id: 'sr-vm1', onchange: function () { api.speicher('vm1', haken.checked ? 1 : 0); api.notiere(R.id, L('VM-Übung', 'VM-Übung'), haken.checked ? L('Übung 1 hello-world in der VM erledigt.', 'Übung 1 in der VM erledigt.') : L('Übung 1 noch offen.', 'Übung 1 noch offen.')); } });
-    haken.checked = vmOk;
+    var k = 'vm' + R.nr, idx = RAEUME.indexOf(R), naechsterRaum = RAEUME[idx + 1] || null;
+    var alleOffen = RAEUME.every(function (x) { return api.geschafft(x.id); });
+    var haken = E('input', { type: 'checkbox', id: 'sr-' + k, onchange: function () { api.speicher(k, haken.checked ? 1 : 0); api.notiere(R.id, L('VM-Übung', 'VM-Übung'), (haken.checked ? L('Erledigt: ', 'Fertig: ') : L('Noch offen: ', 'Noch offen: ')) + R.vm); } });
+    haken.checked = !!api.speicher(k);
+    var knoepfe = [];
+    if (naechsterRaum) knoepfe.push(E('button', { type: 'button', text: '🚪 ' + L('Weiter in ', 'Weiter in ') + T(naechsterRaum.titel) + ' →', onclick: function () { R = naechsterRaum; raumStart(); } }));
+    knoepfe.push(E('button', { type: 'button', text: '↺ ' + L('Raum ', 'Raum ') + R.nr + L(' noch einmal spielen', ' noch einmal'), onclick: function () { raumStart(); } }));
     wurzel.appendChild(E('div', { class: 'sr-ende' }, [
-      E('div', { class: 'sr-kopf', style: 'padding:0' }, [E('div', { class: 'fig', html: figurHtml(JANA, 'froh') }), E('div', { class: 'txt' }, [E('h3', { text: '🔓 ' + L('Schloss 1 ist offen!', 'Schloss 1 ist offen!') }), E('p', { html: T(R.beruf) })])]),
-      E('div', { class: 'vm' }, [E('b', { text: '🖥️ ' + L('Jetzt in echt: ', 'Jetzt in echt: ') + R.vm + L(' in der VM', ' in der VM') }), E('p', { html: L('Öffne das Terminal deiner Linux-VM und tippe diese Befehle. Vergleiche die Ausgabe mit dem Spiel. Dann komm zurück.', 'Öffne das Terminal in der VM. Tippe diese Befehle. Vergleiche mit dem Spiel. Dann komm zurück.') }),
-        E('pre', { text: R.vmBefehle.join('\n') }), E('label', { for: 'sr-vm1' }, [haken, E('span', { text: L('Übung 1 in der VM erledigt', 'Übung 1 in der VM fertig') })])]),
-      E('p', { html: L('<b>Raum 2 „Die Vereinsseite“</b> wird im nächsten Prototyp gebaut. Unten wartet jetzt die Zwischenbilanz.', '<b>Raum 2</b> kommt im nächsten Prototyp. Unten ist jetzt die Zwischenbilanz.') }),
-      E('div', { class: 'zeile' }, [E('button', { type: 'button', text: '↺ ' + L('Raum 1 noch einmal spielen', 'Raum 1 noch einmal'), onclick: function () { raumStart(); } })])
+      E('div', { class: 'sr-kopf', style: 'padding:0' }, [E('div', { class: 'fig', html: figurHtml(JANA, 'froh') }), E('div', { class: 'txt' }, [E('h3', { text: '🔓 ' + L('Schloss ', 'Schloss ') + R.nr + L(' ist offen!', ' ist offen!') }), E('p', { html: T(R.beruf) })])]),
+      alleOffen ? E('p', { class: 'sr-rueck ok', html: '🎉 ' + L('<b>Alle fünf Schlösser sind offen!</b> Kai macht die Tür auf: „Die Vereinsfotos laufen – stark!“ Jetzt fehlt nur noch die echte Foto-Cloud in der VM.', '<b>Alle 5 Schlösser sind offen!</b> Kai macht die Tür auf. Jetzt baust du die echte Foto-Cloud in der VM.') }) : null,
+      E('div', { class: 'vm' }, [E('b', { text: '🖥️ ' + L('Jetzt in echt: ', 'Jetzt in echt: ') + R.vm + L(' in der VM', ' in der VM') }), E('p', { html: L('Öffne das Terminal deiner Linux-VM und arbeite die Übung ab. Vergleiche mit dem Spiel. Dann komm zurück.', 'Öffne das Terminal in der VM. Mach die Übung. Vergleiche mit dem Spiel. Dann komm zurück.') }),
+        E('pre', { text: R.vmBefehle.join('\n') }), E('label', { for: 'sr-' + k }, [haken, E('span', { text: R.vm + L(' in der VM erledigt', ' in der VM fertig') })])]),
+      E('p', { html: L('Unten wartet die Zwischenbilanz zu diesem Raum.', 'Unten ist die Zwischenbilanz.') }),
+      E('div', { class: 'zeile' }, knoepfe)
     ]));
   }
 
@@ -509,7 +554,7 @@ function serverraum(box, api) {
     term.appendChild(ausgabeEl);
     eingabeEl = E('input', { type: 'text', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', 'aria-label': L('Befehl eingeben', 'Befehl eingeben'),
       onkeydown: function (e) { if (e.key === 'Enter') { var z = eingabeEl.value; eingabeEl.value = ''; senden(z); } } });
-    term.appendChild(E('div', { class: 'sr-eingabe' }, [E('span', { text: '$' }), eingabeEl, E('button', { type: 'button', text: '⏎ Enter', 'aria-label': L('Befehl ausführen', 'Befehl ausführen'), onclick: function () { var z = eingabeEl.value; eingabeEl.value = ''; senden(z); eingabeEl.focus(); } })]));
+    term.appendChild(E('div', { class: 'sr-eingabe' }, [E('span', { text: host && host.shell ? '#' : '$' }), eingabeEl, E('button', { type: 'button', text: '⏎ Enter', 'aria-label': L('Befehl ausführen', 'Befehl ausführen'), onclick: function () { var z = eingabeEl.value; eingabeEl.value = ''; senden(z); eingabeEl.focus(); } })]));
     if (PFAD.stufe === 'basis') {
       var bs = E('div', { class: 'sr-bausteine', role: 'group', 'aria-label': L('Befehls-Bausteine', 'Bausteine') });
       R.bausteine.forEach(function (w) { bs.appendChild(E('button', { type: 'button', text: w, onclick: function () { eingabeEl.value = (eingabeEl.value.trim() ? eingabeEl.value.trim() + ' ' : '') + w; eingabeEl.focus(); } })); });
@@ -524,35 +569,44 @@ function serverraum(box, api) {
     rechts.appendChild(serverEl);
     mitte.appendChild(rechts);
     wurzel.appendChild(mitte);
-    wurzel.appendChild(E('details', { class: 'sr-regeln' }, [E('summary', { text: '📘 ' + L('Regelbuch – das gilt in Raum 1', 'Regelbuch – das gilt in Raum 1') }), E('ul', {}, R.regeln.map(function (r) { return E('li', { html: T(r) }); }))]));
+    extraEl = E('div', { class: 'sr-extra' }); extraEl.hidden = true;
+    wurzel.appendChild(extraEl);
+    wurzel.appendChild(E('details', { class: 'sr-regeln' }, [E('summary', { text: '📘 ' + L('Regelbuch – das gilt in Raum ', 'Regelbuch – das gilt in Raum ') + R.nr }), E('ul', {}, R.regeln.map(function (r) { return E('li', { html: T(r) }); }))]));
     serverZeichnen(); fallZeichnen();
     if (phase === 'demo') { var d = fallEl.querySelector('.sr-demo'); if (d) d.classList.add('sr-puls'); }
   }
 
   /* Sprachwechsel: Spiel mit den neuen Texten neu zeichnen */
   document.addEventListener('click', function (e) {
-    if (e.target.closest && e.target.closest('[data-stufe]')) setTimeout(function () { if (!wurzel.isConnected) return; if (api.geschafft(R.id) && phase === 'fertig') zeichneEnde(); else if (host) zeichne(); }, 0);
+    if (e.target.closest && e.target.closest('[data-stufe]')) setTimeout(function () { if (!wurzel.isConnected) return; if (phase === 'fertig') zeichneEnde(); else if (host) zeichne(); }, 0);
   });
 
-  if (api.geschafft(R.id)) { host = neuerHost(); verlauf = []; phase = 'fertig'; zeichneEnde(); }
-  else if (!api.speicher('es')) einstufen();
-  else raumStart();
+  /* Start: erster offener Raum, sonst der zuletzt gespielte */
+  var offen = RAEUME.filter(function (x) { return !api.geschafft(x.id); });
+  if (!offen.length) { R = RAEUME.filter(function (x) { return x.nr === api.speicher('r'); })[0] || RAEUME[RAEUME.length - 1]; host = neuerHost(); verlauf = []; phase = 'fertig'; zeichneEnde(); }
+  else { R = offen[0]; if (!api.speicher('es')) einstufen(); else raumStart(); }
 
   return {
-    // Musterlösung für den automatischen Test: Raum 1 sofort richtig durchspielen
+    // Musterlösung für den automatischen Test: alle offenen Räume sofort richtig durchspielen
     loesen: function () {
-      if (api.geschafft(R.id)) return;
-      host = neuerHost(); verlauf = []; nr = 0; faelle = R.faelle.concat(P([], R.ticket)); phase = 'spiel';
-      R.demo.forEach(function (d) { ausfuehren(d.cmd, true); });
-      selbstText = L('Der Container hat sich beendet, docker ps zeigt nur laufende.', 'Der Container ist beendet.');
-      while (nr < faelle.length) {
-        var f = fall();
-        (f.vorher || []).forEach(function (c) { hostAusfuehren(host, c); });
-        if (f.typ === 'befehl') f.loesung.forEach(function (c) { ausfuehren(c, true); });
-        if (f.notiz) api.notiere(R.id, 'Meine Ausgabe von docker ps -a', '<pre>' + KIT.esc(verlauf.map(function (z) { return z.t; }).slice(-4).join('\n')) + '</pre>');
-        nr++;
-      }
-      ende(true); phase = 'fertig'; zeichneEnde();
+      RAEUME.forEach(function (raum) {
+        if (api.geschafft(raum.id)) return;
+        R = raum; host = neuerHost(); if (R.setup) R.setup(host);
+        verlauf = []; nr = 0; fehlversuche = 0; faelle = R.faelle.concat(P([], R.ticket || [])); phase = 'spiel';
+        R.demo.forEach(function (d) { demoTun(d, true); });
+        if (R.demoReset) { host = neuerHost(); if (R.setup) R.setup(host); }
+        selbstText = L('(Musterlösung) ', '(Musterlösung) ') + T(R.demo.filter(function (d) { return d.selbst; }).map(function (d) { return d.antwort || ''; })[0] || '');
+        while (nr < faelle.length) {
+          var f = fall();
+          vorbereiten(f);
+          if (f.typ === 'befehl') f.loesung.forEach(function (c) { ausfuehren(c, true); });
+          if (f.loese) f.loese(host, ctx);
+          notizSchreiben(f);
+          nr++;
+        }
+        ende(true);
+      });
+      zeichneEnde();
     }
   };
 }
@@ -645,7 +699,7 @@ window.PAKET = {
   id: 'lf9-docker-einfuehrung',
   titel: 'Docker-Einführung',
   untertitel: 'Serverraum 0 – vom ersten Container zur eigenen Foto-Cloud',
-  version: '0.1',
+  version: '0.2',
   bestehen: 80,
   dauer: 'etwa 160 Minuten im Paket, dazu die Übungen in der VM',
   welt: { thema: 'technik', kulisse: 'serverraum', symbol: '🐳' },
