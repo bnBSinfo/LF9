@@ -42,7 +42,19 @@
     uebungen: {
       U1: { auftrag: 'Die Bäckerei Krume hat einen Kassenserver von uns. Zähle die Container, die laufen. Dann lösche die beendeten Container.',
         tipps: ['Schau in die Liste von <code>docker ps -a</code>. Schau auf die Spalte STATUS.', '„Up“ heißt: läuft. „Exited“ heißt: beendet. Es laufen 2.', 'Lösung: 2 laufen. Lösche die 3 beendeten: <code>docker rm test1 test2 alt_backup</code>.'],
-        reflexion: { frage: 'Wo siehst du in <code>docker ps -a</code> das Image von einem Container?', muster: 'In der Spalte IMAGE.' } }
+        reflexion: { frage: 'Wo siehst du in <code>docker ps -a</code> das Image von einem Container?', muster: 'In der Spalte IMAGE.' } },
+      U2: { auftrag: 'Die Kantine will ihren Speiseplan im Netz. Baue das Image. Zeig die Seite auf Port 8500. Dann zeig die neue Fassung.',
+        tipps: ['Welche Zahl ist für den Rechner? Welche für den Container? Apache hört im Container auf 80.', 'Links 8500, rechts 80: <code>-p 8500:80</code>. Nach der Änderung: neu bauen.', 'Lösung: <code>docker build -t speiseplan .</code> · <code>docker run -d -p 8500:80 --name kantine speiseplan</code> · nach der Änderung: neu bauen, <code>docker rm -f kantine</code>, wieder <code>docker run …</code>.'],
+        reflexion: { frage: 'Warum reicht <code>docker restart kantine</code> nicht?', muster: 'Restart nimmt das alte Image. Die neue Datei ist erst nach dem Bauen im Image.' } },
+      U3: { auftrag: 'Der TSV hat ein Trainingstagebuch. Die Datenbank soll bleiben. Die Trainer wollen die PDFs im Ordner sehen.',
+        tipps: ['Welche Daten willst du selbst sehen? Welche nicht?', 'Die Datenbank bekommt einen Namen. Der Export bekommt einen Ordner.', 'Lösung: <code>notizen-db:/app/data</code>, <code>./export:/app/export</code>, unten <code>notizen-db:</code>. Nach <code>down -v</code> ist nur <code>./export</code> noch da.'],
+        reflexion: { frage: 'Wann nimmst du für eine Datenbank doch einen Ordner (Bind Mount)?', muster: 'Wenn ich die Dateien selbst sichern oder kopieren will.' } },
+      U4: { auftrag: 'Der SV Hochfeld will ein Forum mit Datenbank. Mach die Datei fertig. Starte das Forum. Die Datenbank bleibt innen.',
+        tipps: ['Wie heißt die Datenbank in der Datei? So heißt auch der Host.', '<code>DB_HOST: mariadb</code>. Kein Port bei der Datenbank. Denk an die <code>.env</code>.', 'Lösung: <code>mariadb</code>, <code>${DB_PASSWORD}</code>, <code>service_healthy</code>, <code>[]</code>. Dann <code>cp .env.example .env</code> und <code>docker compose up -d</code>. Browser: <code>http://localhost:8400</code>.'],
+        reflexion: { frage: 'Warum heißt der Host hier <code>mariadb</code> und in Raum 4 <code>db</code>?', muster: 'Der Host heißt immer wie der Service in der Datei.' } },
+      U5: { auftrag: 'In der Sprechstunde liegen Tickets von Kunden. Finde bei jeder Meldung die Ursache und die Lösung.',
+        tipps: ['Lies jede Meldung genau. Welches Wort ist der Hinweis?', '2 Beispiele: <code>variable is not set</code> → <code>.env</code> fehlt. <code>port is already allocated</code> → anderen Port links.', 'Lösung: Variable → .env kopieren · no container → <code>up -d</code> · Port belegt → anderer Port · SSL_ERROR → <code>http://</code> · health: starting → Logs lesen · no such service → <code>--profile ml</code>.'],
+        reflexion: { frage: 'Welche Meldung hat dich überrascht? Warum?', muster: 'Zum Beispiel SSL_ERROR. Der Fehler kommt vom Browser, nicht von Docker.' } }
     },
     stationen: {
       S2: { auftrag: 'Der Verein braucht eine Webseite. Baue ein Image. Mach die Seite im Browser sichtbar.', mitdenken: { auftrag: 'Zeichne 2 Kästen: Rechner und Container. Zeichne einen Pfeil für <code>-p 8081:80</code>.', muster: 'Kasten „Rechner“ mit 8081. Pfeil. Kasten „Container“ mit 80. Der Browser fragt 8081.' } },

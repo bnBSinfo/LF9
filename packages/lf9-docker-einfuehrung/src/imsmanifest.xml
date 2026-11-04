@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<manifest identifier="lf9-docker-einfuehrung" version="0.3"
+<manifest identifier="lf9-docker-einfuehrung" version="0.4"
   xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
   xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -38,6 +38,7 @@
       <file href="js/sprache.js"/>
       <file href="js/stufen.js"/>
       <file href="js/tafel.js"/>
+      <file href="js/uebungen.js"/>
     </resource>
   </resources>
 </manifest>

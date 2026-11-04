@@ -154,8 +154,9 @@ function dockerBuild(h, w, f, erg) {
   if (!kontext) { f('ERROR: "docker buildx build" requires exactly 1 argument.', 'fehler'); f("See 'docker buildx build --help'.", 'fehler'); return erg({ fehler: 'buildPunkt' }); }
   if (!(h.projekt.dateien || {}).Dockerfile) { f('ERROR: failed to solve: failed to read dockerfile: open Dockerfile: no such file or directory', 'fehler'); return erg({ fehler: 'keinDockerfile' }); }
   var key = (name || 'none') + ':latest', alt = h.images[key], seite = h.projekt.seite, cached = alt && alt.seite === seite;
-  if (!h.images['nginx:alpine']) h.images['nginx:alpine'] = { name: 'nginx', tag: 'alpine', id: REGISTRY['nginx:alpine'].id, groesse: '52.5MB', neu: true };
-  ['[+] Building 1.3s (7/7) FINISHED', ' => [internal] load build definition from Dockerfile', ' => [1/2] FROM docker.io/library/nginx:alpine', ' => ' + (cached ? 'CACHED ' : '') + '[2/2] COPY index.html /usr/share/nginx/html/', ' => exporting to image', ' => => naming to docker.io/library/' + key].forEach(function (z) { f(z); });
+  var basis = h.projekt.basis || 'nginx:alpine', copy = h.projekt.copy || 'COPY index.html /usr/share/nginx/html/';
+  if (!h.images[basis]) h.images[basis] = { name: basis.split(':')[0], tag: basis.split(':')[1] || 'latest', id: (REGISTRY[basis] || REGISTRY['nginx:alpine']).id, groesse: (REGISTRY[basis] || REGISTRY['nginx:alpine']).groesse, neu: true };
+  ['[+] Building 1.3s (7/7) FINISHED', ' => [internal] load build definition from Dockerfile', ' => [1/2] FROM docker.io/library/' + basis, ' => ' + (cached ? 'CACHED ' : '') + '[2/2] ' + copy, ' => exporting to image', ' => => naming to docker.io/library/' + key].forEach(function (z) { f(z); });
   REGISTRY[key] = { id: 'b' + (seite || 'x').length.toString(16) + '7e2c41f0a9', groesse: '52.6MB', cmd: '"/docker-entrypoint.…"', laeuft: true };
   if (name) h.images[key] = { name: name, tag: 'latest', id: REGISTRY[key].id, groesse: '52.6MB', neu: !cached, seite: seite };
   return erg({ gebaut: name, cached: cached });

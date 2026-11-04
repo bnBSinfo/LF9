@@ -703,7 +703,7 @@ window.PAKET = {
   id: 'lf9-docker-einfuehrung',
   titel: 'Docker-Einführung',
   untertitel: 'Serverraum 0 – vom ersten Container zur eigenen Foto-Cloud',
-  version: '0.3',
+  version: '0.4',
   bestehen: 80,
   dauer: 'etwa 160 Minuten im Paket, dazu die Übungen in der VM',
   welt: { thema: 'technik', kulisse: 'serverraum', symbol: '🐳' },
