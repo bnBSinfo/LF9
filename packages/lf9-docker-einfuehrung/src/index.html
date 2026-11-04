@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lernpaket</title>
+<link rel="stylesheet" href="css/stil.css">
+<link rel="stylesheet" href="css/baukasten.css">
+<link rel="stylesheet" href="css/tafel.css">
+</head>
+<body>
+<div class="app" id="app">
+  <header class="kopf card">
+    <div class="logo" aria-hidden="true"></div>
+    <div class="titel"><h1 id="titel"></h1><div class="unter" id="untertitel"></div></div>
+    <div class="fortschritt" id="fortschritt" aria-live="polite"></div>
+  </header>
+  <nav class="tabs card" id="tabs" aria-label="Teile des Lernpakets"></nav>
+  <main id="haupt" tabindex="-1"></main>
+  <footer class="leiste card" id="leiste"></footer>
+  <div class="fuss" id="fuss"></div>
+</div>
+<script src="js/baukasten.js"></script>  <!-- Bausteine für Szenen (window.KIT) -->
+<script src="js/stufen.js"></script>  <!-- Differenzierung: L(), P(), Basis/Profi (P15, P16) -->
+<script src="js/inhalt.js"></script>
+<script src="js/raeume.js"></script>  <!-- Räume 2–5 von „Serverraum 0“ -->
+<script src="js/nachweis.js"></script>  <!-- Nachweis: Raum „Redaktion“, Fragenpool, Merkblatt -->
+<script src="js/uebungen.js"></script>  <!-- Übungen 2–5 -->
+<script src="js/sprache.js"></script>  <!-- Sprachstufe Einfach + Umschalter (P16) -->
+<script src="js/tafel.js"></script>  <!-- optionales Tafelbild; tut nichts ohne PAKET.tafel -->
+<script src="js/pdf.js"></script>  <!-- PDF erstellen (Download) für Lernheft, Merkblatt, Ergebnis -->
+<script src="js/engine.js"></script>
+</body>
+</html>
