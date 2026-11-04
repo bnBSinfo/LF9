@@ -1,0 +1,23 @@
+# IntelliJ
+.idea/
+*.iml
+*.iws
+
+# Build-Ordner
+target/
+build/
+out/
+
+# Logs
+*.log
+
+# OS-Dateien
+.DS_Store
+Thumbs.db
+
+# Python
+.venv/
+__pycache__/
+
+# Claude-Code-Skills und -Einstellungen (nur lokal)
+.claude/
