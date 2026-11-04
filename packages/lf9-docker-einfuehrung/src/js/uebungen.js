@@ -49,9 +49,23 @@ function befehlsHilfe(keys) {
   return E('details', { class: 'sr-regeln' }, [E('summary', { text: '📘 ' + L('Befehle nachschlagen', 'Befehle nachschlagen') }), ul]);
 }
 
-/* Übung 1 (inhalt.js) bekommt die Befehlsübersicht über einen Wrapper */
+/* „📋 Das brauchst du“: alle Angaben, die man für die Lösung kennen muss (Namen, Ports, Pfade, Regeln) */
+function datenBox(zeilen) {
+  var E = KIT.el;
+  return E('div', { class: 'sr-daten', style: 'background:#fef9c3;color:#422006;border:2px solid #facc15;border-radius:10px;padding:8px 12px;margin:0 0 10px' }, [
+    E('b', { text: '📋 ' + L('Das brauchst du', 'Das brauchst du') }),
+    E('ul', { style: 'margin:4px 0 0;padding-left:1.1em;font-size:.92rem' }, zeilen.map(function (z) { return E('li', { style: 'margin:3px 0', html: T(z) }); }))
+  ]);
+}
+
+/* Übung 1 (inhalt.js) bekommt Angaben und Befehlsübersicht über einen Wrapper */
+var DATEN_U1 = [
+  ['Server der Bäckerei Krume. Diese Container müssen <b>weiterlaufen</b>: <code>kasse</code> und <code>bestellungen</code>.', 'Server der Bäckerei Krume. Diese Container müssen <b>laufen bleiben</b>: <code>kasse</code> und <code>bestellungen</code>.'],
+  ['Spalte STATUS: <code>Up …</code> = läuft, <code>Exited …</code> = beendet.', 'Spalte STATUS: <code>Up</code> = läuft. <code>Exited</code> = beendet.'],
+  ['Die Namen der Container stehen in der letzten Spalte (NAMES).', 'Die Namen stehen in der letzten Spalte (NAMES).']
+];
 var uebungHalleBasis = uebungHalle;
-uebungHalle = function (box, api) { var r = uebungHalleBasis(box, api); box.appendChild(befehlsHilfe(['ps', 'psa', 'rm', 'prune'])); return r; };
+uebungHalle = function (box, api) { var r = uebungHalleBasis(box, api); box.insertBefore(datenBox(DATEN_U1), box.firstChild); box.appendChild(befehlsHilfe(['ps', 'psa', 'rm', 'prune'])); return r; };
 PAKET.uebungen.forEach(function (u) { if (u.interaktion === uebungHalleBasis) u.interaktion = uebungHalle; });
 
 /* ---------- Gemeinsamer Rahmen: Terminal, Zielliste, Browser, Datei ----------
@@ -99,6 +113,7 @@ function uebungsRaum(cfg) {
     /* Rechts: Pfadwahl, Zielliste, Rückmeldung, Auswahlfrage, Browser */
     var rechts = E('div', { class: 'sr-fall' });
     STUFEN.pfadwahl(rechts);
+    if (cfg.daten) rechts.appendChild(datenBox(cfg.daten));
     var liste = E('ol', { style: 'margin:4px 0 0;padding-left:1.3em' }), meldEl = E('div', { 'aria-live': 'polite' }), wahlEl = E('div', { class: 'opt' });
     rechts.appendChild(E('b', { text: L('Deine Ziele', 'Deine Ziele') }));
     rechts.appendChild(liste); rechts.appendChild(wahlEl); rechts.appendChild(meldEl);
@@ -191,6 +206,13 @@ var DOCKERFILE_U2 = 'FROM httpd:alpine\nCOPY speiseplan.html /usr/local/apache2/
 var uebungKantine = uebungsRaum({
   prompt: 'azubi@kantine-srv:~$',
   befehle: ['cat', 'build', 'run', 'ps', 'rm', 'restart', 'browser'],
+  daten: [
+    ['Im Ordner liegen <code>Dockerfile</code> und <code>speiseplan.html</code>. Das Dockerfile legt die Seite per <code>COPY</code> ins Image.', 'Im Ordner: <code>Dockerfile</code> und <code>speiseplan.html</code>. <code>COPY</code> legt die Seite ins Image.'],
+    ['Name des Images: <code>speiseplan</code>', 'Name vom Image: <code>speiseplan</code>'],
+    ['Name des Containers: <code>kantine</code>', 'Name vom Container: <code>kantine</code>'],
+    ['Port im Browser (Host): <code>8500</code> · Port im Container: <code>80</code> (Apache)', 'Port im Browser: <code>8500</code>. Port im Container: <code>80</code>.'],
+    ['Nach einer Änderung an <code>speiseplan.html</code>: neu bauen, alten Container löschen, neu starten.', 'Datei geändert? Neu bauen. Alten Container löschen. Neu starten.']
+  ],
   bausteine: ['docker', 'build', '-t', 'speiseplan', '.', 'run', '-d', '-p', '8500:80', '80:8500', '--name', 'kantine', 'rm', '-f', 'restart', 'ps', 'cat', 'Dockerfile'],
   browser: 'http://localhost:',
   setup: function (h) { h.projekt = { dateien: { Dockerfile: DOCKERFILE_U2, 'speiseplan.html': KANTINE.v1 }, seite: KANTINE.v1, basis: 'httpd:alpine', copy: 'COPY speiseplan.html /usr/local/apache2/htdocs/index.html' }; },
@@ -230,6 +252,12 @@ var COMPOSE_U3 = '# Trainingstagebuch – Notiz-App mit SQLite\nservices:\n  app
 var uebungTagebuch = uebungsRaum({
   prompt: 'azubi@tagebuch-srv:~/tagebuch$',
   befehle: ['fVol', 'up', 'cps', 'volls', 'ls', 'down', 'downv'],
+  daten: [
+    ['Datenbank im Container: <code>/app/data</code> · Name für ihr Volume: <code>notizen-db</code>', 'Datenbank im Container: <code>/app/data</code>. Name vom Volume: <code>notizen-db</code>'],
+    ['PDF-Exporte im Container: <code>/app/export</code> · Ordner auf dem Server: <code>./export</code>', 'PDFs im Container: <code>/app/export</code>. Ordner auf dem Server: <code>./export</code>'],
+    ['Zeile <code>QUELLE:/pfad/im/container</code> – links steht, <b>wo</b> die Daten außerhalb liegen:<br><b>Name</b> links (z. B. <code>daten</code>) = Named Volume: Docker verwaltet den Speicher, man öffnet ihn nicht selbst.<br><b>Pfad</b> links (z. B. <code>./ordner</code>) = Bind Mount: ein normaler Ordner auf dem Server.', 'Links steht, <b>wo</b> die Daten liegen:<br><b>Name</b> = Volume. Docker verwaltet es.<br><b>Pfad</b> wie <code>./ordner</code> = Bind Mount. Ein Ordner auf dem Server.'],
+    ['Jedes Named Volume steht unten unter <code>volumes:</code> noch einmal.', 'Jedes Volume steht unten unter <code>volumes:</code> noch einmal.']
+  ],
   bausteine: ['docker', 'compose', 'up', '-d', 'down', '-v', 'ps', 'volume', 'ls', 'export'],
   datei: { name: 'docker-compose.yml', text: COMPOSE_U3,
     luecken: {
@@ -272,6 +300,13 @@ var COMPOSE_U4F = '# Vereins-Forum SV Hochfeld\nservices:\n  forum:\n    image: 
 var uebungForum = uebungsRaum({
   prompt: 'azubi@hochfeld-srv:~/forum$',
   befehle: ['fHost', 'fEnv', 'fDep', 'fPorts', 'ls', 'cp', 'up', 'start', 'cps', 'logs', 'browser'],
+  daten: [
+    ['Der Datenbank-Service heißt in dieser Datei <code>mariadb</code>. Dieser Name ist auch seine Adresse für das Forum.', 'Die Datenbank heißt hier <code>mariadb</code>. Das ist auch ihre Adresse.'],
+    ['Das Passwort steht als Variable <code>DB_PASSWORD</code> in <code>.env.example</code>. Compose liest aber nur die Datei <code>.env</code>. In der Compose-Datei schreibst du eine Variable so: <code>${NAME}</code>.', 'Das Passwort heißt <code>DB_PASSWORD</code>. Es steht in <code>.env.example</code>. Compose liest nur <code>.env</code>. Variable in der Datei: <code>${NAME}</code>.'],
+    ['Datenbank nur intern: <code>ports: []</code> heißt „kein Port nach außen“.', 'Datenbank nur innen: <code>ports: []</code> heißt „kein Port“.'],
+    ['Das Forum soll erst starten, wenn die Datenbank „healthy“ ist: <code>service_healthy</code>. <code>service_started</code> wartet nur auf den Start des Containers.', 'Das Forum wartet, bis die Datenbank bereit ist: <code>service_healthy</code>.'],
+    ['Forum im Browser: Port <code>8400</code>', 'Forum im Browser: Port <code>8400</code>']
+  ],
   bausteine: ['docker', 'compose', 'up', '-d', 'start', 'ps', 'logs', 'cp', '.env.example', '.env', 'ls', '-a'],
   browser: 'http://localhost:',
   datei: { name: 'docker-compose.yml', text: COMPOSE_U4F,
@@ -334,6 +369,11 @@ function uebungSprechstunde(box, api) {
   if (!document.getElementById('sr-css')) { var s = document.createElement('style'); s.id = 'sr-css'; s.textContent = SR_CSS; document.head.appendChild(s); }
   box.innerHTML = '';
   STUFEN.pfadwahl(box);
+  box.appendChild(datenBox([
+    ['Bei jedem Ticket wählst du <b>links die Ursache</b> und <b>rechts die Behebung</b>. Jede Ursache und jede Behebung passt zu genau einem Ticket.', 'Bei jedem Ticket: <b>links die Ursache</b>, <b>rechts die Lösung</b>. Jede passt nur zu 1 Ticket.'],
+    ['Wörter in den Meldungen: <i>variable is not set</i> = Variable hat keinen Wert · <i>no container to start</i> = kein Container zum Starten da · <i>port is already allocated</i> = Port ist schon vergeben · <i>SSL</i> = verschlüsselte Verbindung (https) · <i>health: starting</i> = Gesundheitsprüfung läuft noch · <i>no such service</i> = diesen Dienst gibt es (gerade) nicht', 'Wörter: <i>variable is not set</i> = Variable ohne Wert · <i>no container to start</i> = kein Container da · <i>port is already allocated</i> = Port schon vergeben · <i>SSL</i> = https · <i>health: starting</i> = Prüfung läuft noch · <i>no such service</i> = Dienst gibt es nicht'],
+    ['Zusatzdienste mit <code>profiles:</code> starten nur, wenn man ihr Profil beim Start nennt.', 'Dienste mit <code>profiles:</code> starten nur mit ihrem Profil.']
+  ]));
   if (PFAD.stufe === 'profi') box.appendChild(STUFEN.profiBand(L('Sechs Tickets statt vier – auch Healthcheck und Profile', '6 Tickets statt 4')));
   var tickets = SPRECHSTUNDE.filter(function (t) { return !t.profi || PFAD.stufe === 'profi'; });
   var nummern = tickets.map(function (t) { return t.u; });
@@ -404,6 +444,13 @@ var COMPOSE_U6 = '# Musikschule Tonleiter – aus zwei docker-run-Befehlen wird 
 var uebungUmzug = uebungsRaum({
   prompt: 'azubi@tonleiter-srv:~/cloud$',
   befehle: ['fPorts', 'fVol', 'fEnv', 'fHost', 'fDep', 'cat', 'psa', 'rm', 'volls', 'ls', 'cp', 'up', 'browser'],
+  daten: [
+    ['Die zwei alten Befehle stehen oben im Terminal (<code>cat alte-befehle.txt</code>). Alle Werte für die Lücken stehen darin.', 'Die 2 alten Befehle stehen im Terminal. Alle Werte stehen darin.'],
+    ['Übersetzung: <code>-p</code> → <code>ports:</code> · <code>-v</code> → <code>volumes:</code> · <code>-e</code> → <code>environment:</code> · Image am Ende → <code>image:</code>', '<code>-p</code> wird <code>ports:</code>. <code>-v</code> wird <code>volumes:</code>. <code>-e</code> wird <code>environment:</code>. Das Image am Ende wird <code>image:</code>.'],
+    ['Neue Service-Namen: <code>db</code> (früher Container <code>cloud-db</code>) und <code>cloud</code>. Die Adresse der Datenbank ist jetzt der Service-Name.', 'Neue Namen: <code>db</code> (früher <code>cloud-db</code>) und <code>cloud</code>. Die Adresse ist der neue Name.'],
+    ['Das Passwort kommt nicht in die Datei, sondern in die <code>.env</code> (Variable <code>DB_PASSWORD</code>, Vorlage <code>.env.example</code>).', 'Das Passwort kommt in die <code>.env</code>. Variable: <code>DB_PASSWORD</code>.'],
+    ['Die alten Container <code>cloud</code> und <code>cloud-db</code> laufen noch und belegen Port 8443. Das Volume <code>clouddb</code> und der Ordner <code>/srv/cloud</code> enthalten die Daten – nie löschen!', 'Die alten Container <code>cloud</code> und <code>cloud-db</code> laufen noch. Sie haben Port 8443. <code>clouddb</code> und <code>/srv/cloud</code> haben die Daten. Nie löschen!']
+  ],
   bausteine: ['docker', 'ps', '-a', 'rm', '-f', 'cloud', 'cloud-db', 'volume', 'ls', 'cp', '.env.example', '.env', 'compose', 'up', '-d'],
   browser: 'http://localhost:',
   datei: { name: 'docker-compose.yml', text: COMPOSE_U6,
