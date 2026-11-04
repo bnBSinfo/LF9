@@ -348,3 +348,80 @@ PAKET.uebungen.push(
     tipps: ['Lies jede Meldung Wort für Wort. Welches Wort verrät die Ursache – Port, Variable, Container, https, health, Service?', 'Zwei Zuordnungen: <code>variable is not set</code> → <code>.env</code> fehlt → <code>cp .env.example .env</code>. <code>port is already allocated</code> → Port belegt → links freien Port eintragen.', 'Lösung: Variable → .env kopieren · no container to start → <code>up -d</code> · Port belegt → anderer Host-Port · SSL_ERROR → <code>http://</code> · health: starting → Logs lesen · no such service → <code>--profile ml</code>.'],
     reflexion: { frage: 'Welche Meldung hat dich am meisten überrascht – und warum?', muster: 'Zum Beispiel <code>SSL_ERROR_RX_RECORD_TOO_LONG</code>, weil der Fehler gar nicht von Docker kommt, sondern vom Browser.' } }
 );
+
+/* ---------- 🚀 Übung 6: Der Umzug (LZ1–LZ6, freiwillig) ---------- */
+var CLOUD = '<h2 style="margin:0">☁️ Cloud der Musikschule Tonleiter</h2><p>Ordner <b>noten/</b> · 1.243 Dateien – alles noch da.</p>';
+var ALT_RUN = 'docker run -d --name cloud-db -e MARIADB_ROOT_PASSWORD=Geheim123 \\\n  -v clouddb:/var/lib/mysql mariadb:11\n\ndocker run -d --name cloud -p 8443:80 -v /srv/cloud:/var/www/html \\\n  -e MYSQL_HOST=cloud-db nextcloud:29';
+var COMPOSE_U6 = '# Musikschule Tonleiter – aus zwei docker-run-Befehlen wird eine Datei\nservices:\n  db:\n    image: {{dbimg}}\n    environment:\n      MARIADB_ROOT_PASSWORD: {{pw}}\n    volumes:\n      - {{dbvol}}:/var/lib/mysql\n    healthcheck:\n      test: ["CMD", "healthcheck.sh", "--connect"]\n\n  cloud:\n    image: nextcloud:29\n    ports:\n      - "{{port}}"\n    volumes:\n      - {{daten}}:/var/www/html\n    environment:\n      MYSQL_HOST: {{host}}\n      MYSQL_PASSWORD: ${DB_PASSWORD}\n    depends_on:\n      db:\n        condition: {{cond}}\n\nvolumes:\n  clouddb:\n    external: true   # das vorhandene Volume weiternutzen, nicht neu anlegen';
+var uebungUmzug = uebungsRaum({
+  prompt: 'azubi@tonleiter-srv:~/cloud$',
+  bausteine: ['docker', 'ps', '-a', 'rm', '-f', 'cloud', 'cloud-db', 'volume', 'ls', 'cp', '.env.example', '.env', 'compose', 'up', '-d'],
+  browser: 'http://localhost:',
+  datei: { name: 'docker-compose.yml', text: COMPOSE_U6,
+    luecken: {
+      dbimg: { optionen: ['mariadb:11', 'nextcloud:29', 'cloud-db'], richtig: 'mariadb:11', tipp: ['Welches Image steht am Ende des ersten <code>docker run</code>?', 'Das Image steht ganz am Ende vom 1. Befehl.'],
+        fb: { 'cloud-db': ['<code>cloud-db</code> war der Container-Name (<code>--name</code>). Bei <code>image:</code> steht das Image.', 'Das ist der Name, nicht das Image.'], 'nextcloud:29': ['Das ist das Image der Cloud, nicht der Datenbank.', 'Das ist das Image der Cloud.'] } },
+      pw: { optionen: ['${DB_PASSWORD}', 'Geheim123', 'DB_PASSWORD'], richtig: '${DB_PASSWORD}', tipp: ['Passwörter gehören nicht in die Datei, sondern in die <code>.env</code>.', 'Das Passwort kommt aus der <code>.env</code>.'],
+        fb: { Geheim123: ['Das funktioniert, aber das Passwort stünde dann in jeder Kopie der Datei (z. B. im Git-Repo). Nimm die Variable aus der <code>.env</code>.', 'Dann steht das Passwort offen in der Datei. Nimm die Variable.'], DB_PASSWORD: ['Ohne <code>${…}</code> wäre das Passwort wörtlich „DB_PASSWORD“.', 'Ohne <code>${ }</code> ist es nur ein Wort.'] } },
+      dbvol: { optionen: ['clouddb', '/srv/cloud', './clouddb'], richtig: 'clouddb', tipp: ['Aus <code>-v clouddb:/var/lib/mysql</code> – links steht das Volume.', 'Nimm das Volume aus dem alten Befehl: <code>clouddb</code>.'],
+        fb: { '/srv/cloud': ['<code>/srv/cloud</code> gehört zur Cloud, nicht zur Datenbank.', 'Das ist der Ordner der Cloud.'], './clouddb': ['Ein Pfad wäre ein neuer, leerer Ordner. Die Daten liegen im Volume <code>clouddb</code>.', 'Das wäre ein neuer leerer Ordner.'] } },
+      port: { optionen: ['8443:80', '80:8443', '8443:8443'], richtig: '8443:80', tipp: ['Aus <code>-p 8443:80</code> wird <code>ports: - "8443:80"</code> – gleiche Reihenfolge.', 'Gleiche Zahlen wie bei <code>-p</code>: <code>8443:80</code>.'],
+        fb: { '80:8443': ['Die Reihenfolge bleibt wie bei <code>-p</code>: Host links, Container rechts.', 'Links der Rechner, rechts der Container.'], '8443:8443': ['Im Container hört Nextcloud auf 80 – so stand es auch rechts bei <code>-p</code>.', 'Im Container ist es Port 80.'] } },
+      daten: { optionen: ['/srv/cloud', 'cloud', '/var/www/html'], richtig: '/srv/cloud', tipp: ['Aus <code>-v /srv/cloud:/var/www/html</code> – links steht der Ordner auf dem Host.', 'Nimm den Ordner aus dem alten Befehl: <code>/srv/cloud</code>.'],
+        fb: { cloud: ['Ein Name wäre ein neues, leeres Volume. Die Dateien liegen im Host-Ordner <code>/srv/cloud</code>.', 'Das wäre ein neues leeres Volume.'], '/var/www/html': ['Das ist der Pfad im Container (rechts). Links steht der Host-Ordner.', 'Das ist der Pfad im Container.'] } },
+      host: { optionen: ['db', 'cloud-db', 'localhost'], richtig: 'db', tipp: ['Im Compose-Netz heißt der Host wie der <b>Service</b> in dieser Datei.', 'Der Host heißt wie der Service: <code>db</code>.'],
+        fb: { 'cloud-db': ['So hieß der alte Container. In Compose ist der Service-Name die Adresse – hier <code>db</code>.', 'Das war der alte Name. Jetzt heißt der Service <code>db</code>.'], localhost: ['<code>localhost</code> ist im Cloud-Container die Cloud selbst.', '<code>localhost</code> ist die Cloud selbst.'] } },
+      cond: { optionen: ['service_healthy', 'service_started'], richtig: 'service_healthy', tipp: ['Die Cloud soll erst starten, wenn die Datenbank bereit ist.', 'Die Cloud wartet, bis die Datenbank bereit ist.'],
+        fb: { service_started: ['Gestartet heißt noch nicht bereit. <code>service_healthy</code> wartet auf den Healthcheck.', 'Gestartet heißt noch nicht bereit.'] } }
+    },
+    richtig: { dbimg: 'mariadb:11', pw: '${DB_PASSWORD}', dbvol: 'clouddb', port: '8443:80', daten: '/srv/cloud', host: 'db', cond: 'service_healthy' },
+    speichern: function (h, w) { h.compose.werte = w; h.compose.gespeichert = true; } },
+  setup: function (h) {
+    h.images['mariadb:11'] = { name: 'mariadb', tag: '11', id: REGISTRY['mariadb:11'].id, groesse: REGISTRY['mariadb:11'].groesse };
+    h.images['nextcloud:29'] = { name: 'nextcloud', tag: '29', id: 'c4d1e8a2f973', groesse: '1.21GB' };
+    h.container.push({ id: '3b7a9e2c1d40', name: 'cloud-db', image: 'mariadb:11', status: 'up', ports: [] },
+      { id: '8e1f4c7a2b95', name: 'cloud', image: 'nextcloud:29', status: 'up', ports: ['8443:80'], seite: CLOUD, port: 80 });
+    h.volumes.clouddb = { 'ibdata1': '' }; h.ordner['/srv/cloud'] = { 'noten': '' };
+    h.projekt = { dateien: { 'alte-befehle.txt': ALT_RUN, 'docker-compose.yml': '(Lückentext)', '.env.example': 'DB_PASSWORD=Geheim123' } };
+    h.compose = { projekt: 'cloud', werte: {}, gespeichert: false, envVars: ['DB_PASSWORD'],
+      dienste: function () { return [{ dienst: 'db', image: 'mariadb:11', brauchtEnv: true, health: true }, { dienst: 'cloud', image: 'nextcloud:29', ports: ['8443:80'], port: 80, seite: CLOUD, bind: '/srv/cloud' }]; },
+      logs: function (h, f) { f(h.env ? 'cloud-db-1     | [Note] mariadbd: ready for connections.' : 'cloud-db-1     | [ERROR] [Entrypoint]: Database is uninitialized and password option is not specified', h.env ? '' : 'fehler'); } };
+  },
+  start: function (aus) { aus('cat alte-befehle.txt', true); },
+  ziele: [
+    { text: ['Übersetze die zwei alten <code>docker run</code>-Befehle in die <code>docker-compose.yml</code>: <code>-p</code> → <code>ports:</code>, <code>-v</code> → <code>volumes:</code>, <code>-e</code> → <code>environment:</code>.', 'Schreibe die 2 alten Befehle in die Datei. <code>-p</code> wird <code>ports:</code>. <code>-v</code> wird <code>volumes:</code>. <code>-e</code> wird <code>environment:</code>.'], ziel: function (h, st) { return !!st.dateiOk; } },
+    { text: ['Entferne die zwei alten Container. Die Daten in <code>clouddb</code> und <code>/srv/cloud</code> dürfen nicht verloren gehen.', 'Lösche die 2 alten Container. Die Daten müssen bleiben.'],
+      ziel: function (h) { return !h.container.some(function (c) { return c.name === 'cloud' || c.name === 'cloud-db'; }); } },
+    { text: ['Lege die <code>.env</code> mit dem Passwort an.', 'Lege die <code>.env</code> an.'], ziel: function (h) { return !!h.env; } },
+    { text: ['Starte alles mit Compose.', 'Starte alles mit Compose.'], ziel: function (h) { return h.container.some(function (c) { return c.compose === 'cloud' && c.dienst === 'cloud' && c.status === 'up'; }); } },
+    { text: ['Prüfe im Browser: Ist die Cloud mit allen Noten wieder da?', 'Prüfe im Browser: Sind die Noten noch da?'], ziel: function (h, st) { return !!(st.browse && st.browse.r.ok && st.browse.r.seite === CLOUD && st.browse.r.c.compose === 'cloud'); } },
+    { text: ['Was ist an der Compose-Datei besser als an den zwei langen Befehlen?', 'Was ist an der Datei besser?'],
+      wahl: { lob: ['Genau: Alles steht in einer Datei, kann versioniert und weitergegeben werden, und der Start ist ein Befehl.', 'Richtig: 1 Datei, 1 Befehl. Man kann sie weitergeben.'],
+        optionen: [
+          { t: ['Alles steht in einer Datei, sie lässt sich versionieren und weitergeben – der Start ist ein Befehl.', 'Alles ist in 1 Datei. Der Start ist 1 Befehl.'], richtig: true },
+          { t: ['Compose-Container laufen schneller.', 'Die Container laufen schneller.'], fb: ['Die Container sind dieselben – Compose startet sie nur bequemer.', 'Die Container sind gleich schnell.'] },
+          { t: ['Mit Compose braucht man keine Volumes mehr.', 'Man braucht keine Volumes mehr.'], fb: ['Volumes braucht man weiter – sie stehen nur in der Datei statt im Befehl.', 'Volumes braucht man weiter.'] }
+        ] } }
+  ],
+  hinweis: function (h, r, z) {
+    if (r.fehler === 'portBelegt') return ['Port 8443 gehört noch dem alten Container <code>cloud</code>. Erst die alten Container entfernen.', 'Der alte Container hat noch Port 8443. Lösche ihn zuerst.'];
+    if (/docker\s+volume\s+rm/.test(z) || r.volumeWeg) return ['Achtung: Damit hättest du die Datenbank der Musikschule gelöscht! Volumes nie beim Umzug löschen.', 'Achtung: Das Volume hat die Daten. Nie löschen!'];
+    if (r.fehler === 'laeuft') return ['Der Container läuft noch. Mit <code>-f</code> wird er gestoppt und gelöscht – die Daten im Volume und im Ordner bleiben.', 'Er läuft noch. Nimm <code>docker rm -f</code>.'];
+    return null;
+  },
+  hinweisBrowser: function (h, r) {
+    if (r.ssl) return ['Trotz Port 8443 spricht der Container kein https. Tippe <code>http://</code>.', 'Tippe <code>http://</code>.'];
+    return null;
+  },
+  notiz: ['Übung 6 Umzug: von docker run zu Compose', 'Übung 6: von docker run zu Compose'],
+  notizExtra: function () { return '<p><code>-p</code> → <code>ports:</code> · <code>-v</code> → <code>volumes:</code> · <code>-e</code> → <code>environment:</code> · <code>--name cloud-db</code> → Service <code>db</code> (neuer Hostname) · Passwort in die <code>.env</code> · vorhandenes Volume mit <code>external: true</code>.</p>'; },
+  erledigt: ['Zwei docker-run-Befehle in eine Compose-Datei übersetzt und umgezogen – ohne Datenverlust.', 'Umzug geschafft. Die Daten sind noch da.'],
+  loese: function (x) { x.datei(); x.cmd('docker rm -f cloud cloud-db'); x.cmd('cp .env.example .env'); x.cmd('docker compose up -d'); x.browse('http://localhost:8443'); x.wahl(); }
+});
+PAKET.uebungen.push(
+  { id: 'U6', titel: '🚀 Der Umzug (freiwillig)', lz: ['LZ1', 'LZ3', 'LZ4', 'LZ5', 'LZ6'],
+    auftrag: 'Die Musikschule Tonleiter betreibt ihre Cloud mit zwei langen <code>docker run</code>-Befehlen. Zieh sie auf Compose um – ohne dass Noten oder Datenbank verloren gehen.',
+    interaktion: uebungUmzug,
+    tipps: ['Jede Option von <code>docker run</code> hat eine Zeile in Compose: <code>-p</code> → <code>ports:</code>, <code>-v</code> → <code>volumes:</code>, <code>-e</code> → <code>environment:</code>. Aus <code>--name</code> wird der Service-Name.', 'Datei: <code>mariadb:11</code>, <code>${DB_PASSWORD}</code>, <code>clouddb</code>, <code>8443:80</code>, <code>/srv/cloud</code>, <code>db</code>, <code>service_healthy</code>. Dann die alten Container mit <code>docker rm -f</code> entfernen – Volume und Ordner bleiben.', 'Lösung: Datei wie in Tipp 2 · <code>docker rm -f cloud cloud-db</code> · <code>cp .env.example .env</code> · <code>docker compose up -d</code> · Browser <code>http://localhost:8443</code>.'],
+    reflexion: { frage: 'Warum steht unten beim Volume <code>external: true</code>?', muster: 'Sonst würde Compose ein neues Volume <code>cloud_clouddb</code> anlegen – leer. Mit <code>external: true</code> nutzt es das vorhandene Volume <code>clouddb</code> mit den Daten.' } }
+);
