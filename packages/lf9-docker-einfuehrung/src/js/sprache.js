@@ -30,12 +30,12 @@
       LZ6: { kurz: 'Fehlersuche', text: 'Ich kann eine Fehlermeldung von Docker lesen. Ich finde die Ursache und die Lösung.' }
     },
     glossar: {
-      'das Image': { erklaerung: 'Ein Bauplan. Aus dem Bauplan macht Docker Container. Den Bauplan kann man nicht ändern.' },
-      'der Container': { erklaerung: 'Ein Programm, das aus einem Image läuft. Aus 1 Image kann man viele Container machen.' },
-      'die Registry': { erklaerung: 'Ein Lager im Internet für Images. Zum Beispiel Docker Hub.' },
-      'der Host': { erklaerung: 'Der Rechner, auf dem Docker läuft. Hier: die VM oder der Server vom Verein.' },
-      'das Port-Mapping': { erklaerung: 'Eine Weiterleitung. Links steht der Port vom Rechner. Rechts steht der Port im Container.' },
-      'das Volume': { erklaerung: 'Ein Speicher von Docker. Die Daten bleiben, auch wenn der Container weg ist.' },
+      'Image': { erklaerung: 'Ein Bauplan. Aus dem Bauplan macht Docker Container. Den Bauplan kann man nicht ändern.' },
+      'Container': { erklaerung: 'Ein Programm, das aus einem Image läuft. Aus 1 Image kann man viele Container machen.' },
+      'Registry': { erklaerung: 'Ein Lager im Internet für Images. Zum Beispiel Docker Hub.' },
+      'Host': { erklaerung: 'Der Rechner, auf dem Docker läuft. Hier: die VM oder der Server vom Verein.' },
+      'Port-Mapping': { erklaerung: 'Eine Weiterleitung. Links steht der Port vom Rechner. Rechts steht der Port im Container.' },
+      'Volume': { erklaerung: 'Ein Speicher von Docker. Die Daten bleiben, auch wenn der Container weg ist.' },
       'Docker Compose': { erklaerung: 'Ein Werkzeug. Es startet mehrere Container mit 1 Datei.' },
       'ephemer': { erklaerung: 'Nicht dauerhaft. Die Daten sind weg, wenn der Container weg ist.' }
     },

@@ -11,6 +11,49 @@
 REGISTRY['httpd:alpine'] = { id: '6f2e9b1d4c8a', groesse: '62.1MB', cmd: '"httpd-foreground"', laeuft: true };
 DIENSTPORT['httpd:alpine'] = 80;
 
+/* ---------- Befehle nachschlagen (aufklappbar unter jeder Übung) ----------
+   Allgemeine Form mit Platzhaltern in GROSSBUCHSTABEN – keine fertige Lösung. */
+var BEFEHLE = {
+  ps: ['docker ps', 'zeigt die laufenden Container', 'zeigt Container, die laufen'],
+  psa: ['docker ps -a', 'zeigt alle Container, auch beendete', 'zeigt alle Container, auch beendete'],
+  images: ['docker images', 'zeigt die Images auf dem Server', 'zeigt die Images'],
+  rm: ['docker rm NAME NAME …', 'löscht beendete Container; mit <code>-f</code> auch laufende', 'löscht Container. Mit <code>-f</code> auch laufende.'],
+  prune: ['docker container prune -f', 'löscht alle beendeten Container auf einmal', 'löscht alle beendeten Container'],
+  cat: ['cat DATEI', 'zeigt den Inhalt einer Datei', 'zeigt, was in einer Datei steht'],
+  ls: ['ls -a', 'zeigt die Dateien im Ordner, mit <code>-a</code> auch versteckte wie <code>.env</code>', 'zeigt die Dateien. <code>-a</code> zeigt auch <code>.env</code>.'],
+  build: ['docker build -t NAME .', 'baut aus dem Dockerfile im Ordner (<code>.</code>) ein Image', 'baut ein Image. Der Punkt heißt: hier im Ordner.'],
+  run: ['docker run -d -p HOST:CONTAINER --name NAME IMAGE', 'startet einen neuen Container im Hintergrund; links der Port des Servers, rechts der Port im Container', 'startet einen neuen Container. Links der Port vom Rechner, rechts der Port im Container.'],
+  restart: ['docker restart NAME', 'startet <b>denselben</b> Container neu – mit dem alten Image', 'startet den Container neu. Er hat das alte Image.'],
+  cp: ['cp .env.example .env', 'kopiert die Vorlage zur Datei <code>.env</code>, aus der Compose die Variablen liest', 'macht aus der Vorlage die Datei <code>.env</code>'],
+  up: ['docker compose up -d', 'erstellt und startet alle Dienste aus der <code>docker-compose.yml</code>', 'macht und startet alle Container aus der Datei'],
+  start: ['docker compose start', 'startet nur Container, die es schon gibt', 'startet nur Container, die es schon gibt'],
+  cps: ['docker compose ps', 'zeigt die Container dieses Compose-Projekts', 'zeigt die Container aus der Datei'],
+  logs: ['docker compose logs DIENST', 'zeigt die Meldungen eines Dienstes', 'zeigt die Meldungen von einem Dienst'],
+  down: ['docker compose down', 'löscht Container und Netzwerk – Volumes bleiben', 'löscht die Container. Volumes bleiben.'],
+  downv: ['docker compose down -v', 'löscht zusätzlich die Volumes', 'löscht auch die Volumes'],
+  volls: ['docker volume ls', 'zeigt alle Volumes', 'zeigt alle Volumes'],
+  profil: ['docker compose --profile NAME up -d', 'startet zusätzlich die Dienste eines Profils', 'startet auch die Dienste aus einem Profil'],
+  browser: ['http://localhost:PORT', 'im Browser: PORT ist die <b>linke</b> Zahl beim Port-Mapping, immer <code>http://</code>', 'im Browser: die linke Zahl. Immer <code>http://</code>.'],
+  fPorts: ['ports:\n  - "HOST:CONTAINER"', 'in der Datei: Port nach außen – nur für Dienste, die der Browser erreichen soll', 'in der Datei: Port nach außen. Nur wenn der Browser den Dienst braucht.'],
+  fVol: ['volumes:\n  - NAME:/pfad\n  - ./ordner:/pfad', 'in der Datei: Name links = Named Volume, Pfad links = Bind Mount; Named Volumes unten unter <code>volumes:</code> deklarieren', 'in der Datei: Name links = Volume. Pfad links = Bind Mount. Volumes unten noch einmal aufschreiben.'],
+  fEnv: ['environment:\n  VAR: ${VAR}', 'in der Datei: Wert kommt aus der <code>.env</code>', 'in der Datei: Der Wert kommt aus der <code>.env</code>.'],
+  fHost: ['DB_HOST: SERVICE', 'in der Datei: Die Datenbank erreichst du über ihren Service-Namen, nicht über <code>localhost</code>', 'in der Datei: Die Adresse ist der Name vom Service. Nicht <code>localhost</code>.'],
+  fDep: ['depends_on:\n  SERVICE:\n    condition: service_healthy', 'in der Datei: startet erst, wenn der andere Dienst gesund ist', 'in der Datei: wartet, bis der andere Dienst bereit ist']
+};
+function befehlsHilfe(keys) {
+  var E = KIT.el, ul = E('ul', { style: 'margin:6px 0;padding-left:1.1em' });
+  keys.forEach(function (k) {
+    var b = BEFEHLE[k];
+    ul.appendChild(E('li', {}, [E('code', { style: 'white-space:pre-wrap', text: b[0] }), E('span', { html: ' – ' + L(b[1], b[2]) })]));
+  });
+  return E('details', { class: 'sr-regeln' }, [E('summary', { text: '📘 ' + L('Befehle nachschlagen', 'Befehle nachschlagen') }), ul]);
+}
+
+/* Übung 1 (inhalt.js) bekommt die Befehlsübersicht über einen Wrapper */
+var uebungHalleBasis = uebungHalle;
+uebungHalle = function (box, api) { var r = uebungHalleBasis(box, api); box.appendChild(befehlsHilfe(['ps', 'psa', 'rm', 'prune'])); return r; };
+PAKET.uebungen.forEach(function (u) { if (u.interaktion === uebungHalleBasis) u.interaktion = uebungHalle; });
+
 /* ---------- Gemeinsamer Rahmen: Terminal, Zielliste, Browser, Datei ----------
    cfg: { prompt, setup(h), bausteine, ziele: [{text, ziel(h, st), vorher(h, st), wahl}],
           datei: {name, text, luecken, speichern(h, werte)}, browser: 'http://localhost:',
@@ -92,6 +135,7 @@ function uebungsRaum(cfg) {
       rechts.appendChild(E('div', { class: 'sr-browser', style: 'margin-top:10px' }, [E('div', { class: 'bar' }, [E('span', { text: '🌐' }), url, E('button', { type: 'button', text: L('Öffnen', 'Öffnen'), onclick: function () { browse(); } })]), seite]));
     }
     wurzel.appendChild(E('div', { class: 'sr-mitte' }, [term, rechts]));
+    if (cfg.befehle) wurzel.appendChild(befehlsHilfe(cfg.befehle));
 
     /* Datei mit Lücken (Lückentext aus raeume.js: Basis Auswahl, Profi Eintippen) */
     if (cfg.datei) {
@@ -146,6 +190,7 @@ var KANTINE = {
 var DOCKERFILE_U2 = 'FROM httpd:alpine\nCOPY speiseplan.html /usr/local/apache2/htdocs/index.html\nEXPOSE 80';
 var uebungKantine = uebungsRaum({
   prompt: 'azubi@kantine-srv:~$',
+  befehle: ['cat', 'build', 'run', 'ps', 'rm', 'restart', 'browser'],
   bausteine: ['docker', 'build', '-t', 'speiseplan', '.', 'run', '-d', '-p', '8500:80', '80:8500', '--name', 'kantine', 'rm', '-f', 'restart', 'ps', 'cat', 'Dockerfile'],
   browser: 'http://localhost:',
   setup: function (h) { h.projekt = { dateien: { Dockerfile: DOCKERFILE_U2, 'speiseplan.html': KANTINE.v1 }, seite: KANTINE.v1, basis: 'httpd:alpine', copy: 'COPY speiseplan.html /usr/local/apache2/htdocs/index.html' }; },
@@ -184,6 +229,7 @@ var uebungKantine = uebungsRaum({
 var COMPOSE_U3 = '# Trainingstagebuch – Notiz-App mit SQLite\nservices:\n  app:\n    image: trainingstagebuch:1.4\n    ports:\n      - "8300:3000"\n    volumes:\n      - {{db}}:/app/data       # SQLite-Datenbank\n      - {{exp}}:/app/export    # PDF-Export für die Trainer\n\nvolumes:\n  {{decl}}:';
 var uebungTagebuch = uebungsRaum({
   prompt: 'azubi@tagebuch-srv:~/tagebuch$',
+  befehle: ['fVol', 'up', 'cps', 'volls', 'ls', 'down', 'downv'],
   bausteine: ['docker', 'compose', 'up', '-d', 'down', '-v', 'ps', 'volume', 'ls', 'export'],
   datei: { name: 'docker-compose.yml', text: COMPOSE_U3,
     luecken: {
@@ -225,6 +271,7 @@ var FORUM = '<h2 style="margin:0">💬 Forum SV Hochfeld</h2><p>Neu: Fahrgemeins
 var COMPOSE_U4F = '# Vereins-Forum SV Hochfeld\nservices:\n  forum:\n    image: flarum:1.8\n    ports:\n      - "8400:80"\n    environment:\n      DB_HOST: {{host}}\n      DB_PASSWORD: {{pw}}\n    depends_on:\n      mariadb:\n        condition: {{cond}}\n\n  mariadb:\n    image: mariadb:11\n    environment:\n      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD}\n    ports: {{dbports}}\n    volumes:\n      - forumdaten:/var/lib/mysql\n    healthcheck:\n      test: ["CMD", "healthcheck.sh", "--connect"]\n\nvolumes:\n  forumdaten:';
 var uebungForum = uebungsRaum({
   prompt: 'azubi@hochfeld-srv:~/forum$',
+  befehle: ['fHost', 'fEnv', 'fDep', 'fPorts', 'ls', 'cp', 'up', 'start', 'cps', 'logs', 'browser'],
   bausteine: ['docker', 'compose', 'up', '-d', 'start', 'ps', 'logs', 'cp', '.env.example', '.env', 'ls', '-a'],
   browser: 'http://localhost:',
   datei: { name: 'docker-compose.yml', text: COMPOSE_U4F,
@@ -322,6 +369,7 @@ function uebungSprechstunde(box, api) {
     }
   }
   wurzel.appendChild(E('div', {}, [E('button', { type: 'button', text: L('Prüfen', 'Prüfen'), onclick: pruefen }), gesamt]));
+  wurzel.appendChild(befehlsHilfe(['ls', 'cp', 'up', 'start', 'cps', 'logs', 'profil', 'browser', 'fPorts']));
   return { loesen: function () { felder.forEach(function (f) { f.su.value = String(f.t.u); f.sb.value = String(f.t.u); }); pruefen(); } };
 }
 
@@ -355,6 +403,7 @@ var ALT_RUN = 'docker run -d --name cloud-db -e MARIADB_ROOT_PASSWORD=Geheim123 
 var COMPOSE_U6 = '# Musikschule Tonleiter – aus zwei docker-run-Befehlen wird eine Datei\nservices:\n  db:\n    image: {{dbimg}}\n    environment:\n      MARIADB_ROOT_PASSWORD: {{pw}}\n    volumes:\n      - {{dbvol}}:/var/lib/mysql\n    healthcheck:\n      test: ["CMD", "healthcheck.sh", "--connect"]\n\n  cloud:\n    image: nextcloud:29\n    ports:\n      - "{{port}}"\n    volumes:\n      - {{daten}}:/var/www/html\n    environment:\n      MYSQL_HOST: {{host}}\n      MYSQL_PASSWORD: ${DB_PASSWORD}\n    depends_on:\n      db:\n        condition: {{cond}}\n\nvolumes:\n  clouddb:\n    external: true   # das vorhandene Volume weiternutzen, nicht neu anlegen';
 var uebungUmzug = uebungsRaum({
   prompt: 'azubi@tonleiter-srv:~/cloud$',
+  befehle: ['fPorts', 'fVol', 'fEnv', 'fHost', 'fDep', 'cat', 'psa', 'rm', 'volls', 'ls', 'cp', 'up', 'browser'],
   bausteine: ['docker', 'ps', '-a', 'rm', '-f', 'cloud', 'cloud-db', 'volume', 'ls', 'cp', '.env.example', '.env', 'compose', 'up', '-d'],
   browser: 'http://localhost:',
   datei: { name: 'docker-compose.yml', text: COMPOSE_U6,
