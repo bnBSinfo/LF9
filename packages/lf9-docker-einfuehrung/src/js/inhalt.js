@@ -5,8 +5,12 @@
    antwortet wie in echt (Ausgaben, Fehlermeldungen), die Ansicht „Server“
    zeigt Images und Container. Jeder geschaffte Raum öffnet ein Schloss der
    Tür; danach folgt die passende Übung in der echten VM.
-   Prototyp v0.1: Raum 1 („Hallo, Container!“) vollständig spielbar.
+   Raum 1 steht hier, Räume 2–5 in js/raeume.js, der Nachweis in js/nachweis.js.
    Alle Personen, Firmen und Vereine sind erfunden.
+
+   Für paket.py (liest die ersten Treffer in dieser Datei fürs Manifest):
+   id: 'lf9-docker-einfuehrung', titel: 'Docker-Einführung' – bei Änderung
+   auch unten in window.PAKET anpassen.
    ===================================================================== */
 
 /* ---------- Personen ---------- */

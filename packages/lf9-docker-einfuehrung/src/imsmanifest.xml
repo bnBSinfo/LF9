@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<manifest identifier="sr-u1-zahl" version="0.2"
+<manifest identifier="lf9-docker-einfuehrung" version="0.3"
   xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
   xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -32,9 +32,9 @@
       <file href="js/baukasten.js"/>
       <file href="js/engine.js"/>
       <file href="js/inhalt.js"/>
+      <file href="js/nachweis.js"/>
       <file href="js/pdf.js"/>
       <file href="js/raeume.js"/>
-      <file href="js/nachweis.js"/>
       <file href="js/sprache.js"/>
       <file href="js/stufen.js"/>
       <file href="js/tafel.js"/>
