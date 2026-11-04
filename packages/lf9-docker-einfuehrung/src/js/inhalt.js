@@ -703,7 +703,7 @@ window.PAKET = {
   id: 'lf9-docker-einfuehrung',
   titel: 'Docker-Einführung',
   untertitel: 'Serverraum 0 – vom ersten Container zur eigenen Foto-Cloud',
-  version: '0.7',
+  version: '0.8',
   bestehen: 80,
   dauer: 'etwa 160 Minuten im Paket, dazu die Übungen in der VM',
   welt: { thema: 'technik', kulisse: 'serverraum', symbol: '🐳' },
@@ -722,12 +722,12 @@ window.PAKET = {
   ],
 
   glossar: [
-    { begriff: 'das Image', erklaerung: 'Unveränderlicher Bauplan für Container: Programm, Bibliotheken und Einstellungen. Kommt aus einer Registry oder aus <code>docker build</code>.', vorab: true },
-    { begriff: 'der Container', erklaerung: 'Laufende oder beendete Instanz eines Images. Aus einem Image entstehen beliebig viele Container.', vorab: true },
-    { begriff: 'die Registry', erklaerung: 'Online-Lager für Images, z. B. Docker Hub. <code>docker pull</code> und <code>docker run</code> laden von dort.' },
-    { begriff: 'der Host', erklaerung: 'Der Rechner, auf dem Docker läuft – hier die Linux-VM bzw. der Vereinsserver.' },
-    { begriff: 'das Port-Mapping', erklaerung: 'Weiterleitung von einem Port des Hosts zu einem Port im Container: <code>-p Host:Container</code>.', vorab: true },
-    { begriff: 'das Volume', erklaerung: 'Von Docker verwalteter Speicher, der Container überlebt. Wird nur mit Namen angegeben, z. B. <code>pgdata:/var/lib/…</code>.', vorab: true },
+    { begriff: 'Image', erklaerung: 'Unveränderlicher Bauplan für Container: Programm, Bibliotheken und Einstellungen. Kommt aus einer Registry oder aus <code>docker build</code>.', vorab: true },
+    { begriff: 'Container', erklaerung: 'Laufende oder beendete Instanz eines Images. Aus einem Image entstehen beliebig viele Container.', vorab: true },
+    { begriff: 'Registry', erklaerung: 'Online-Lager für Images, z. B. Docker Hub. <code>docker pull</code> und <code>docker run</code> laden von dort.' },
+    { begriff: 'Host', erklaerung: 'Der Rechner, auf dem Docker läuft – hier die Linux-VM bzw. der Vereinsserver.' },
+    { begriff: 'Port-Mapping', erklaerung: 'Weiterleitung von einem Port des Hosts zu einem Port im Container: <code>-p Host:Container</code>.', vorab: true },
+    { begriff: 'Volume', erklaerung: 'Von Docker verwalteter Speicher, der Container überlebt. Wird nur mit Namen angegeben, z. B. <code>pgdata:/var/lib/…</code>.', vorab: true },
     { begriff: 'Docker Compose', erklaerung: 'Werkzeug, das mehrere Container aus einer Datei (<code>docker-compose.yml</code>) gemeinsam startet und verbindet.', vorab: true },
     { begriff: 'ephemer', erklaerung: 'Flüchtig: Was nur im Container gespeichert ist, ist weg, wenn der Container gelöscht wird.' }
   ],
