@@ -158,12 +158,21 @@ function uebungsRaum(cfg) {
       wurzel.appendChild(oben);
       var dMeld = E('div', { 'aria-live': 'polite' });
       var dbox = E('div', { class: 'sr-fall' }, [E('b', { html: L('Schritt 1 · Datei ', 'Schritt 1 · Datei ') + '<code>' + cfg.datei.name + '</code> ' + L('ergänzen', 'ergänzen') })]);
-      lueckenFall({ datei: cfg.datei.name, text: cfg.datei.text, luecken: cfg.datei.luecken, speichern: function (hh, w) { cfg.datei.speichern(hh, w); st.dateiOk = true; } })(dbox, {
+      /* Arbeitsanweisung in einem eigenen Feld neben dem Editor */
+      var dlinks = dbox;
+      if (cfg.datei.anweisung) {
+        dlinks = E('div');
+        var anw = E('ol', { style: 'margin:4px 0 0;padding-left:0;list-style:none' });
+        var nrn = Object.keys(cfg.datei.luecken).map(function (k) { return cfg.datei.luecken[k].nr || ''; });
+        cfg.datei.anweisung.forEach(function (a, i) { anw.appendChild(E('li', { style: 'margin:0 0 8px', html: '<b>' + (nrn[i] || (i + 1) + '.') + '</b> ' + T(a) })); });
+        dbox.appendChild(E('div', { class: 'sr-mitte', style: 'margin-top:6px' }, [dlinks, E('div', { class: 'sr-fall sr-anweisung', role: 'note' }, [E('b', { text: '📝 ' + L('Arbeitsanweisung', 'Das sollst du tun') }), anw])]));
+      }
+      lueckenFall({ datei: cfg.datei.name, text: cfg.datei.text, luecken: cfg.datei.luecken, speichern: function (hh, w) { cfg.datei.speichern(hh, w); st.dateiOk = true; } })(dlinks, {
         host: function () { return h; }, neu: function () {},
         ok: function () { dMeld.innerHTML = ''; dMeld.appendChild(E('div', { class: 'sr-rueck ok', html: '✔ ' + L('Datei gespeichert – alle Lücken stimmen. Weiter mit Schritt 2 im Terminal.', 'Gespeichert. Alles richtig. Weiter mit Schritt 2 im Terminal.') })); weiter(); },
         fehl: function (t) { dMeld.innerHTML = ''; dMeld.appendChild(E('div', { class: 'sr-rueck bad', html: t })); }
       });
-      dbox.appendChild(dMeld);
+      dlinks.appendChild(dMeld);
       wurzel.appendChild(dbox);
       wurzel.appendChild(E('b', { style: 'display:block;margin:4px 2px 0', html: L('Schritt 2 · Im Terminal weiter', 'Schritt 2 · Im Terminal weiter') }));
     }
@@ -269,14 +278,19 @@ var uebungTagebuch = uebungsRaum({
   datei: { name: 'docker-compose.yml', text: COMPOSE_U3,
     luecken: {
       db: { optionen: ['notizen-db', './data', '/app/data'], richtig: 'notizen-db',
-        aufgabe: ['① <b>Datenbank</b>: Sie soll bleiben, wenn der Container gelöscht und durch eine neue Version ersetzt wird. Niemand muss die Dateien öffnen – Docker verwaltet sie. Name: <code>notizen-db</code>', '① <b>Datenbank</b>: Sie soll bleiben, auch wenn der Container gelöscht wird. Docker verwaltet sie. Name: <code>notizen-db</code>'], tipp: ['Die Datenbank soll Docker verwalten – dafür gibt es einen <b>Namen</b> statt eines Pfads.', 'Die Datenbank bekommt einen Namen.'],
+        nr: '①', tipp: ['Die Datenbank soll Docker verwalten – dafür gibt es einen <b>Namen</b> statt eines Pfads.', 'Die Datenbank bekommt einen Namen.'],
         fb: { './data': ['<code>./data</code> ist ein Pfad – ein Bind Mount. Die Datenbank muss niemand anfassen: Ein Named Volume genügt.', '<code>./data</code> ist ein Ordner. Nimm einen Namen.'], '/app/data': ['Links steht, was vom Host kommt. <code>/app/data</code> ist der Pfad im Container (rechts).', 'Links steht nicht der Container-Pfad.'] } },
       exp: { optionen: ['./export', 'export', '/app/export'], richtig: './export',
-        aufgabe: ['② <b>PDF-Exporte</b>: Die Trainer wollen sie auf dem Server im Ordner <code>./export</code> öffnen.', '② <b>PDFs</b>: Die Trainer öffnen sie im Ordner <code>./export</code> auf dem Server.'], tipp: ['Die Trainer wollen die PDFs im Ordner sehen – dafür brauchst du einen <b>Pfad</b> auf dem Host.', 'Der Export braucht einen Ordner: <code>./export</code>.'],
+        nr: '②', tipp: ['Die Trainer wollen die PDFs im Ordner sehen – dafür brauchst du einen <b>Pfad</b> auf dem Host.', 'Der Export braucht einen Ordner: <code>./export</code>.'],
         fb: { export: ['Ein Name links ist ein Named Volume. Die PDFs lägen dann versteckt bei Docker, nicht im Projektordner.', 'Ein Name ist ein Volume. Die Trainer sehen es nicht.'], '/app/export': ['Links steht der Host-Ordner. <code>/app/export</code> ist der Pfad im Container.', 'Links steht nicht der Container-Pfad.'] } },
       decl: { optionen: ['notizen-db', 'export', 'data'], richtig: 'notizen-db',
-        aufgabe: ['③ Melde hier das Named Volume aus ① an.', '③ Schreib hier das Volume aus ① hin.'], tipp: ['Unten deklarierst du nur Named Volumes – also den Namen von oben.', 'Unten steht der Name vom Volume.'] }
+        nr: '③', tipp: ['Unten deklarierst du nur Named Volumes – also den Namen von oben.', 'Unten steht der Name vom Volume.'] }
     },
+    anweisung: [
+      ['<b>Datenbank</b> (<code>/app/data</code>): Sie soll bleiben, wenn der Container gelöscht und durch eine neue Version ersetzt wird. Niemand muss die Dateien öffnen – Docker verwaltet sie. Name: <code>notizen-db</code>', '<b>Datenbank</b> (<code>/app/data</code>): Sie soll bleiben, auch wenn der Container gelöscht wird. Docker verwaltet sie. Name: <code>notizen-db</code>'],
+      ['<b>PDF-Exporte</b> (<code>/app/export</code>): Die Trainer wollen sie auf dem Server im Ordner <code>./export</code> öffnen.', '<b>PDFs</b> (<code>/app/export</code>): Die Trainer öffnen sie im Ordner <code>./export</code> auf dem Server.'],
+      ['Ganz unten unter <code>volumes:</code>: Melde das Named Volume aus ① an.', 'Ganz unten unter <code>volumes:</code>: Schreib das Volume aus ① hin.']
+    ],
     richtig: { db: 'notizen-db', exp: './export', decl: 'notizen-db' },
     speichern: function (h, w) { h.compose.werte = w; h.compose.gespeichert = true; } },
   setup: function (h) {
@@ -286,7 +300,7 @@ var uebungTagebuch = uebungsRaum({
       dienste: function () { return [{ dienst: 'app', image: 'trainingstagebuch:1.4', ports: ['8300:3000'], port: 3000, seite: '<p>Trainingstagebuch</p>', volume: 'notizen-db', bind: '/home/azubi/export' }]; } };
   },
   ziele: [
-    { text: ['Ergänze die drei Lücken in der Datei. Neben jeder Lücke steht, was hinein soll.', 'Fülle die 3 Lücken aus. Neben jeder Lücke steht, was hinein soll.'], ziel: function (h, st) { return !!st.dateiOk; } },
+    { text: ['Ergänze die drei Lücken in der Datei. Die Arbeitsanweisung steht rechts neben der Datei.', 'Fülle die 3 Lücken aus. Was hinein soll, steht rechts neben der Datei.'], ziel: function (h, st) { return !!st.dateiOk; } },
     { text: ['Starte die App mit Compose im Hintergrund.', 'Starte die App mit Compose.'], ziel: function (h) { return h.container.some(function (c) { return c.compose === 'tagebuch' && c.status === 'up'; }); } },
     { text: ['Prüfe, wo die Daten der App jetzt außerhalb des Containers liegen:<br>① Tippe <code>docker volume ls</code>. Die Liste zeigt alle Volumes. Dort steht jetzt <code>tagebuch_notizen-db</code> – das Volume der Datenbank (Compose setzt den Projektnamen <code>tagebuch_</code> davor).<br>② Tippe <code>ls</code>. Die Liste zeigt die Dateien und Ordner im Projektordner auf dem Server. Dort steht jetzt <code>export/</code> – der Ordner für die PDFs.', 'Wo liegen die Daten jetzt? Prüfe es:<br>① Tippe <code>docker volume ls</code>. Du siehst die Volumes. Dort steht <code>tagebuch_notizen-db</code>. Das ist die Datenbank.<br>② Tippe <code>ls</code>. Du siehst die Ordner auf dem Server. Dort steht <code>export/</code>. Das ist der Ordner für die PDFs.'], ziel: function (h, st) { return st.befehle.some(function (b) { return /docker\s+volume\s+ls/.test(b); }) && st.befehle.some(function (b) { return /^ls\b/.test(b); }); } },
     { text: ['Der Verein will wissen, was beim „großen Aufräumen“ mit den Daten passiert. Tippe <code>docker compose down -v</code> (<code>-v</code> steht für <code>--volumes</code>).', 'Was passiert beim großen Aufräumen? Tippe <code>docker compose down -v</code>.'],
