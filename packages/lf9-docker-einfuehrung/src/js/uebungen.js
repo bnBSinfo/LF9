@@ -112,8 +112,8 @@ function uebungsRaum(cfg) {
 
     /* Rechts: Pfadwahl, Zielliste, Rückmeldung, Auswahlfrage, Browser */
     var rechts = E('div', { class: 'sr-fall' });
-    STUFEN.pfadwahl(rechts);
-    if (cfg.daten) rechts.appendChild(datenBox(cfg.daten));
+    if (!cfg.datei) STUFEN.pfadwahl(rechts);
+    if (cfg.daten && !cfg.datei) rechts.appendChild(datenBox(cfg.daten));
     var liste = E('ol', { style: 'margin:4px 0 0;padding-left:1.3em' }), meldEl = E('div', { 'aria-live': 'polite' }), wahlEl = E('div', { class: 'opt' });
     rechts.appendChild(E('b', { text: L('Deine Ziele', 'Deine Ziele') }));
     rechts.appendChild(liste); rechts.appendChild(wahlEl); rechts.appendChild(meldEl);
@@ -149,19 +149,26 @@ function uebungsRaum(cfg) {
       url = E('input', { type: 'text', value: cfg.browser, 'aria-label': L('Adresse', 'Adresse'), onkeydown: function (e) { if (e.key === 'Enter') browse(); } });
       rechts.appendChild(E('div', { class: 'sr-browser', style: 'margin-top:10px' }, [E('div', { class: 'bar' }, [E('span', { text: '🌐' }), url, E('button', { type: 'button', text: L('Öffnen', 'Öffnen'), onclick: function () { browse(); } })]), seite]));
     }
-    wurzel.appendChild(E('div', { class: 'sr-mitte' }, [term, rechts]));
-    if (cfg.befehle) wurzel.appendChild(befehlsHilfe(cfg.befehle));
-
-    /* Datei mit Lücken (Lückentext aus raeume.js: Basis Auswahl, Profi Eintippen) */
+    /* Mit Datei: Reihenfolge auf der Seite = Reihenfolge der Ziele.
+       Oben die Angaben, dann Schritt 1 (Datei), dann Schritt 2 (Terminal). */
     if (cfg.datei) {
-      var dbox = E('div', { class: 'sr-fall' }, [E('b', { html: L('Datei ', 'Datei ') + '<code>' + cfg.datei.name + '</code>' })]);
+      var oben = E('div', { class: 'sr-fall' });
+      STUFEN.pfadwahl(oben);
+      if (cfg.daten) oben.appendChild(datenBox(cfg.daten));
+      wurzel.appendChild(oben);
+      var dMeld = E('div', { 'aria-live': 'polite' });
+      var dbox = E('div', { class: 'sr-fall' }, [E('b', { html: L('Schritt 1 · Datei ', 'Schritt 1 · Datei ') + '<code>' + cfg.datei.name + '</code> ' + L('ergänzen', 'ergänzen') })]);
       lueckenFall({ datei: cfg.datei.name, text: cfg.datei.text, luecken: cfg.datei.luecken, speichern: function (hh, w) { cfg.datei.speichern(hh, w); st.dateiOk = true; } })(dbox, {
         host: function () { return h; }, neu: function () {},
-        ok: function () { melde(['ok', '✔ ' + L('Datei gespeichert – alle Lücken stimmen.', 'Gespeichert. Alles richtig.')]); weiter(); },
-        fehl: function (t) { melde(['bad', t]); }
+        ok: function () { dMeld.innerHTML = ''; dMeld.appendChild(E('div', { class: 'sr-rueck ok', html: '✔ ' + L('Datei gespeichert – alle Lücken stimmen. Weiter mit Schritt 2 im Terminal.', 'Gespeichert. Alles richtig. Weiter mit Schritt 2 im Terminal.') })); weiter(); },
+        fehl: function (t) { dMeld.innerHTML = ''; dMeld.appendChild(E('div', { class: 'sr-rueck bad', html: t })); }
       });
+      dbox.appendChild(dMeld);
       wurzel.appendChild(dbox);
+      wurzel.appendChild(E('b', { style: 'display:block;margin:4px 2px 0', html: L('Schritt 2 · Im Terminal weiter', 'Schritt 2 · Im Terminal weiter') }));
     }
+    wurzel.appendChild(E('div', { class: 'sr-mitte' }, [term, rechts]));
+    if (cfg.befehle) wurzel.appendChild(befehlsHilfe(cfg.befehle));
 
     /* Ziele prüfen und weiterschalten */
     function weiter() {
@@ -278,8 +285,9 @@ var uebungTagebuch = uebungsRaum({
   ziele: [
     { text: ['Ergänze die drei Lücken in der Datei:<br>① <b>Datenbank</b> (<code>/app/data</code>): Sie soll erhalten bleiben, wenn der Container gelöscht und durch eine neue Version ersetzt wird. Niemand muss die Dateien öffnen – Docker soll sie verwalten.<br>② <b>PDF-Exporte</b> (<code>/app/export</code>): Die Trainer wollen sie auf dem Server im Ordner <code>./export</code> öffnen.<br>③ Unten: das Volume aus ① anmelden.', 'Fülle die 3 Lücken aus:<br>① <b>Datenbank</b> (<code>/app/data</code>): Sie soll bleiben, auch wenn der Container gelöscht wird. Docker soll sie verwalten.<br>② <b>PDFs</b> (<code>/app/export</code>): Die Trainer wollen sie im Ordner <code>./export</code> öffnen.<br>③ Unten: das Volume aus ① aufschreiben.'], ziel: function (h, st) { return !!st.dateiOk; } },
     { text: ['Starte die App mit Compose im Hintergrund.', 'Starte die App mit Compose.'], ziel: function (h) { return h.container.some(function (c) { return c.compose === 'tagebuch' && c.status === 'up'; }); } },
-    { text: ['Schau nach, was Docker angelegt hat: <code>docker volume ls</code> und <code>ls</code>.', 'Schau nach: <code>docker volume ls</code> und <code>ls</code>.'], ziel: function (h, st) { return st.befehle.some(function (b) { return /docker\s+volume\s+ls/.test(b); }) && st.befehle.some(function (b) { return /^ls\b/.test(b); }); } },
-    { text: ['Der Verein will testen, was ein „großes Aufräumen“ anrichtet: <code>docker compose down -v</code>.', 'Teste: <code>docker compose down -v</code>.'], ziel: function (h) { return h.compose.unten === 'v'; } },
+    { text: ['Prüfe, wo die Daten der App jetzt außerhalb des Containers liegen:<br>① Tippe <code>docker volume ls</code>. Die Liste zeigt alle Volumes. Dort steht jetzt <code>tagebuch_notizen-db</code> – das Volume der Datenbank (Compose setzt den Projektnamen <code>tagebuch_</code> davor).<br>② Tippe <code>ls</code>. Die Liste zeigt die Dateien und Ordner im Projektordner auf dem Server. Dort steht jetzt <code>export/</code> – der Ordner für die PDFs.', 'Wo liegen die Daten jetzt? Prüfe es:<br>① Tippe <code>docker volume ls</code>. Du siehst die Volumes. Dort steht <code>tagebuch_notizen-db</code>. Das ist die Datenbank.<br>② Tippe <code>ls</code>. Du siehst die Ordner auf dem Server. Dort steht <code>export/</code>. Das ist der Ordner für die PDFs.'], ziel: function (h, st) { return st.befehle.some(function (b) { return /docker\s+volume\s+ls/.test(b); }) && st.befehle.some(function (b) { return /^ls\b/.test(b); }); } },
+    { text: ['Der Verein will wissen, was beim „großen Aufräumen“ mit den Daten passiert. Tippe <code>docker compose down -v</code> (<code>-v</code> steht für <code>--volumes</code>).', 'Was passiert beim großen Aufräumen? Tippe <code>docker compose down -v</code>.'],
+      sage: ['✔ Gefunden: Die Datenbank liegt im Volume <code>tagebuch_notizen-db</code>, die PDFs im Ordner <code>./export</code> auf dem Server.', '✔ Gefunden: Datenbank im Volume, PDFs im Ordner <code>./export</code>.'], ziel: function (h) { return h.compose.unten === 'v'; } },
     { text: ['Was ist jetzt noch da? Prüfe es im Terminal und wähle.', 'Was ist noch da? Prüfe im Terminal. Dann wähle.'],
       wahl: { lob: ['Genau: <code>down -v</code> hat das Volume <code>tagebuch_notizen-db</code> gelöscht. Der Ordner <code>./export</code> auf dem Host bleibt.', 'Richtig: Das Volume ist weg. Der Ordner bleibt.'],
         optionen: [
