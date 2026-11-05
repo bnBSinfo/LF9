@@ -152,11 +152,11 @@
     }
     function geh(von, nach, fehler) { return function () { if (von.indexOf(zustand) >= 0) { zustand = nach; zeichne(); } else zeichne('<span class="dk-bad">✗ ' + fehler + '</span>'); }; }
     api.werkzeug({ icon: '🆕', text: 'create', taste: 'c', aktion: geh(['image', 'removed'], 'created', L('Es gibt den Container schon', 'Den Container gibt es schon')) });
-    api.werkzeug({ icon: '▶', text: 'start', taste: 's', aktion: geh(['created', 'exited'], 'running', L('Erst create', 'Erst create')) });
+    api.werkzeug({ icon: '▶', text: 'start', taste: 's', aktion: geh(['created', 'exited'], 'running', L('Erst create ausführen', 'Zuerst create')) });
     api.werkzeug({ icon: '⏹', text: 'stop', taste: 't', aktion: geh(['running'], 'exited', L('Läuft gerade nicht', 'Läuft nicht')) });
     api.werkzeug({ icon: '🗑', text: 'rm', taste: 'x', aktion: function () {
       if (zustand === 'running') return zeichne('<span class="dk-bad">✗ ' + L('läuft noch – erst stop oder rm -f', 'läuft noch – erst stop oder rm -f') + '</span>');
-      geh(['created', 'exited'], 'removed', L('Kein Container da', 'Kein Container da'))();
+      geh(['created', 'exited'], 'removed', L('Es gibt keinen Container', 'Es gibt keinen Container'))();
     } });
     api.werkzeug({ icon: '🚀', text: 'run = create + start', taste: 'r', aktion: geh(['image', 'removed'], 'running', L('Es gibt den Container schon', 'Den Container gibt es schon')) });
     zeichne();
@@ -177,7 +177,7 @@
       E('div', { class: 'dk-band', style: 'align-self:center', text: 'BUILD  ·  SHIP' }),
       E('div', { class: 'dk-reihe dk-nw' }, [df, p[0], img, p[1], reg]),
       E('div', { class: 'dk-reihe dk-nw', style: 'justify-content:flex-end' }, [E('div', { class: 'dk-band', style: 'align-self:center', text: 'RUN' }),
-        kasten('dk-os', '🖥️ Server', L('Mitschüler · zuhause', 'Mitschüler · zuhause'), [E('div', { class: 'dk-reihe dk-nw', style: 'margin-top:6px' }, [img2, p[3], cons])]), p[2]])
+        kasten('dk-os', '🖥️ Server', L('Mitschüler · zu Hause', 'Mitschüler · zu Hause'), [E('div', { class: 'dk-reihe dk-nw', style: 'margin-top:6px' }, [img2, p[3], cons])]), p[2]])
     ]));
     var info = E('div', { class: 'dk-gross', 'aria-live': 'polite' });
     d.appendChild(info);
@@ -211,11 +211,11 @@
       wrap.innerHTML = '';
       wrap.appendChild(zeile('localhost:8080', A, A ? '8080' : '', 'steckbrief'));
       wrap.appendChild(zeile('localhost:8081', B, B ? '8081' : '', 'steckbrief2'));
-      meld.innerHTML = konflikt ? '<span class="dk-bad">✗ <code>-p 8080:80</code> ' + L('für steckbrief2: port is already allocated', 'für steckbrief2: port is already allocated') + '</span>' : '<span class="dk-etikett">' + L('Im Container dürfen beide :80 nutzen – jeder Host-Port nur einmal.', 'Im Container beide :80 – jeder Host-Port nur 1-mal.') + '</span>';
+      meld.innerHTML = konflikt ? '<span class="dk-bad">✗ <code>-p 8080:80</code> ' + L('für steckbrief2: port is already allocated', 'für steckbrief2: port is already allocated') + '</span>' : '<span class="dk-etikett">' + L('Intern dürfen beide Container :80 nutzen – jeden Host-Port gibt es aber nur einmal.', 'Innen dürfen beide :80 haben. Jeden Host-Port gibt es nur 1-mal.') + '</span>';
     }
     api.werkzeug({ icon: '🔌', text: '-p 8080:80', taste: 'a', typ: 'schalter', an: true, aktion: function (an) { A = an; konflikt = false; zeichne(); } });
     api.werkzeug({ icon: '🔌', text: '-p 8081:80', taste: 'b', typ: 'schalter', aktion: function (an) { B = an; konflikt = false; zeichne(); } });
-    api.werkzeug({ icon: '💥', text: L('2× 8080', '2× 8080'), taste: 'k', aktion: function () { konflikt = A; if (!A) { meld.innerHTML = '<span class="dk-etikett">' + L('Erst -p 8080:80 einschalten', 'Erst -p 8080:80 an') + '</span>'; return; } zeichne(); } });
+    api.werkzeug({ icon: '💥', text: L('2× 8080', '2× 8080'), taste: 'k', aktion: function () { konflikt = A; if (!A) { meld.innerHTML = '<span class="dk-etikett">' + L('Erst -p 8080:80 einschalten', 'Schalte zuerst -p 8080:80 an') + '</span>'; return; } zeichne(); } });
     zeichne();
     return {};
   }
@@ -278,21 +278,37 @@
     dauer: '20 Minuten',
     szenen: [
       { id: 'wohnen', titel: 'Wie wohnen Apps?', station: 'S1', zeichne: szWohnen,
-        erklaerung: '<p>Ohne Docker teilen sich alle Programme <b>ein</b> Betriebssystem – wie eine WG in einem Raum. Braucht App A Python 3.8 und App B Python 3.12, gibt es Streit.</p><p>Eine <b>virtuelle Maschine</b> trennt sauber, bringt aber ein ganzes eigenes Betriebssystem mit: schwer und langsam.</p><p>Ein <b>Container</b> packt nur die App mit ihren Bibliotheken ein und teilt sich den Linux-Kernel des Hosts – wie Wohnungen im selben Haus. Wie ein Schiffscontainer läuft er überall gleich: auf dem Laptop, dem Schulserver und in der Cloud.</p>' },
+        erklaerung: '<p>Ohne Docker teilen sich alle Programme <b>ein</b> Betriebssystem – wie eine WG in einem Raum. Braucht App A Python 3.8 und App B Python 3.12, gibt es Streit.</p><p>Eine <b>virtuelle Maschine</b> trennt sauber, bringt aber ein ganzes eigenes Betriebssystem mit. Das macht sie schwer und langsam.</p><p>Ein <b>Container</b> enthält nur die App mit ihren Bibliotheken und teilt sich den Linux-Kernel mit dem Host – wie Wohnungen im selben Haus. Wie ein Schiffscontainer läuft er überall gleich: auf dem Laptop, dem Schulserver und in der Cloud.</p>' },
       { id: 'klasse', titel: 'Image und Container', station: 'S1', zeichne: szKlasse,
-        erklaerung: '<p>Ein <b>Image</b> ist der Bauplan: Programm, Bibliotheken, Einstellungen. Es ist schreibgeschützt.</p><p>Jedes <code>docker run</code> macht aus dem Image einen <b>neuen Container</b> – wie <code>new</code> aus einer Klasse ein neues Objekt macht. Aus einem Image können viele Container laufen. <code>docker rm</code> löscht einen Container, das Image bleibt.</p>' },
+        erklaerung: '<p>Ein <b>Image</b> ist der Bauplan: Programm, Bibliotheken, Einstellungen. Es ist schreibgeschützt.</p><p>Jedes <code>docker run</code> erzeugt aus dem Image einen <b>neuen Container</b> – so wie <code>new</code> aus einer Klasse ein neues Objekt erzeugt. Aus einem Image können viele Container entstehen. Mit <code>docker rm</code> löschst du einen Container; das Image bleibt erhalten.</p>' },
       { id: 'run', titel: 'Was passiert bei docker run?', station: 'S1', zeichne: szRun,
-        erklaerung: '<p>Du tippst den Befehl im <b>Client</b>. Der schickt ihn an den <b>Docker Daemon</b> auf dem Host.</p><p>Der Daemon schaut, ob das Image schon lokal liegt. Wenn nicht, lädt er es mit <b>pull</b> aus der <b>Registry</b> (z. B. Docker Hub). Dann erstellt und startet er den Container. Die Ausgabe kommt zurück in dein Terminal.</p><p>Beim zweiten Mal ist das Image schon da: kein Download mehr.</p>' },
+        erklaerung: '<p>Du tippst den Befehl im <b>Client</b>. Dieser schickt ihn an den <b>Docker Daemon</b> auf dem Host.</p><p>Der Daemon schaut, ob das Image schon lokal liegt. Wenn nicht, lädt er es mit <b>pull</b> aus der <b>Registry</b> (z. B. Docker Hub). Dann erstellt und startet er den Container. Die Ausgabe erscheint in deinem Terminal.</p><p>Beim zweiten Mal ist das Image schon da, und Docker muss nichts mehr herunterladen.</p>' },
       { id: 'leben', titel: 'Lebenszyklus eines Containers', station: 'S1', zeichne: szLeben,
-        erklaerung: '<p>Ein Container ist erst <b>Created</b>, dann <b>Running</b>. Gestoppt ist er <b>Exited</b> – er ist aber noch da und lässt sich wieder starten. Erst <code>docker rm</code> löscht ihn.</p><p><code>docker run</code> = create + start. <code>docker ps</code> zeigt nur laufende Container, <code>docker ps -a</code> auch gestoppte.</p>' },
+        erklaerung: '<p>Ein Container ist zuerst <b>Created</b> (erstellt), dann <b>Running</b> (läuft). Ein gestoppter Container hat den Status <b>Exited</b>. Er ist aber noch vorhanden und lässt sich wieder starten. Erst <code>docker rm</code> löscht ihn.</p><p><code>docker run</code> = create + start. <code>docker ps</code> zeigt nur laufende Container, <code>docker ps -a</code> zeigt alle, auch die gestoppten.</p>' },
       { id: 'build', titel: 'Build · Ship · Run', station: 'S2', zeichne: szBuild,
-        erklaerung: '<p>Im <b>Dockerfile</b> steht das Rezept: <code>FROM</code> Basis-Image, <code>COPY</code> eigene Dateien hinein, <code>EXPOSE</code> den Port dokumentieren.</p><p><code>docker build</code> macht daraus ein Image. Mit <code>push</code> kommt es in eine Registry, mit <code>pull</code> holt es sich ein anderer Rechner, mit <code>run</code> laufen dort Container. Ändert sich eine kopierte Datei, musst du <b>neu bauen</b>.</p>' },
+        erklaerung: '<p>Im <b>Dockerfile</b> steht das Rezept: <code>FROM</code> nennt das Basis-Image, <code>COPY</code> kopiert eigene Dateien hinein, <code>EXPOSE</code> dokumentiert den Port.</p><p><code>docker build</code> macht daraus ein Image. Mit <code>push</code> kommt es in eine Registry, mit <code>pull</code> holt es sich ein anderer Rechner, und mit <code>run</code> startet er daraus Container. Ändert sich eine kopierte Datei, musst du <b>neu bauen</b>.</p>' },
       { id: 'ports', titel: 'Port-Mapping', station: 'S2', zeichne: szPorts,
-        erklaerung: '<p>Ein Container ist von außen erst erreichbar, wenn du einen Port weiterleitest: <code>-p 8080:80</code> heißt <b>Host-Port 8080</b> → <b>Container-Port 80</b>.</p><p>Zwei Container dürfen innen beide Port 80 nutzen. Jeder Port auf dem Host kann aber nur <b>einmal</b> vergeben werden – sonst meldet Docker <code>port is already allocated</code>.</p>' },
+        erklaerung: '<p>Ein Container ist von außen erst erreichbar, wenn du einen Port weiterleitest: <code>-p 8080:80</code> heißt <b>Host-Port 8080</b> → <b>Container-Port 80</b>.</p><p>Zwei Container dürfen intern beide Port 80 nutzen. Jeder Port auf dem Host kann aber nur <b>einmal</b> vergeben werden – sonst meldet Docker <code>port is already allocated</code>.</p>' },
       { id: 'daten', titel: 'Container vergessen alles', station: 'S3', zeichne: szDaten,
-        erklaerung: '<p>Was ein Container in seine eigene Schicht schreibt, ist mit <code>docker rm</code> weg – wie ein Hotelzimmer, das aufgeräumt wird.</p><p>Ein <b>Named Volume</b> (<code>meine-daten:/daten</code>) ist ein Schließfach, das Docker verwaltet: Es bleibt, auch wenn der Container gelöscht wird. Nur <code>docker compose down -v</code> löscht es.</p><p>Ein <b>Bind Mount</b> (<code>./export:/app/export</code>) ist ein normaler Ordner auf dem Host. Den löscht Docker nie.</p>' },
+        erklaerung: '<p>Was ein Container in seine eigene Schicht schreibt, ist nach <code>docker rm</code> weg – wie ein Hotelzimmer, das aufgeräumt wird.</p><p>Ein <b>Named Volume</b> (<code>meine-daten:/daten</code>) ist ein Schließfach, das Docker verwaltet: Es bleibt, auch wenn der Container gelöscht wird. Erst <code>docker compose down -v</code> löscht es.</p><p>Ein <b>Bind Mount</b> (<code>./export:/app/export</code>) ist ein normaler Ordner auf dem Host. Den löscht Docker nie.</p>' },
       { id: 'compose', titel: 'Compose: Namen statt IP-Adressen', station: 'S4', zeichne: szCompose,
-        erklaerung: '<p>Mit <b>Docker Compose</b> stehen alle Dienste in einer Datei. <code>docker compose up -d</code> startet sie gemeinsam und legt ein Netzwerk für sie an.</p><p>Im Netzwerk heißt jeder Dienst so wie sein <b>Service-Name</b>: Das eingebaute DNS übersetzt <code>db</code> in die IP-Adresse – wie ein Telefonbuch.</p><p>Vorsicht, <b>localhost-Falle</b>: <code>localhost</code> im Container ist der Container selbst, nicht die Datenbank.</p>' }
+        erklaerung: '<p>Mit <b>Docker Compose</b> stehen alle Dienste in einer Datei. <code>docker compose up -d</code> startet sie gemeinsam und legt ein Netzwerk für sie an.</p><p>Im Netzwerk ist jeder Dienst unter seinem <b>Service-Namen</b> erreichbar: Das eingebaute DNS übersetzt <code>db</code> in die IP-Adresse – wie ein Telefonbuch.</p><p>Vorsicht, <b>localhost-Falle</b>: <code>localhost</code> im Container ist der Container selbst, nicht die Datenbank.</p>' }
     ]
   };
+
+  /* Startkarte von js/tafel.js (die Datei bleibt unverändert) für Schüler beschriften:
+     window.TAFEL wird erst in tafel.js gesetzt, deshalb hier beim Setzen abfangen. */
+  var tafelObj;
+  Object.defineProperty(window, 'TAFEL', { configurable: true, get: function () { return tafelObj; }, set: function (t) {
+    tafelObj = t;
+    if (!t || !t.startKarte) return;
+    var original = t.startKarte;
+    t.startKarte = function () {
+      var k = original.apply(this, arguments), h = k.querySelector('h2'), p = k.querySelector('p'), b = k.querySelector('button');
+      if (h) h.textContent = L('Was ist eigentlich Docker?', 'Was ist eigentlich Docker?');
+      if (p) p.innerHTML = L('In 8 kurzen Szenen zum Anklicken siehst du, wie Docker funktioniert: vom Image über den Container bis zu Compose. Daneben steht jeweils eine Erklärung. Du findest die Szenen auch oben unter <b>Tafelbild</b> und in den Räumen 1–4 unter <b>💡</b>.', 'In 8 kurzen Szenen siehst du, wie Docker funktioniert. Daneben steht eine Erklärung. Du findest sie auch oben unter <b>Tafelbild</b> und in den Räumen unter <b>💡</b>.');
+      if (b) b.lastChild.textContent = ' ' + L('Erklärung ansehen', 'Erklärung ansehen');
+      return k;
+    };
+  } });
 })();
