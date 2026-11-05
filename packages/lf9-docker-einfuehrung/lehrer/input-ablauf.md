@@ -18,7 +18,7 @@ Leitfrage: **„Wie bekommt der TSV Lechwiesen seine Foto-Cloud auf den Server, 
 | Zeit | Szene | Klicks (Taste) | Impuls an die Klasse | Erwartung / typische Fehlvorstellung | Merksatz (mündlich) |
 |---|---|---|---|---|---|
 | 0:00–2:00 | Einstieg | – | „Zwei Programme brauchen verschiedene Python-Versionen. Was tun?“ | „Zweiter Rechner“, „VM“ | – |
-| 2:00–4:00 | 1 Wie wohnen Apps? | B, V, C | „Was ist bei der VM teuer?“ | Container = kleine VM (eigenes OS) | Container teilen sich den Kernel des Hosts. |
+| 2:00–4:00 | 1 Wie wohnen Apps? | (startet mit Bare Metal) V, C, S | „Was ist bei der VM teuer?“ | Container = kleine VM (eigenes OS) | Container teilen sich den Kernel des Hosts. |
 | 4:00–6:00 | 2 Image und Container | R, R, X, J | „Was passiert mit dem Image bei `docker rm`?“ | Image wird mitgelöscht | Image = Klasse, Container = Objekt. |
 | 6:00–8:30 | 3 Was passiert bei docker run? | S ×5, dann N, S ×4 | „Woher kommt das Image?“ – vor Schritt ②; beim 2. Mal: „Wird wieder geladen?“ | Image liegt immer schon da / wird jedes Mal geladen | Fehlt das Image, holt `run` es aus der Registry. |
 | 8:30–10:30 | 4 Lebenszyklus | R, T, X; dann R, X | „Warum ist `docker ps` leer?“ – nach T | gestoppt = gelöscht; `rm` auf laufendem Container | `ps` nur laufende, `ps -a` alle. |
