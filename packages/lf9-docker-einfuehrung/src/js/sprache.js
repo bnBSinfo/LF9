@@ -177,6 +177,19 @@
       LZ4: { zeilen: [{ text: 'Name links (<code>pgdata:/…</code>) heißt ___. Pfad links (<code>./medien:/…</code>) heißt ___.' }, { text: '<code>down</code> löscht ___. <code>down -v</code> löscht auch ___.' }], fehler: 'Nie <code>docker compose down -v</code>, wenn die Datenbank bleiben soll.' },
       LZ5: { zeilen: [{ text: 'Die Datenbank erreiche ich über ihren ___.' }, null, { text: 'Beim 1. Start tippe ich <code>docker compose ___</code>.' }] },
       LZ6: { zeilen: [{ text: 'Bei einer Fehlermeldung lese ich zuerst ___.' }, { text: 'Läuft ein Dienst nicht, prüfe ich mit ___ und ___.' }], schema: 'Meldung lesen. Ursache finden. 1 Sache ändern. <code>up -d</code>. Im Browser prüfen.' }
+    },
+    tafel: {
+      titel: 'So funktioniert Docker',
+      szenen: {
+        wohnen: { erklaerung: '<p>Ohne Docker teilen sich alle Programme <b>ein</b> Betriebssystem. Wie eine WG in einem Raum. App A braucht Python 3.8, App B braucht Python 3.12. Das gibt Streit.</p><p>Eine <b>virtuelle Maschine</b> hat ein ganzes eigenes Betriebssystem. Das ist schwer und langsam.</p><p>Ein <b>Container</b> hat nur die App und ihre Bibliotheken. Er teilt sich den Kern vom Host. Wie Wohnungen in einem Haus. Er läuft überall gleich.</p>' },
+        klasse: { erklaerung: '<p>Ein <b>Image</b> ist ein Bauplan. Man kann ihn nicht ändern.</p><p>Jedes <code>docker run</code> macht einen <b>neuen Container</b>. Wie <code>new</code> ein neues Objekt macht. Aus 1 Image laufen viele Container. <code>docker rm</code> löscht einen Container. Das Image bleibt.</p>' },
+        run: { erklaerung: '<p>Du tippst den Befehl. Der <b>Client</b> schickt ihn an den <b>Docker Daemon</b>.</p><p>Der Daemon schaut: Ist das Image da? Nein? Dann lädt er es aus der <b>Registry</b> (<b>pull</b>). Dann startet er den Container. Die Ausgabe kommt in dein Terminal.</p><p>Beim 2. Mal ist das Image schon da.</p>' },
+        leben: { erklaerung: '<p>Ein Container ist erst <b>Created</b>, dann <b>Running</b>. Gestoppt heißt <b>Exited</b>. Er ist dann noch da. Erst <code>docker rm</code> löscht ihn.</p><p><code>docker run</code> = create + start. <code>docker ps</code> zeigt nur Container, die laufen. <code>docker ps -a</code> zeigt alle.</p>' },
+        build: { erklaerung: '<p>Im <b>Dockerfile</b> steht das Rezept. <code>FROM</code>: das Basis-Image. <code>COPY</code>: eigene Dateien hinein. <code>EXPOSE</code>: der Port.</p><p><code>docker build</code> macht daraus ein Image. <code>push</code> bringt es in die Registry. <code>pull</code> holt es auf einen anderen Rechner. <code>run</code> startet dort Container. Datei geändert? Dann <b>neu bauen</b>.</p>' },
+        ports: { erklaerung: '<p>Von außen kommst du nur mit Weiterleitung an den Container: <code>-p 8080:80</code>. Links ist der Port vom <b>Host</b>. Rechts ist der Port im <b>Container</b>.</p><p>Im Container dürfen beide Port 80 haben. Jeden Port vom Host gibt es nur <b>1-mal</b>. Sonst kommt <code>port is already allocated</code>.</p>' },
+        daten: { erklaerung: '<p>Was im Container gespeichert ist, ist nach <code>docker rm</code> weg. Wie ein Hotelzimmer, das aufgeräumt wird.</p><p>Ein <b>Volume</b> ist wie ein Schließfach. Docker verwaltet es. Es bleibt, auch wenn der Container weg ist. Nur <code>down -v</code> löscht es.</p><p>Ein <b>Bind Mount</b> ist ein Ordner auf dem Host. Den löscht Docker nie.</p>' },
+        compose: { erklaerung: '<p>Bei <b>Docker Compose</b> stehen alle Dienste in 1 Datei. <code>docker compose up -d</code> startet alle. Compose macht auch ein Netzwerk.</p><p>Im Netzwerk heißt jeder Dienst wie sein <b>Service-Name</b>. Docker sucht die IP-Adresse zum Namen <code>db</code>. Wie ein Telefonbuch.</p><p>Vorsicht: <code>localhost</code> im Container ist der Container selbst. Nicht die Datenbank.</p>' }
+      }
     }
   };
 

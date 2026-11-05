@@ -273,6 +273,7 @@ var SR_CSS = '.sr-spiel{display:flex;flex-direction:column;gap:10px;min-height:5
   '.sr-fall .rm{margin-top:6px}' +
   '.sr-regeln{background:#f8fafc;color:#0f172a;border-radius:10px;padding:6px 12px}.sr-regeln summary{cursor:pointer;font-weight:700;min-height:36px;display:flex;align-items:center}' +
   '.sr-regeln li{margin:3px 0;font-size:.9rem}' +
+  '.sr-erklknopf{align-self:flex-start;background:#fef3c7;color:#422006;border:2px solid #f59e0b;font-weight:700;min-height:44px;text-align:left}.sr-erklknopf small{font-weight:400}' +
   '.sr-rueck{border-radius:8px;padding:8px 10px;margin-top:8px;font-size:.92rem}.sr-rueck.ok{background:#dcfce7;color:#14532d}.sr-rueck.bad{background:#fee2e2;color:#7f1d1d}.sr-rueck.tut{background:#dbeafe;color:#1e3a8a}' +
   '.sr-rueck button{margin-top:6px;min-height:40px}' +
   '.sr-pfad{flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.85rem}.sr-pfad button{min-height:40px;font-weight:700}' +
@@ -576,6 +577,9 @@ function serverraum(box, api) {
     extraEl = E('div', { class: 'sr-extra' }); extraEl.hidden = true;
     wurzel.appendChild(extraEl);
     wurzel.appendChild(E('details', { class: 'sr-regeln' }, [E('summary', { text: '📘 ' + L('Regelbuch – das gilt in Raum ', 'Regelbuch – das gilt in Raum ') + R.nr }), E('ul', {}, R.regeln.map(function (r) { return E('li', { html: T(r) }); }))]));
+    /* Erklär-Szenen „So funktioniert Docker“ (js/erklaerung.js) zu diesem Raum */
+    var erkl = PAKET.tafel ? PAKET.tafel.szenen.map(function (s, i) { return s.station === R.id ? i : -1; }).filter(function (i) { return i >= 0; }) : [];
+    if (erkl.length && window.TAFEL) wurzel.appendChild(E('button', { type: 'button', class: 'sr-erklknopf', html: '💡 ' + L('So funktioniert Docker – Erklärung zu Raum ', 'So funktioniert Docker – Erklärung zu Raum ') + R.nr + ' <small>(' + erkl.map(function (i) { return PAKET.tafel.szenen[i].titel; }).join(' · ') + ')</small>', onclick: function () { TAFEL.oeffnen({ szene: erkl[0] }); } }));
     serverZeichnen(); fallZeichnen();
     if (phase === 'demo') { var d = fallEl.querySelector('.sr-demo'); if (d) d.classList.add('sr-puls'); }
   }
@@ -703,7 +707,7 @@ window.PAKET = {
   id: 'lf9-docker-einfuehrung',
   titel: 'Docker-Einführung',
   untertitel: 'Serverraum 0 – vom ersten Container zur eigenen Foto-Cloud',
-  version: '0.16',
+  version: '0.17',
   bestehen: 80,
   dauer: 'etwa 160 Minuten im Paket, dazu die Übungen in der VM',
   welt: { thema: 'technik', kulisse: 'serverraum', symbol: '🐳' },
