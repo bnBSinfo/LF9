@@ -162,11 +162,11 @@
         d.appendChild(E('div', { class: 'dk-etikett', text: L('gleiche Maße, egal was drin ist – passt auf jedes Schiff, jeden Lkw, jeden Zug', 'gleiche Form, egal was drin ist') }));
       }
     }
-    api.werkzeug({ icon: '🏚️', text: 'Bare Metal', taste: 'b', typ: 'modus', aktion: function () { zeichne('metal'); } });
+    var m = api.werkzeug({ icon: '🏚️', text: 'Bare Metal', taste: 'b', typ: 'modus', aktion: function () { zeichne('metal'); } });
     api.werkzeug({ icon: '🏘️', text: 'VM', taste: 'v', typ: 'modus', aktion: function () { zeichne('vm'); } });
-    var c = api.werkzeug({ icon: '🏢', text: 'Container', taste: 'c', typ: 'modus', an: true, aktion: function () { zeichne('container'); } });
+    api.werkzeug({ icon: '🏢', text: 'Container', taste: 'c', typ: 'modus', aktion: function () { zeichne('container'); } });
     api.werkzeug({ icon: '🚢', text: L('Schiffscontainer', 'Schiffscontainer'), taste: 's', typ: 'modus', aktion: function () { zeichne('schiff'); } });
-    c.setze(true); zeichne('container');
+    m.setze(true); zeichne('metal');   // Start mit dem Problem: Bare Metal
     return {};
   }
 
