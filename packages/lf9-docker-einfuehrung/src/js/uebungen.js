@@ -255,7 +255,7 @@ var uebungKantine = uebungsRaum({
 });
 
 /* ---------- Übung 3: Das Trainingstagebuch (LZ4) ---------- */
-var COMPOSE_U3 = '# Trainingstagebuch – Notiz-App mit SQLite\nservices:\n  app:\n    image: trainingstagebuch:1.4\n    ports:\n      - "8300:3000"\n    volumes:\n      - {{db}}:/app/data       # SQLite-Datenbank\n      - {{exp}}:/app/export    # PDF-Export für die Trainer\n\nvolumes:\n  {{decl}}:';
+var COMPOSE_U3 = '# Trainingstagebuch – Notiz-App mit SQLite\nservices:\n  app:\n    image: trainingstagebuch:1.4\n    ports:\n      - "8300:3000"\n    volumes:\n      - {{db}}:/app/data\n      - {{exp}}:/app/export\n\nvolumes:\n  {{decl}}:';
 var uebungTagebuch = uebungsRaum({
   prompt: 'azubi@tagebuch-srv:~/tagebuch$',
   befehle: ['fVol', 'up', 'cps', 'volls', 'ls', 'down', 'downv'],
@@ -268,11 +268,14 @@ var uebungTagebuch = uebungsRaum({
   bausteine: ['docker', 'compose', 'up', '-d', 'down', '-v', 'ps', 'volume', 'ls', 'export'],
   datei: { name: 'docker-compose.yml', text: COMPOSE_U3,
     luecken: {
-      db: { optionen: ['notizen-db', './data', '/app/data'], richtig: 'notizen-db', tipp: ['Die Datenbank soll Docker verwalten – dafür gibt es einen <b>Namen</b> statt eines Pfads.', 'Die Datenbank bekommt einen Namen.'],
+      db: { optionen: ['notizen-db', './data', '/app/data'], richtig: 'notizen-db',
+        aufgabe: ['① <b>Datenbank</b>: Sie soll bleiben, wenn der Container gelöscht und durch eine neue Version ersetzt wird. Niemand muss die Dateien öffnen – Docker verwaltet sie. Name: <code>notizen-db</code>', '① <b>Datenbank</b>: Sie soll bleiben, auch wenn der Container gelöscht wird. Docker verwaltet sie. Name: <code>notizen-db</code>'], tipp: ['Die Datenbank soll Docker verwalten – dafür gibt es einen <b>Namen</b> statt eines Pfads.', 'Die Datenbank bekommt einen Namen.'],
         fb: { './data': ['<code>./data</code> ist ein Pfad – ein Bind Mount. Die Datenbank muss niemand anfassen: Ein Named Volume genügt.', '<code>./data</code> ist ein Ordner. Nimm einen Namen.'], '/app/data': ['Links steht, was vom Host kommt. <code>/app/data</code> ist der Pfad im Container (rechts).', 'Links steht nicht der Container-Pfad.'] } },
-      exp: { optionen: ['./export', 'export', '/app/export'], richtig: './export', tipp: ['Die Trainer wollen die PDFs im Ordner sehen – dafür brauchst du einen <b>Pfad</b> auf dem Host.', 'Der Export braucht einen Ordner: <code>./export</code>.'],
+      exp: { optionen: ['./export', 'export', '/app/export'], richtig: './export',
+        aufgabe: ['② <b>PDF-Exporte</b>: Die Trainer wollen sie auf dem Server im Ordner <code>./export</code> öffnen.', '② <b>PDFs</b>: Die Trainer öffnen sie im Ordner <code>./export</code> auf dem Server.'], tipp: ['Die Trainer wollen die PDFs im Ordner sehen – dafür brauchst du einen <b>Pfad</b> auf dem Host.', 'Der Export braucht einen Ordner: <code>./export</code>.'],
         fb: { export: ['Ein Name links ist ein Named Volume. Die PDFs lägen dann versteckt bei Docker, nicht im Projektordner.', 'Ein Name ist ein Volume. Die Trainer sehen es nicht.'], '/app/export': ['Links steht der Host-Ordner. <code>/app/export</code> ist der Pfad im Container.', 'Links steht nicht der Container-Pfad.'] } },
-      decl: { optionen: ['notizen-db', 'export', 'data'], richtig: 'notizen-db', tipp: ['Unten deklarierst du nur Named Volumes – also den Namen von oben.', 'Unten steht der Name vom Volume.'] }
+      decl: { optionen: ['notizen-db', 'export', 'data'], richtig: 'notizen-db',
+        aufgabe: ['③ Melde hier das Named Volume aus ① an.', '③ Schreib hier das Volume aus ① hin.'], tipp: ['Unten deklarierst du nur Named Volumes – also den Namen von oben.', 'Unten steht der Name vom Volume.'] }
     },
     richtig: { db: 'notizen-db', exp: './export', decl: 'notizen-db' },
     speichern: function (h, w) { h.compose.werte = w; h.compose.gespeichert = true; } },
@@ -283,7 +286,7 @@ var uebungTagebuch = uebungsRaum({
       dienste: function () { return [{ dienst: 'app', image: 'trainingstagebuch:1.4', ports: ['8300:3000'], port: 3000, seite: '<p>Trainingstagebuch</p>', volume: 'notizen-db', bind: '/home/azubi/export' }]; } };
   },
   ziele: [
-    { text: ['Ergänze die drei Lücken in der Datei:<br>① <b>Datenbank</b> (<code>/app/data</code>): Sie soll erhalten bleiben, wenn der Container gelöscht und durch eine neue Version ersetzt wird. Niemand muss die Dateien öffnen – Docker soll sie verwalten.<br>② <b>PDF-Exporte</b> (<code>/app/export</code>): Die Trainer wollen sie auf dem Server im Ordner <code>./export</code> öffnen.<br>③ Unten: das Volume aus ① anmelden.', 'Fülle die 3 Lücken aus:<br>① <b>Datenbank</b> (<code>/app/data</code>): Sie soll bleiben, auch wenn der Container gelöscht wird. Docker soll sie verwalten.<br>② <b>PDFs</b> (<code>/app/export</code>): Die Trainer wollen sie im Ordner <code>./export</code> öffnen.<br>③ Unten: das Volume aus ① aufschreiben.'], ziel: function (h, st) { return !!st.dateiOk; } },
+    { text: ['Ergänze die drei Lücken in der Datei. Neben jeder Lücke steht, was hinein soll.', 'Fülle die 3 Lücken aus. Neben jeder Lücke steht, was hinein soll.'], ziel: function (h, st) { return !!st.dateiOk; } },
     { text: ['Starte die App mit Compose im Hintergrund.', 'Starte die App mit Compose.'], ziel: function (h) { return h.container.some(function (c) { return c.compose === 'tagebuch' && c.status === 'up'; }); } },
     { text: ['Prüfe, wo die Daten der App jetzt außerhalb des Containers liegen:<br>① Tippe <code>docker volume ls</code>. Die Liste zeigt alle Volumes. Dort steht jetzt <code>tagebuch_notizen-db</code> – das Volume der Datenbank (Compose setzt den Projektnamen <code>tagebuch_</code> davor).<br>② Tippe <code>ls</code>. Die Liste zeigt die Dateien und Ordner im Projektordner auf dem Server. Dort steht jetzt <code>export/</code> – der Ordner für die PDFs.', 'Wo liegen die Daten jetzt? Prüfe es:<br>① Tippe <code>docker volume ls</code>. Du siehst die Volumes. Dort steht <code>tagebuch_notizen-db</code>. Das ist die Datenbank.<br>② Tippe <code>ls</code>. Du siehst die Ordner auf dem Server. Dort steht <code>export/</code>. Das ist der Ordner für die PDFs.'], ziel: function (h, st) { return st.befehle.some(function (b) { return /docker\s+volume\s+ls/.test(b); }) && st.befehle.some(function (b) { return /^ls\b/.test(b); }); } },
     { text: ['Der Verein will wissen, was beim „großen Aufräumen“ mit den Daten passiert. Tippe <code>docker compose down -v</code> (<code>-v</code> steht für <code>--volumes</code>).', 'Was passiert beim großen Aufräumen? Tippe <code>docker compose down -v</code>.'],
