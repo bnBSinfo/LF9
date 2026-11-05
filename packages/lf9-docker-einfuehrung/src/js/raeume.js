@@ -245,7 +245,7 @@ var RW_CSS = '.sr-browser{background:#fff;color:#0f172a;border:1px solid #cbd5e1
   '.sr-editor{background:#020617;color:#e2e8f0;border-radius:10px;padding:8px 10px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem;line-height:1.5;overflow:auto;white-space:pre}' +
   '.sr-editor select,.sr-editor input{font:inherit;min-height:30px;background:#fef3c7;color:#422006;border:2px solid #f59e0b;border-radius:6px;padding:0 4px}' +
   '.sr-editor .falsch{border-color:#dc2626;background:#fee2e2}.sr-editor .richtig{border-color:#16a34a;background:#dcfce7}.sr-editor .kom{color:#64748b}' +
-  '.sr-editor .aufg{display:inline-block;white-space:normal;vertical-align:middle;max-width:26em;margin:2px 0 2px 12px;padding:2px 8px;border-radius:6px;background:#fef3c7;color:#422006;font-family:system-ui,sans-serif;font-size:.8rem;line-height:1.35}.sr-editor .aufg code{background:#fde68a;border-radius:3px;padding:0 2px}' +
+  '.sr-editor .nr{color:#fbbf24;font-weight:700}' +
   '.sr-editor .zeile{display:block;width:100%;text-align:left;background:none;border:0;color:inherit;font:inherit;padding:0 4px;min-height:0;border-radius:4px;white-space:pre}.sr-editor .zeile.mark{background:#7f1d1d}' +
   '.sr-sort .karte{display:flex;flex-wrap:wrap;align-items:center;gap:6px;border-bottom:1px dashed #cbd5e1;padding:6px 0}.sr-sort code{flex:1 1 100%}.sr-sort button[aria-pressed="true"]{background:#1d4ed8;color:#fff}' +
   '.sr-form label{display:block;margin:6px 0 2px;font-weight:700}.sr-form input,.sr-form select{min-height:38px;width:100%}';
@@ -277,21 +277,21 @@ function lueckenFall(opt) {
     var ed = E('div', { class: 'sr-editor', role: 'group', 'aria-label': opt.datei });
     ed.appendChild(E('div', { class: 'kom', text: '# ' + opt.datei }));
     opt.text.split('\n').forEach(function (zeile) {
-      var div = E('div');
-      var aufg = [];
+      var div = E('div'), nrn = [];
       zeile.split(/(\{\{\w+\}\})/).forEach(function (teil) {
         var m = teil.match(/^\{\{(\w+)\}\}$/);
         if (!m) { div.appendChild(E('span', { class: /^\s*#/.test(teil) ? 'kom' : '', text: teil })); return; }
         var L0 = opt.luecken[m[1]], el;
-        if (L0.aufgabe) aufg.push(T(L0.aufgabe));
+
         if (PFAD.stufe === 'profi' && !L0.immerAuswahl) el = E('input', { type: 'text', size: '16', 'aria-label': L('Lücke ', 'Lücke ') + m[1], spellcheck: 'false' });
         else { el = E('select', { 'aria-label': L('Lücke ', 'Lücke ') + m[1] }, [E('option', { value: '', text: '???' })].concat(L0.optionen.map(function (o) { return E('option', { value: o, text: o }); }))); }
         if (h.compose && h.compose.werte && h.compose.werte[m[1]]) el.value = h.compose.werte[m[1]];
         (felder[m[1]] = felder[m[1]] || []).push(el);
         div.appendChild(el);
+        if (L0.nr) nrn.push(L0.nr);
       });
-      /* Aufgabe zur Lücke direkt neben dem Feld (optional: luecken[id].aufgabe) */
-      aufg.forEach(function (a) { div.appendChild(E('span', { class: 'aufg', html: '◀ ' + a })); });
+      /* optionale Nummer der Lücke am Zeilenende, passend zur Arbeitsanweisung daneben */
+      if (nrn.length) div.appendChild(E('span', { class: 'nr', text: '   ◀ ' + nrn.join(' ') }));
       ed.appendChild(div);
     });
     box.appendChild(ed);
