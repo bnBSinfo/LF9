@@ -336,15 +336,21 @@ var uebungForum = uebungsRaum({
   browser: 'http://localhost:',
   datei: { name: 'docker-compose.yml', text: COMPOSE_U4F,
     luecken: {
-      host: { optionen: ['mariadb', 'localhost', 'db'], richtig: 'mariadb', tipp: ['Wie heißt der Datenbank-Service in <b>dieser</b> Datei? So heißt auch der Host.', 'Schau: Wie heißt die Datenbank in dieser Datei?'],
+      host: { nr: '①', optionen: ['mariadb', 'localhost', 'db'], richtig: 'mariadb', tipp: ['Wie heißt der Datenbank-Service in <b>dieser</b> Datei? So heißt auch der Host.', 'Schau: Wie heißt die Datenbank in dieser Datei?'],
         fb: { localhost: ['Im Forum-Container ist <code>localhost</code> das Forum selbst. Die Datenbank erreichst du über ihren Service-Namen.', '<code>localhost</code> ist das Forum selbst.'], db: ['In Raum 4 hieß der Service <code>db</code>. Hier heißt er anders – schau in die Datei.', 'Hier heißt die Datenbank nicht <code>db</code>.'] } },
-      pw: { optionen: ['${DB_PASSWORD}', 'DB_PASSWORD', '.env'], richtig: '${DB_PASSWORD}', tipp: ['Eine Variable aus der <code>.env</code> schreibst du mit Dollar und Klammern.', 'Schreibe: <code>${DB_PASSWORD}</code>'],
+      pw: { nr: '②', optionen: ['${DB_PASSWORD}', 'DB_PASSWORD', '.env'], richtig: '${DB_PASSWORD}', tipp: ['Eine Variable aus der <code>.env</code> schreibst du mit Dollar und Klammern.', 'Schreibe: <code>${DB_PASSWORD}</code>'],
         fb: { DB_PASSWORD: ['Ohne <code>${…}</code> wäre das Passwort wörtlich „DB_PASSWORD“.', 'Ohne <code>${ }</code> ist es nur ein Wort.'], '.env': ['Hier steht die Variable, nicht der Dateiname.', 'Hier steht die Variable.'] } },
-      cond: { optionen: ['service_healthy', 'service_started'], richtig: 'service_healthy', tipp: ['Das Forum soll erst starten, wenn die Datenbank Anfragen annimmt.', 'Das Forum wartet, bis die Datenbank bereit ist.'],
+      cond: { nr: '③', optionen: ['service_healthy', 'service_started'], richtig: 'service_healthy', tipp: ['Das Forum soll erst starten, wenn die Datenbank Anfragen annimmt.', 'Das Forum wartet, bis die Datenbank bereit ist.'],
         fb: { service_started: ['<code>service_started</code> wartet nur auf den Start des Containers – die Datenbank ist dann oft noch nicht bereit.', 'Gestartet heißt noch nicht bereit.'] } },
-      dbports: { optionen: ['[]', '["3306:3306"]'], richtig: '[]', immerAuswahl: true, tipp: ['Die Datenbank darf nicht von außen erreichbar sein.', 'Die Datenbank braucht keinen Port nach außen.'],
+      dbports: { nr: '④', optionen: ['[]', '["3306:3306"]'], richtig: '[]', immerAuswahl: true, tipp: ['Die Datenbank darf nicht von außen erreichbar sein.', 'Die Datenbank braucht keinen Port nach außen.'],
         fb: { '["3306:3306"]': ['Damit wäre die Datenbank von außen erreichbar. Das Forum erreicht sie auch ohne – über das interne Netz.', 'Dann ist die Datenbank von außen offen. Das soll nicht sein.'] } }
     },
+    anweisung: [
+      ['<b>DB_HOST</b>: Unter welcher Adresse erreicht das Forum die Datenbank?', '<b>DB_HOST</b>: Wie heißt die Adresse der Datenbank?'],
+      ['<b>DB_PASSWORD</b>: Das Passwort soll nicht offen in der Datei stehen. Hol es als Variable aus der <code>.env</code>.', '<b>DB_PASSWORD</b>: Das Passwort kommt aus der <code>.env</code>. Schreib die Variable hin.'],
+      ['<b>condition</b>: Das Forum soll erst starten, wenn die Datenbank Anfragen annimmt – nicht schon, wenn ihr Container läuft.', '<b>condition</b>: Das Forum startet erst, wenn die Datenbank bereit ist.'],
+      ['<b>ports</b> der Datenbank: Die Datenbank darf von außen nicht erreichbar sein.', '<b>ports</b> der Datenbank: Von außen kommt niemand an die Datenbank.']
+    ],
     richtig: { host: 'mariadb', pw: '${DB_PASSWORD}', cond: 'service_healthy', dbports: '[]' },
     speichern: function (h, w) { h.compose.werte = w; h.compose.gespeichert = true; } },
   setup: function (h) {
@@ -357,7 +363,7 @@ var uebungForum = uebungsRaum({
       } };
   },
   ziele: [
-    { text: ['Ergänze die Datei. Die Datenbank darf nicht von außen erreichbar sein.', 'Ergänze die Datei. Die Datenbank bleibt innen.'], ziel: function (h, st) { return !!st.dateiOk; } },
+    { text: ['Ergänze die vier Lücken in der Datei. Die Arbeitsanweisung steht rechts neben der Datei.', 'Fülle die 4 Lücken aus. Was hinein soll, steht rechts neben der Datei.'], ziel: function (h, st) { return !!st.dateiOk; } },
     { text: ['Lege die Datei mit dem Passwort an. Schau zuerst mit <code>ls -a</code>, was im Ordner liegt.', 'Lege die Datei mit dem Passwort an. Schau zuerst mit <code>ls -a</code>.'], ziel: function (h) { return !!h.env; } },
     { text: ['Starte das Forum zum ersten Mal.', 'Starte das Forum zum 1. Mal.'], ziel: function (h) { return h.container.some(function (c) { return c.compose === 'forum' && c.dienst === 'forum' && c.status === 'up'; }); } },
     { text: ['Prüfe im Browser, ob das Forum antwortet.', 'Prüfe im Browser: Geht das Forum?'], ziel: function (h, st) { return !!(st.browse && st.browse.r.ok && st.browse.r.seite === FORUM); } }
@@ -480,21 +486,30 @@ var uebungUmzug = uebungsRaum({
   browser: 'http://localhost:',
   datei: { name: 'docker-compose.yml', text: COMPOSE_U6,
     luecken: {
-      dbimg: { optionen: ['mariadb:11', 'nextcloud:29', 'cloud-db'], richtig: 'mariadb:11', tipp: ['Welches Image steht am Ende des ersten <code>docker run</code>?', 'Das Image steht ganz am Ende vom 1. Befehl.'],
+      dbimg: { nr: '①', optionen: ['mariadb:11', 'nextcloud:29', 'cloud-db'], richtig: 'mariadb:11', tipp: ['Welches Image steht am Ende des ersten <code>docker run</code>?', 'Das Image steht ganz am Ende vom 1. Befehl.'],
         fb: { 'cloud-db': ['<code>cloud-db</code> war der Container-Name (<code>--name</code>). Bei <code>image:</code> steht das Image.', 'Das ist der Name, nicht das Image.'], 'nextcloud:29': ['Das ist das Image der Cloud, nicht der Datenbank.', 'Das ist das Image der Cloud.'] } },
-      pw: { optionen: ['${DB_PASSWORD}', 'Geheim123', 'DB_PASSWORD'], richtig: '${DB_PASSWORD}', tipp: ['Passwörter gehören nicht in die Datei, sondern in die <code>.env</code>.', 'Das Passwort kommt aus der <code>.env</code>.'],
+      pw: { nr: '②', optionen: ['${DB_PASSWORD}', 'Geheim123', 'DB_PASSWORD'], richtig: '${DB_PASSWORD}', tipp: ['Passwörter gehören nicht in die Datei, sondern in die <code>.env</code>.', 'Das Passwort kommt aus der <code>.env</code>.'],
         fb: { Geheim123: ['Das funktioniert, aber das Passwort stünde dann in jeder Kopie der Datei (z. B. im Git-Repo). Nimm die Variable aus der <code>.env</code>.', 'Dann steht das Passwort offen in der Datei. Nimm die Variable.'], DB_PASSWORD: ['Ohne <code>${…}</code> wäre das Passwort wörtlich „DB_PASSWORD“.', 'Ohne <code>${ }</code> ist es nur ein Wort.'] } },
-      dbvol: { optionen: ['clouddb', '/srv/cloud', './clouddb'], richtig: 'clouddb', tipp: ['Aus <code>-v clouddb:/var/lib/mysql</code> – links steht das Volume.', 'Nimm das Volume aus dem alten Befehl: <code>clouddb</code>.'],
+      dbvol: { nr: '③', optionen: ['clouddb', '/srv/cloud', './clouddb'], richtig: 'clouddb', tipp: ['Aus <code>-v clouddb:/var/lib/mysql</code> – links steht das Volume.', 'Nimm das Volume aus dem alten Befehl: <code>clouddb</code>.'],
         fb: { '/srv/cloud': ['<code>/srv/cloud</code> gehört zur Cloud, nicht zur Datenbank.', 'Das ist der Ordner der Cloud.'], './clouddb': ['Ein Pfad wäre ein neuer, leerer Ordner. Die Daten liegen im Volume <code>clouddb</code>.', 'Das wäre ein neuer leerer Ordner.'] } },
-      port: { optionen: ['8443:80', '80:8443', '8443:8443'], richtig: '8443:80', tipp: ['Aus <code>-p 8443:80</code> wird <code>ports: - "8443:80"</code> – gleiche Reihenfolge.', 'Gleiche Zahlen wie bei <code>-p</code>: <code>8443:80</code>.'],
+      port: { nr: '④', optionen: ['8443:80', '80:8443', '8443:8443'], richtig: '8443:80', tipp: ['Aus <code>-p 8443:80</code> wird <code>ports: - "8443:80"</code> – gleiche Reihenfolge.', 'Gleiche Zahlen wie bei <code>-p</code>: <code>8443:80</code>.'],
         fb: { '80:8443': ['Die Reihenfolge bleibt wie bei <code>-p</code>: Host links, Container rechts.', 'Links der Rechner, rechts der Container.'], '8443:8443': ['Im Container hört Nextcloud auf 80 – so stand es auch rechts bei <code>-p</code>.', 'Im Container ist es Port 80.'] } },
-      daten: { optionen: ['/srv/cloud', 'cloud', '/var/www/html'], richtig: '/srv/cloud', tipp: ['Aus <code>-v /srv/cloud:/var/www/html</code> – links steht der Ordner auf dem Host.', 'Nimm den Ordner aus dem alten Befehl: <code>/srv/cloud</code>.'],
+      daten: { nr: '⑤', optionen: ['/srv/cloud', 'cloud', '/var/www/html'], richtig: '/srv/cloud', tipp: ['Aus <code>-v /srv/cloud:/var/www/html</code> – links steht der Ordner auf dem Host.', 'Nimm den Ordner aus dem alten Befehl: <code>/srv/cloud</code>.'],
         fb: { cloud: ['Ein Name wäre ein neues, leeres Volume. Die Dateien liegen im Host-Ordner <code>/srv/cloud</code>.', 'Das wäre ein neues leeres Volume.'], '/var/www/html': ['Das ist der Pfad im Container (rechts). Links steht der Host-Ordner.', 'Das ist der Pfad im Container.'] } },
-      host: { optionen: ['db', 'cloud-db', 'localhost'], richtig: 'db', tipp: ['Im Compose-Netz heißt der Host wie der <b>Service</b> in dieser Datei.', 'Der Host heißt wie der Service: <code>db</code>.'],
+      host: { nr: '⑥', optionen: ['db', 'cloud-db', 'localhost'], richtig: 'db', tipp: ['Im Compose-Netz heißt der Host wie der <b>Service</b> in dieser Datei.', 'Der Host heißt wie der Service: <code>db</code>.'],
         fb: { 'cloud-db': ['So hieß der alte Container. In Compose ist der Service-Name die Adresse – hier <code>db</code>.', 'Das war der alte Name. Jetzt heißt der Service <code>db</code>.'], localhost: ['<code>localhost</code> ist im Cloud-Container die Cloud selbst.', '<code>localhost</code> ist die Cloud selbst.'] } },
-      cond: { optionen: ['service_healthy', 'service_started'], richtig: 'service_healthy', tipp: ['Die Cloud soll erst starten, wenn die Datenbank bereit ist.', 'Die Cloud wartet, bis die Datenbank bereit ist.'],
+      cond: { nr: '⑦', optionen: ['service_healthy', 'service_started'], richtig: 'service_healthy', tipp: ['Die Cloud soll erst starten, wenn die Datenbank bereit ist.', 'Die Cloud wartet, bis die Datenbank bereit ist.'],
         fb: { service_started: ['Gestartet heißt noch nicht bereit. <code>service_healthy</code> wartet auf den Healthcheck.', 'Gestartet heißt noch nicht bereit.'] } }
     },
+    anweisung: [
+      ['<b>image</b> der Datenbank: Übernimm das Image aus dem ersten <code>docker run</code>.', '<b>image</b> der Datenbank: Nimm das Image aus dem 1. Befehl.'],
+      ['<b>Passwort</b> der Datenbank: nicht offen in die Datei – hol es als Variable aus der <code>.env</code>.', '<b>Passwort</b>: Es kommt aus der <code>.env</code>. Schreib die Variable hin.'],
+      ['<b>volumes</b> der Datenbank: Die vorhandenen Daten sollen weitergenutzt werden. Nimm das Volume aus dem ersten Befehl.', '<b>volumes</b> der Datenbank: Nimm das Volume aus dem 1. Befehl.'],
+      ['<b>ports</b> der Cloud: wie bei <code>-p</code> im zweiten Befehl.', '<b>ports</b> der Cloud: wie bei <code>-p</code> im 2. Befehl.'],
+      ['<b>volumes</b> der Cloud: Die Dateien liegen im Host-Ordner aus <code>-v</code> im zweiten Befehl.', '<b>volumes</b> der Cloud: Nimm den Ordner aus <code>-v</code> im 2. Befehl.'],
+      ['<b>MYSQL_HOST</b>: Unter welcher Adresse erreicht die Cloud die Datenbank in Compose?', '<b>MYSQL_HOST</b>: Wie heißt die Adresse der Datenbank in Compose?'],
+      ['<b>condition</b>: Die Cloud soll erst starten, wenn die Datenbank bereit ist.', '<b>condition</b>: Die Cloud startet erst, wenn die Datenbank bereit ist.']
+    ],
     richtig: { dbimg: 'mariadb:11', pw: '${DB_PASSWORD}', dbvol: 'clouddb', port: '8443:80', daten: '/srv/cloud', host: 'db', cond: 'service_healthy' },
     speichern: function (h, w) { h.compose.werte = w; h.compose.gespeichert = true; } },
   setup: function (h) {
@@ -510,7 +525,7 @@ var uebungUmzug = uebungsRaum({
   },
   start: function (aus) { aus('cat alte-befehle.txt', true); },
   ziele: [
-    { text: ['Übersetze die zwei alten <code>docker run</code>-Befehle in die <code>docker-compose.yml</code>: <code>-p</code> → <code>ports:</code>, <code>-v</code> → <code>volumes:</code>, <code>-e</code> → <code>environment:</code>.', 'Schreibe die 2 alten Befehle in die Datei. <code>-p</code> wird <code>ports:</code>. <code>-v</code> wird <code>volumes:</code>. <code>-e</code> wird <code>environment:</code>.'], ziel: function (h, st) { return !!st.dateiOk; } },
+    { text: ['Übersetze die zwei alten <code>docker run</code>-Befehle in die <code>docker-compose.yml</code>. Die Arbeitsanweisung zu jeder Lücke steht rechts neben der Datei.', 'Schreibe die 2 alten Befehle in die Datei. Was in jede Lücke soll, steht rechts neben der Datei.'], ziel: function (h, st) { return !!st.dateiOk; } },
     { text: ['Entferne die zwei alten Container. Die Daten in <code>clouddb</code> und <code>/srv/cloud</code> dürfen nicht verloren gehen.', 'Lösche die 2 alten Container. Die Daten müssen bleiben.'],
       ziel: function (h) { return !h.container.some(function (c) { return c.name === 'cloud' || c.name === 'cloud-db'; }); } },
     { text: ['Lege die <code>.env</code> mit dem Passwort an.', 'Lege die <code>.env</code> an.'], ziel: function (h) { return !!h.env; } },
