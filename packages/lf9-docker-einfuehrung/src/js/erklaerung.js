@@ -31,35 +31,137 @@
   function kasten(art, titel, unter, extra) { return E('div', { class: 'dk-box ' + (art || '') }, [E('b', { html: titel })].concat(unter ? [E('small', { html: unter })] : []).concat(extra || [])); }
   function pfeil(zeichen, text) { return E('div', { class: 'dk-pfeil' }, [E('span', { text: zeichen })].concat(text ? [E('small', { html: text })] : [])); }
 
+
+  /* ---------- Bilder für die Vergleiche (SVG, keine externen Dateien) ---------- */
+  var TXT = 'font-family="system-ui,sans-serif" text-anchor="middle"';
+  function svg(vb, breite, inhalt, label) { return '<svg viewBox="' + vb + '" style="width:' + breite + ';max-width:100%;height:auto;display:block;margin:0 auto" role="img" aria-label="' + label + '">' + inhalt + '</svg>'; }
+  function bild(html) { return E('div', { style: 'width:100%', html: html }); }
+  function kachel(x, y, w, h, fuell, rand, text, dreh) {
+    return '<g' + (dreh ? ' transform="rotate(' + dreh + ' ' + (x + w / 2) + ' ' + (y + h / 2) + ')"' : '') + '><rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="7" fill="' + fuell + '" stroke="' + rand + '" stroke-width="3"/>' +
+      '<text x="' + (x + w / 2) + '" y="' + (y + h / 2 + 7) + '" font-size="19" font-weight="700" fill="#0f172a" ' + TXT + '>' + text + '</text></g>';
+  }
+  function balken(x, y, w, h, farbe, text, schrift) {
+    return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + farbe + '"/><text x="' + (x + w / 2) + '" y="' + (y + h / 2 + 7) + '" font-size="' + (schrift || 18) + '" font-weight="700" fill="#fff" ' + TXT + '>' + text + '</text>';
+  }
+  var GRUEN = ['#dcfce7', '#16a34a'], BLAU = ['#dbeafe', '#2563eb'], GELB = ['#fef3c7', '#d97706'];
+  var BILD = {
+    /* WG: ein Haus, alle Apps durcheinander in einem Raum */
+    wg: function () {
+      return svg('0 0 600 340', '620px',
+        '<polygon points="130,125 300,30 470,125" fill="#cbd5e1" stroke="#475569" stroke-width="4"/>' +
+        '<rect x="150" y="125" width="300" height="140" fill="#fff" stroke="#475569" stroke-width="4"/>' +
+        '<text x="300" y="158" font-size="20" font-weight="800" fill="#dc2626" ' + TXT + '>⚡ Python 3.8 ↔ 3.12 ⚡</text>' +
+        kachel(170, 180, 110, 40, GRUEN[0], GRUEN[1], 'App A', -9) + kachel(310, 190, 110, 40, BLAU[0], BLAU[1], 'App B', 7) + kachel(235, 214, 110, 40, GELB[0], GELB[1], 'App C', -3) +
+        balken(135, 265, 330, 34, '#475569', L('ein Betriebssystem für alle', 'ein Betriebssystem für alle')) +
+        balken(110, 299, 380, 34, '#1e293b', 'Hardware'),
+        L('Ein Haus mit einem Raum, drei Apps darin', 'Ein Haus mit einem Raum, drei Apps darin'));
+    },
+    /* Reihenhäuser: jedes Haus mit Dach, Schornstein (eigene Heizung) und eigenem Fundament */
+    reihenhaus: function () {
+      var h = '', apps = [['App A', GRUEN], ['App B', BLAU], ['App C', GELB]];
+      apps.forEach(function (a, i) {
+        var x = 80 + i * 150;
+        h += '<rect x="' + (x + 84) + '" y="62" width="16" height="40" fill="#7c2d12"/><text x="' + (x + 92) + '" y="54" font-size="22" ' + TXT + '>💨</text>' +
+          '<polygon points="' + (x - 6) + ',128 ' + (x + 65) + ',62 ' + (x + 136) + ',128" fill="#b91c1c" stroke="#7f1d1d" stroke-width="3"/>' +
+          '<rect x="' + x + '" y="128" width="130" height="100" fill="#fff7ed" stroke="#7f1d1d" stroke-width="3"/>' +
+          kachel(x + 12, 142, 106, 36, a[1][0], a[1][1], a[0]) +
+          '<rect x="' + (x + 52) + '" y="190" width="26" height="38" fill="#7f1d1d"/>' +
+          balken(x - 6, 228, 142, 30, '#64748b', L('eigenes OS', 'eigenes OS'), 16) +
+          '<text x="' + (x + 65) + '" y="276" font-size="15" fill="#475569" ' + TXT + '>🔥 ' + L('eigene Heizung', 'eigene Heizung') + '</text>';
+      });
+      return svg('0 0 600 350', '640px', h + balken(60, 284, 480, 30, '#94a3b8', 'Hypervisor') + balken(40, 314, 520, 34, '#1e293b', L('Host-Betriebssystem · Hardware', 'Host-Betriebssystem · Hardware')),
+        L('Drei Reihenhäuser, jedes mit eigenem Fundament und eigener Heizung', 'Drei Reihenhäuser, jedes mit eigenem Fundament'));
+    },
+    /* Mehrfamilienhaus: drei Wohnungen, eigene Türen, ein gemeinsames Fundament */
+    mehrfamilienhaus: function () {
+      var h = '<rect x="182" y="18" width="236" height="16" fill="#334155"/><rect x="190" y="34" width="220" height="198" fill="#fff" stroke="#334155" stroke-width="4"/>';
+      [['App A', GRUEN], ['App B', BLAU], ['App C', GELB]].forEach(function (a, i) {
+        var y = 40 + i * 64;
+        if (i) h += '<line x1="190" y1="' + (y - 4) + '" x2="410" y2="' + (y - 4) + '" stroke="#94a3b8" stroke-width="3"/>';
+        h += kachel(204, y + 8, 120, 40, a[1][0], a[1][1], a[0]) + '<rect x="350" y="' + (y + 2) + '" width="34" height="54" rx="3" fill="#94a3b8"/><circle cx="377" cy="' + (y + 31) + '" r="3" fill="#334155"/>';
+      });
+      return svg('0 0 600 340', '620px', h + balken(170, 232, 260, 32, '#2563eb', 'Docker Engine') + balken(140, 264, 320, 36, '#e11d48', L('gemeinsamer Linux-Kernel', 'gemeinsamer Linux-Kernel')) + balken(110, 300, 380, 36, '#1e293b', 'Hardware'),
+        L('Ein Mehrfamilienhaus mit drei Wohnungen auf einem Fundament', 'Ein Haus mit drei Wohnungen auf einem Fundament'));
+    },
+    /* Schiff mit lauter gleich großen Containern */
+    schiff: function () {
+      var h = '', farben = ['#16a34a', '#2563eb', '#d97706', '#9333ea', '#e11d48', '#0891b2'];
+      for (var r = 0; r < 2; r++) for (var c = 0; c < 4; c++) {
+        var x = 120 + c * 80, y = 118 - r * 44, f = farben[(r * 4 + c) % farben.length];
+        h += '<rect x="' + x + '" y="' + y + '" width="76" height="40" fill="' + f + '" stroke="#0f172a" stroke-width="2"/>';
+        for (var l = 1; l < 5; l++) h += '<line x1="' + (x + l * 15) + '" y1="' + (y + 4) + '" x2="' + (x + l * 15) + '" y2="' + (y + 36) + '" stroke="rgba(0,0,0,.25)" stroke-width="2"/>';
+      }
+      h += '<polygon points="70,160 530,160 490,225 110,225" fill="#1e3a8a"/><rect x="452" y="88" width="54" height="72" fill="#e2e8f0" stroke="#1e3a8a" stroke-width="3"/>' +
+        '<path d="M0 240 Q 37 228 75 240 T 150 240 T 225 240 T 300 240 T 375 240 T 450 240 T 525 240 T 600 240" fill="none" stroke="#38bdf8" stroke-width="5"/>' +
+        '<text x="300" y="282" font-size="22" font-weight="700" fill="#0f172a" ' + TXT + '>💻 Laptop  =  🏫 ' + L('Schulserver', 'Schulserver') + '  =  ☁️ Cloud</text>';
+      return svg('0 0 600 300', '620px', h, L('Containerschiff mit gleich großen Containern', 'Schiff mit gleich großen Containern'));
+    },
+    /* kleine Bilder für die Kästen */
+    bauplan: function () {
+      var g = '';
+      for (var i = 10; i < 80; i += 10) g += '<line x1="' + i + '" y1="4" x2="' + i + '" y2="56" stroke="rgba(255,255,255,.18)"/>';
+      for (var j = 10; j < 60; j += 10) g += '<line x1="4" y1="' + j + '" x2="76" y2="' + j + '" stroke="rgba(255,255,255,.18)"/>';
+      return svg('0 0 80 60', '96px', '<rect x="2" y="2" width="76" height="56" rx="4" fill="#1e40af"/>' + g +
+        '<polyline points="20,32 40,14 60,32" fill="none" stroke="#fff" stroke-width="2.5"/><rect x="25" y="32" width="30" height="18" fill="none" stroke="#fff" stroke-width="2.5" stroke-dasharray="4 2"/>', L('Bauplan', 'Bauplan'));
+    },
+    haus: function (farbe, rand) {
+      return svg('0 0 64 58', '64px', '<polygon points="4,27 32,5 60,27" fill="' + rand + '"/><rect x="10" y="27" width="44" height="28" fill="' + farbe + '" stroke="' + rand + '" stroke-width="3"/>' +
+        '<rect x="27" y="37" width="10" height="18" fill="' + rand + '"/><rect x="15" y="33" width="8" height="8" fill="#fff" stroke="' + rand + '" stroke-width="2"/><rect x="41" y="33" width="8" height="8" fill="#fff" stroke="' + rand + '" stroke-width="2"/>', L('gebautes Haus', 'gebautes Haus'));
+    },
+    regal: function () {
+      var h = '<rect x="4" y="4" width="92" height="66" fill="none" stroke="#6b21a8" stroke-width="3"/><line x1="4" y1="37" x2="96" y2="37" stroke="#6b21a8" stroke-width="3"/>';
+      ['#16a34a', '#2563eb', '#d97706', '#e11d48', '#0891b2', '#9333ea'].forEach(function (f, i) { h += '<rect x="' + (10 + (i % 3) * 28) + '" y="' + (i < 3 ? 12 : 45) + '" width="24" height="22" fill="' + f + '"/>'; });
+      return svg('0 0 100 74', '92px', h, L('Regal mit Images', 'Regal mit Images'));
+    },
+    bett: function () {
+      return svg('0 0 90 56', '84px', '<rect x="6" y="8" width="10" height="44" rx="2" fill="#7c2d12"/><rect x="16" y="28" width="68" height="16" rx="3" fill="#fff" stroke="#475569" stroke-width="2"/>' +
+        '<rect x="20" y="20" width="18" height="10" rx="4" fill="#e2e8f0" stroke="#475569" stroke-width="2"/><rect x="40" y="24" width="44" height="8" rx="3" fill="#86efac"/><rect x="78" y="44" width="5" height="8" fill="#7c2d12"/><text x="68" y="16" font-size="14" ' + TXT + '>🛎️</text>', L('Hotelbett', 'Hotelbett'));
+    },
+    schliessfach: function () {
+      return svg('0 0 70 70', '64px', '<rect x="4" y="4" width="62" height="62" rx="4" fill="#94a3b8" stroke="#334155" stroke-width="3"/><line x1="35" y1="4" x2="35" y2="66" stroke="#334155" stroke-width="2"/><line x1="4" y1="35" x2="66" y2="35" stroke="#334155" stroke-width="2"/>' +
+        '<rect x="40" y="40" width="22" height="22" fill="#fde68a" stroke="#334155" stroke-width="2"/><circle cx="51" cy="48" r="3.5" fill="#334155"/><rect x="50" y="48" width="2" height="8" fill="#334155"/>', L('Schließfach', 'Schließfach'));
+    },
+    ordner: function () {
+      return svg('0 0 76 58', '68px', '<path d="M4 12 h24 l6 7 h38 v35 h-68 z" fill="#f59e0b" stroke="#92400e" stroke-width="3"/><rect x="4" y="22" width="68" height="32" fill="#fbbf24" stroke="#92400e" stroke-width="3"/>', L('Ordner', 'Ordner'));
+    },
+    telefonbuch: function () {
+      return svg('0 0 120 76', '120px', '<path d="M60 10 Q 32 2 6 10 V 70 Q 32 62 60 70 Z" fill="#fff" stroke="#334155" stroke-width="3"/><path d="M60 10 Q 88 2 114 10 V 70 Q 88 62 60 70 Z" fill="#fff" stroke="#334155" stroke-width="3"/>' +
+        '<text x="33" y="34" font-size="12" font-weight="700" fill="#0f172a" ' + TXT + '>db</text><text x="33" y="52" font-size="12" fill="#0f172a" ' + TXT + '>web</text>' +
+        '<text x="87" y="34" font-size="10" fill="#0f172a" ' + TXT + '>172.18.0.2</text><text x="87" y="52" font-size="10" fill="#0f172a" ' + TXT + '>172.18.0.3</text>', L('Telefonbuch', 'Telefonbuch'));
+    },
+    hafen: function () {
+      return svg('0 0 100 60', '92px', '<polygon points="10,34 90,34 80,52 20,52" fill="#1e3a8a"/><rect x="22" y="20" width="18" height="14" fill="#16a34a"/><rect x="41" y="20" width="18" height="14" fill="#2563eb"/><rect x="60" y="20" width="18" height="14" fill="#d97706"/>' +
+        '<path d="M0 56 Q 12 50 25 56 T 50 56 T 75 56 T 100 56" fill="none" stroke="#38bdf8" stroke-width="3"/>', L('Schiff', 'Schiff'));
+    }
+  };
+
   /* ---------- 1 · Wie wohnen Apps? ---------- */
   function szWohnen(box, api) {
     var d = buehne(box);
     function zeichne(modus) {
       d.innerHTML = '';
-      var apps = ['App A', 'App B', 'App C'];
       if (modus === 'metal') {
-        d.appendChild(E('div', { class: 'dk-gross', text: L('Bare Metal ≈ WG in einem Raum', 'Bare Metal ≈ WG in einem Raum') }));
-        d.appendChild(E('div', { class: 'dk-reihe' }, apps.map(function (a) { return kasten('dk-con', a); })));
-        d.appendChild(E('div', { class: 'dk-bad dk-gross', text: '⚡ Python 3.8 ↔ Python 3.12 ⚡' }));
-        d.appendChild(kasten('dk-os', L('ein Betriebssystem für alle', 'ein Betriebssystem für alle')));
-        d.appendChild(kasten('dk-os', 'Hardware'));
+        d.appendChild(E('div', { class: 'dk-gross', text: L('Bare Metal ≈ WG in einem einzigen Raum', 'Bare Metal ≈ WG in einem einzigen Raum') }));
+        d.appendChild(bild(BILD.wg()));
+        d.appendChild(E('div', { class: 'dk-etikett', text: L('alles teilt sich alles', 'alle teilen sich alles') }));
       } else if (modus === 'vm') {
         d.appendChild(E('div', { class: 'dk-gross', text: L('Virtuelle Maschinen ≈ Reihenhäuser', 'Virtuelle Maschinen ≈ Reihenhäuser') }));
-        d.appendChild(E('div', { class: 'dk-reihe' }, apps.map(function (a) { return E('div', { class: 'dk-spalte' }, [kasten('dk-con', a), kasten('dk-os', L('eigenes OS', 'eigenes OS'), '≈ 1–2 GB')]); })));
-        d.appendChild(kasten('dk-os', 'Hypervisor'));
-        d.appendChild(kasten('dk-os', L('Host-Betriebssystem · Hardware', 'Host-Betriebssystem · Hardware')));
-      } else {
+        d.appendChild(bild(BILD.reihenhaus()));
+        d.appendChild(E('div', { class: 'dk-etikett', text: L('jedes Haus: eigenes Fundament, eigene Heizung · ≈ 1–2 GB je VM', 'jedes Haus: eigenes Fundament, eigene Heizung') }));
+      } else if (modus === 'container') {
         d.appendChild(E('div', { class: 'dk-gross', text: L('Container ≈ Wohnungen im Mehrfamilienhaus', 'Container ≈ Wohnungen im Mehrfamilienhaus') }));
-        d.appendChild(E('div', { class: 'dk-reihe' }, apps.map(function (a) { return kasten('dk-con', '📦 ' + a, L('+ Bibliotheken + Laufzeit', '+ Bibliotheken + Laufzeit')); })));
-        d.appendChild(kasten('dk-img', 'Docker Engine'));
-        d.appendChild(kasten('dk-os', L('gemeinsamer Linux-Kernel', 'gemeinsamer Linux-Kernel')));
-        d.appendChild(kasten('dk-os', 'Hardware'));
-        d.appendChild(E('div', { class: 'dk-etikett', html: '💻 Laptop = 🏫 Schulserver = ☁️ Cloud' }));
+        d.appendChild(bild(BILD.mehrfamilienhaus()));
+        d.appendChild(E('div', { class: 'dk-etikett', text: L('eigene Tür, gemeinsames Fundament · App + Bibliotheken + Laufzeit', 'eigene Tür, gemeinsames Fundament') }));
+      } else {
+        d.appendChild(E('div', { class: 'dk-gross', text: L('Die Idee: der Schiffscontainer', 'Die Idee: der Schiffscontainer') }));
+        d.appendChild(bild(BILD.schiff()));
+        d.appendChild(E('div', { class: 'dk-etikett', text: L('gleiche Maße, egal was drin ist – passt auf jedes Schiff, jeden Lkw, jeden Zug', 'gleiche Form, egal was drin ist') }));
       }
     }
     api.werkzeug({ icon: '🏚️', text: 'Bare Metal', taste: 'b', typ: 'modus', aktion: function () { zeichne('metal'); } });
     api.werkzeug({ icon: '🏘️', text: 'VM', taste: 'v', typ: 'modus', aktion: function () { zeichne('vm'); } });
     var c = api.werkzeug({ icon: '🏢', text: 'Container', taste: 'c', typ: 'modus', an: true, aktion: function () { zeichne('container'); } });
+    api.werkzeug({ icon: '🚢', text: L('Schiffscontainer', 'Schiffscontainer'), taste: 's', typ: 'modus', aktion: function () { zeichne('schiff'); } });
     c.setze(true); zeichne('container');
     return {};
   }
@@ -67,15 +169,16 @@
   /* ---------- 2 · Image und Container ---------- */
   function szKlasse(box, api) {
     var d = buehne(box), namen = ['a', 'b', 'c', 'd'], n = 0, java = false;
-    var img = kasten('dk-img', '🧱 Image <code>webserver</code>', L('Bauplan · read-only', 'Bauplan · nur lesen'));
+    var img = kasten('dk-img', 'Image <code>webserver</code>', L('Bauplan · read-only', 'Bauplan · nur lesen'));
+    img.insertBefore(bild(BILD.bauplan()), img.firstChild);
     var cons = E('div', { class: 'dk-reihe', style: 'min-height:120px' });
     var befehl = E('div', { class: 'dk-code', style: 'min-width:22em' });
-    d.appendChild(E('div', { class: 'dk-reihe' }, [img, pfeil('➜', 'docker run'), cons]));
+    d.appendChild(img); d.appendChild(pfeil('⬇', 'docker run')); d.appendChild(cons);
     d.appendChild(befehl);
     function zeichne() {
       img.querySelector('small').innerHTML = L('Bauplan · read-only', 'Bauplan · nur lesen') + (java ? ' <b style="display:inline;font-size:1rem">≈ class Webserver</b>' : '');
       cons.innerHTML = '';
-      for (var i = 0; i < n; i++) cons.appendChild(kasten('dk-con', '▶ ' + L('Container', 'Container') + ' <code>' + namen[i] + '</code>', java ? '≈ new Webserver()' : L('läuft', 'läuft')));
+      for (var i = 0; i < n; i++) { var ck = kasten('dk-con', L('Container', 'Container') + ' <code>' + namen[i] + '</code>', java ? '≈ new Webserver()' : L('läuft', 'läuft')); ck.insertBefore(bild(BILD.haus(GRUEN[0], GRUEN[1])), ck.firstChild); cons.appendChild(ck); }
       if (!n) cons.appendChild(E('div', { class: 'dk-etikett', style: 'align-self:center', text: L('noch kein Container', 'noch kein Container') }));
       var z = [];
       for (var k = 0; k < n; k++) z.push(java ? 'Webserver ' + namen[k] + ' = new Webserver();' : '$ docker run -d --name ' + namen[k] + ' webserver');
@@ -97,7 +200,8 @@
     var imgListe = E('div', { class: 'dk-liste' }), conListe = E('div', { class: 'dk-liste' });
     var host = kasten('', '🖥️ Docker Host <small style="display:inline">(' + L('deine VM', 'deine VM') + ')</small>', 'Docker Daemon (dockerd)', [
       E('div', { class: 'dk-reihe', style: 'margin-top:8px' }, [kasten('dk-img', 'Images', '', [imgListe]), kasten('dk-con', 'Container', '', [conListe])])]);
-    var reg = kasten('dk-reg', '☁️ Registry', 'Docker Hub', [E('div', { class: 'dk-liste', html: 'hello-world<br>nginx<br>postgres<br>python<br>…' })]);
+    var reg = kasten('dk-reg', 'Registry', 'Docker Hub · ≈ App-Store', [E('div', { class: 'dk-liste', html: 'hello-world<br>nginx<br>postgres<br>python<br>…' })]);
+    reg.insertBefore(bild(BILD.regal()), reg.firstChild);
     var p1 = pfeil('➜', '① run'), p3 = pfeil('⇠', '③ pull');
     var info = E('div', { class: 'dk-gross', 'aria-live': 'polite' });
     d.appendChild(E('div', { class: 'dk-reihe dk-nw' }, [cli, p1, host, p3, reg]));
@@ -167,7 +271,8 @@
   function szBuild(box, api) {
     var d = buehne(box), schritt = 0;
     var df = kasten('dk-os', '📄 Dockerfile', '', [E('div', { class: 'dk-code', style: 'margin-top:6px;font-size:.85rem', text: 'FROM nginx:alpine\nCOPY index.html /usr/share/nginx/html/\nEXPOSE 80' })]);
-    var img = kasten('dk-img', '🧱 Image', 'steckbrief'), reg = kasten('dk-reg', '☁️ Registry', 'Docker Hub · ghcr.io');
+    var img = kasten('dk-img', 'Image', 'steckbrief'), reg = kasten('dk-reg', 'Registry', 'Docker Hub · ghcr.io');
+    img.insertBefore(bild(BILD.bauplan()), img.firstChild); reg.insertBefore(bild(BILD.hafen()), reg.firstChild);
     var img2 = kasten('dk-img', '🧱 Image', L('auf dem Server', 'auf dem Server')), cons = kasten('dk-con', '▶ Container', '', [E('div', { html: '📦 📦 📦' })]);
     var p = [pfeil('➜', 'build'), pfeil('➜', 'push'), pfeil('➜', 'pull'), pfeil('➜', 'run')];
     var teile = [img, reg, img2, cons];
@@ -230,12 +335,14 @@
     function zeichne(m) {
       conEl.innerHTML = ''; volEl.innerHTML = ''; bindEl.innerHTML = '';
       if (con) conEl.appendChild(E('div', { class: 'dk-spalte' }, [
-        E('div', { class: 'dk-etikett', text: L('Container ', 'Container ') + con + ' ≈ ' + L('Hotelzimmer', 'Hotelzimmer') }),
+        bild(BILD.bett()), E('div', { class: 'dk-etikett', text: L('Container ', 'Container ') + con + ' ≈ ' + L('Hotelzimmer', 'Hotelzimmer') }),
         kasten('dk-con', L('Container-Schicht (R/W)', 'Container-Schicht (schreiben)'), schicht.length ? '📄 ' + schicht.join(' ') : L('(leer)', '(leer)')),
         kasten('dk-img', L('Image-Schichten (read-only)', 'Image-Schichten (nur lesen)'), 'ubuntu:22.04')]));
       else conEl.appendChild(kasten('dk-os dk-aus', L('kein Container', 'kein Container')));
-      volEl.appendChild(vol ? kasten('dk-vol', '🔒 Named Volume <code>meine-daten</code>', '📄 hello.txt · ≈ ' + L('Schließfach', 'Schließfach')) : kasten('dk-os dk-aus', '<code>meine-daten</code>', L('gelöscht', 'gelöscht')));
-      bindEl.appendChild(kasten('dk-vol', '📁 Bind Mount <code>./export</code>', '📄 plan.pdf · ≈ ' + L('eigener Ordner', 'eigener Ordner')));
+      volEl.appendChild(vol ? kasten('dk-vol', 'Named Volume <code>meine-daten</code>', '📄 hello.txt · ≈ ' + L('Schließfach', 'Schließfach')) : kasten('dk-os dk-aus', '<code>meine-daten</code>', L('gelöscht', 'gelöscht')));
+      bindEl.appendChild(kasten('dk-vol', 'Bind Mount <code>./export</code>', '📄 plan.pdf · ≈ ' + L('eigener Ordner', 'eigener Ordner')));
+      if (vol) volEl.firstChild.insertBefore(bild(BILD.schliessfach()), volEl.firstChild.firstChild);
+      bindEl.firstChild.insertBefore(bild(BILD.ordner()), bindEl.firstChild.firstChild);
       meld.innerHTML = m || '';
     }
     api.werkzeug({ icon: '✍️', text: L('Datei schreiben', 'Datei schreiben'), taste: 'w', aktion: function () { if (!con) return zeichne(); if (schicht.indexOf('ping') < 0) schicht.push('ping'); zeichne(); } });
@@ -263,7 +370,8 @@
         ? E('div', { class: 'dk-gross dk-bad', html: '<code>localhost:5432</code> ↺ ✗' })
         : E('div', { class: 'dk-gross dk-ok', html: '<code>db:5432</code> ↓ ✓' });
       netz.appendChild(web); netz.appendChild(verb); netz.appendChild(db);
-      netz.appendChild(E('div', { class: 'dk-etikett', html: '📒 DNS: <code>db</code> → 172.18.0.2' }));
+      netz.appendChild(E('div', { class: 'dk-reihe dk-nw', style: 'align-items:center' }, [bild(BILD.telefonbuch()), E('div', { class: 'dk-etikett', html: 'DNS ≈ ' + L('Telefonbuch', 'Telefonbuch') + '<br><code>db</code> → 172.18.0.2' })]));
+      netz.lastChild.firstChild.style.width = 'auto';
       netz.appendChild(kasten('dk-vol', '🔒 pgdata'));
     }
     api.werkzeug({ icon: '▶', text: 'docker compose up -d', taste: 'u', aktion: function () { oben = true; zeichne(); } });
@@ -278,7 +386,7 @@
     dauer: '20 Minuten',
     szenen: [
       { id: 'wohnen', titel: 'Wie wohnen Apps?', station: 'S1', zeichne: szWohnen,
-        erklaerung: '<p><b>Das Problem:</b> Auf einem Server laufen oft mehrere Programme, die verschiedene Versionen derselben Software brauchen. App A läuft nur mit Python 3.8, App B braucht Python 3.12. Installiert man beide direkt auf dem Betriebssystem (<b>Bare Metal</b>), kommen sie sich in die Quere – wie in einer WG, in der alle in einem einzigen Raum wohnen.</p><p><b>Lösung 1 – virtuelle Maschinen:</b> Jede App bekommt einen eigenen virtuellen Rechner mit eigenem Betriebssystem. Das trennt sauber, kostet aber viel: Jede VM braucht mehrere Gigabyte Speicher und startet so langsam wie ein echter Rechner. Das ist wie bei Reihenhäusern, die jedes ein eigenes Fundament und eine eigene Heizung haben.</p><p><b>Lösung 2 – Container:</b> Ein Container enthält nur die App mit ihren Bibliotheken und ihrer Laufzeitumgebung. Den Kern des Betriebssystems (Linux-Kernel) teilt er sich mit dem Host. Container sind deshalb klein und starten in Sekunden – wie Wohnungen in einem Mehrfamilienhaus: eigene Tür, gemeinsames Fundament.</p><p><b>Die Idee dahinter</b> stammt vom Schiffscontainer: Egal, was darin steckt – er hat immer dieselbe Form und passt auf jedes Schiff, jeden Lkw und jeden Zug. Ein Docker-Container läuft genauso überall gleich: auf deinem Laptop, auf dem Schulserver und in der Cloud.</p><p><b>Probier es aus:</b> Wechsle unten zwischen <b>Bare Metal</b>, <b>VM</b> und <b>Container</b>.</p>' },
+        erklaerung: '<p><b>Das Problem:</b> Auf einem Server laufen oft mehrere Programme, die verschiedene Versionen derselben Software brauchen. App A läuft nur mit Python 3.8, App B braucht Python 3.12. Installiert man beide direkt auf dem Betriebssystem (<b>Bare Metal</b>), kommen sie sich in die Quere – wie in einer WG, in der alle in einem einzigen Raum wohnen.</p><p><b>Lösung 1 – virtuelle Maschinen:</b> Jede App bekommt einen eigenen virtuellen Rechner mit eigenem Betriebssystem. Das trennt sauber, kostet aber viel: Jede VM braucht mehrere Gigabyte Speicher und startet so langsam wie ein echter Rechner. Das ist wie bei Reihenhäusern, die jedes ein eigenes Fundament und eine eigene Heizung haben.</p><p><b>Lösung 2 – Container:</b> Ein Container enthält nur die App mit ihren Bibliotheken und ihrer Laufzeitumgebung. Den Kern des Betriebssystems (Linux-Kernel) teilt er sich mit dem Host. Container sind deshalb klein und starten in Sekunden – wie Wohnungen in einem Mehrfamilienhaus: eigene Tür, gemeinsames Fundament.</p><p><b>Die Idee dahinter</b> stammt vom Schiffscontainer: Egal, was darin steckt – er hat immer dieselbe Form und passt auf jedes Schiff, jeden Lkw und jeden Zug. Ein Docker-Container läuft genauso überall gleich: auf deinem Laptop, auf dem Schulserver und in der Cloud.</p><p><b>Probier es aus:</b> Wechsle unten zwischen <b>Bare Metal</b>, <b>VM</b>, <b>Container</b> und <b>Schiffscontainer</b> und vergleiche die Bilder.</p>' },
       { id: 'klasse', titel: 'Image und Container', station: 'S1', zeichne: szKlasse,
         erklaerung: '<p>Ein <b>Image</b> ist ein Bauplan. Es enthält alles, was ein Programm zum Laufen braucht: das Programm selbst, seine Bibliotheken und Einstellungen. Ein Image ist <b>schreibgeschützt</b> und ändert sich nicht, während Container daraus laufen.</p><p>Ein <b>Container</b> ist ein laufendes Exemplar dieses Bauplans. Jedes <code>docker run</code> erzeugt einen <b>neuen</b> Container. Aus einem Image können so beliebig viele Container entstehen, die unabhängig voneinander laufen – zum Beispiel drei Webserver aus demselben Image.</p><p><b>Vergleich mit Java:</b> Das Image entspricht einer Klasse (<code>class Webserver</code>), der Container einem Objekt (<code>new Webserver()</code>). Eine Klasse kann viele Objekte haben, ein Image viele Container.</p><p>Mit <code>docker rm</code> löschst du einen Container; das Image bleibt erhalten. Ein Image löschst du mit <code>docker rmi</code> – aber erst, wenn kein Container mehr daraus besteht, auch kein gestoppter.</p><p><b>Probier es aus:</b> Klicke mehrmals auf <b>docker run</b> und schalte dann <b>wie in Java</b> ein.</p>' },
       { id: 'run', titel: 'Was passiert bei docker run?', station: 'S1', zeichne: szRun,
