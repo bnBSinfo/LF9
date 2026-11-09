@@ -144,14 +144,14 @@
     var d = buehne(box);
     /* Erklärung rechts passt zur gewählten Ansicht: nur Bare Metal, nur VM … */
     var TEXT_WOHNEN = {
-      metal: ['<p><b>Bare Metal</b> heißt: Alle Programme werden direkt auf dem Betriebssystem des Servers installiert – ohne jede Trennung.</p><p><b>Das Problem:</b> Programme brauchen oft verschiedene Versionen derselben Software. App A läuft nur mit Python 3.8, App B braucht Python 3.12. Installiert man beide auf demselben System, kommen sie sich in die Quere: Ein Update für App B kann App A lahmlegen.</p><p>Das ist wie in einer <b>WG, in der alle in einem einzigen Raum wohnen</b>: Alle teilen sich alles, und es gibt ständig Streit.</p><p><b>Probier es aus:</b> Klicke auf <b>VM</b>. Wie lässt sich der Streit lösen?</p>',
-        '<p><b>Bare Metal</b> heißt: Alle Programme sind direkt auf dem Betriebssystem vom Server installiert. Es gibt keine Trennung.</p><p><b>Das Problem:</b> App A braucht Python 3.8. App B braucht Python 3.12. Beide sind auf demselben System. Dann stören sie sich. Ein Update für App B kann App A kaputt machen.</p><p>Das ist wie eine <b>WG, in der alle in 1 Raum wohnen</b>. Alle teilen sich alles. Es gibt oft Streit.</p><p><b>Probier es aus:</b> Klicke auf <b>VM</b>. Wie kann man den Streit lösen?</p>'],
-      vm: ['<p>Eine <b>virtuelle Maschine (VM)</b> ist ein Rechner, der nur als Software existiert. Ein Programm namens <b>Hypervisor</b> verteilt die echte Hardware auf mehrere VMs.</p><p>Jede App bekommt ihre eigene VM mit einem <b>eigenen, vollständigen Betriebssystem</b>. So sind die Apps sauber getrennt: App A hat ihr Python 3.8, App B ihr Python 3.12.</p><p><b>Der Nachteil:</b> Jede VM bringt ein ganzes Betriebssystem mit. Sie braucht mehrere Gigabyte Speicher und startet so langsam wie ein echter Rechner.</p><p>Das ist wie bei <b>Reihenhäusern</b>: Jede Familie hat ihr eigenes Haus mit eigenem Fundament und eigener Heizung. Das ist ruhig, aber teuer.</p><p><b>Probier es aus:</b> Klicke auf <b>Container</b>. Geht es auch sparsamer?</p>',
-        '<p>Eine <b>virtuelle Maschine (VM)</b> ist ein Rechner aus Software. Ein Programm, der <b>Hypervisor</b>, teilt die echte Hardware auf mehrere VMs auf.</p><p>Jede App bekommt eine eigene VM. Jede VM hat ein <b>eigenes Betriebssystem</b>. So sind die Apps gut getrennt. App A hat Python 3.8. App B hat Python 3.12.</p><p><b>Der Nachteil:</b> Jede VM hat ein ganzes Betriebssystem. Das braucht viel Speicher. Eine VM startet langsam.</p><p>Das ist wie bei <b>Reihenhäusern</b>. Jede Familie hat ein eigenes Haus. Jedes Haus hat eine eigene Heizung. Das ist ruhig, aber teuer.</p><p><b>Probier es aus:</b> Klicke auf <b>Container</b>. Geht es auch sparsamer?</p>'],
-      container: ['<p>Ein <b>Container</b> enthält nur die App und alles, was sie zum Laufen braucht: Bibliotheken, Laufzeitumgebung (z. B. Python 3.8) und Einstellungen. Ein eigenes Betriebssystem hat er nicht.</p><p>Alle Container teilen sich den <b>Kern des Betriebssystems</b> (Linux-Kernel) mit dem Host. Die <b>Docker Engine</b> sorgt dafür, dass sie trotzdem voneinander getrennt bleiben.</p><p><b>Der Vorteil:</b> Container sind viel kleiner als VMs und starten in Sekunden. Auf einem Server haben deshalb viel mehr Container Platz.</p><p>Das ist wie bei <b>Wohnungen in einem Mehrfamilienhaus</b>: Jede Wohnung hat ihre eigene Tür, aber alle stehen auf demselben Fundament.</p><p><b>Probier es aus:</b> Klicke auf <b>Schiffscontainer</b>. Woher kommt der Name?</p>',
-        '<p>Ein <b>Container</b> hat nur die App und alles, was sie braucht: Bibliotheken, zum Beispiel Python 3.8, und Einstellungen. Er hat kein eigenes Betriebssystem.</p><p>Alle Container teilen sich den <b>Kern vom Betriebssystem</b> mit dem Host. Die <b>Docker Engine</b> hält die Container trotzdem getrennt.</p><p><b>Der Vorteil:</b> Container sind viel kleiner als VMs. Sie starten in Sekunden. Auf einen Server passen viel mehr Container.</p><p>Das ist wie bei <b>Wohnungen in einem Haus</b>. Jede Wohnung hat eine eigene Tür. Aber alle stehen auf demselben Fundament.</p><p><b>Probier es aus:</b> Klicke auf <b>Schiffscontainer</b>. Woher kommt der Name?</p>'],
-      schiff: ['<p>Der Name kommt vom <b>Schiffscontainer</b>. Früher wurde jede Ware anders verpackt: in Kisten, Fässern oder Säcken. Das Verladen war langsam und teuer, und oft ging etwas kaputt.</p><p>Heute haben alle Container <b>dieselben Maße</b> – egal, was darin steckt. Deshalb passt jeder Container auf jedes Schiff, jeden Lkw und jeden Zug.</p><p>Ein Docker-Container funktioniert genauso: Er läuft <b>überall gleich</b> – auf deinem Laptop, auf dem Schulserver und in der Cloud. Der Satz „Bei mir läuft es aber!“ gehört damit der Vergangenheit an.</p>',
-        '<p>Der Name kommt vom <b>Schiffscontainer</b>. Früher war jede Ware anders verpackt: in Kisten, Fässern oder Säcken. Das Verladen war langsam und teuer.</p><p>Heute haben alle Container <b>dieselbe Größe</b>. Egal, was drin ist. Darum passt jeder Container auf jedes Schiff und jeden Lkw.</p><p>Ein Docker-Container ist genauso. Er läuft <b>überall gleich</b>: auf dem Laptop, auf dem Schulserver und in der Cloud.</p>']
+      metal: ['<p><b>Bare Metal:</b> Alle Programme laufen direkt auf einem einzigen Betriebssystem.</p><p><b>Problem:</b> App A braucht Python 3.8, App B braucht Python 3.12. Die beiden kommen sich in die Quere. Das ist wie in einer <b>WG mit nur einem Raum</b>.</p><p>👉 Klicke auf <b>VM</b>.</p>',
+        '<p><b>Bare Metal:</b> Alle Programme laufen direkt auf 1 Betriebssystem.</p><p><b>Problem:</b> App A braucht Python 3.8. App B braucht Python 3.12. Die beiden stören sich. Das ist wie in einer <b>WG mit nur 1 Raum</b>.</p><p>👉 Klicke auf <b>VM</b>.</p>'],
+      vm: ['<p><b>VM:</b> Jede App bekommt einen eigenen virtuellen Rechner mit <b>eigenem Betriebssystem</b>. So sind die Apps sauber getrennt.</p><p><b>Nachteil:</b> Jede VM braucht viel Speicher und startet langsam. Das ist wie bei <b>Reihenhäusern</b> mit eigener Heizung.</p><p>👉 Klicke auf <b>Container</b>.</p>',
+        '<p><b>VM:</b> Jede App bekommt einen eigenen Rechner aus Software. Jeder hat ein <b>eigenes Betriebssystem</b>. So sind die Apps getrennt.</p><p><b>Nachteil:</b> Das braucht viel Speicher. Der Start dauert lange. Das ist wie bei <b>Reihenhäusern</b> mit eigener Heizung.</p><p>👉 Klicke auf <b>Container</b>.</p>'],
+      container: ['<p><b>Container:</b> Ein Container enthält nur die App und ihre Bibliotheken, aber <b>kein eigenes Betriebssystem</b>. Alle Container teilen sich den Linux-Kernel des Hosts.</p><p><b>Vorteil:</b> Container sind klein und starten in Sekunden. Das ist wie bei <b>Wohnungen in einem Mehrfamilienhaus</b>.</p><p>👉 Klicke auf <b>Schiffscontainer</b>.</p>',
+        '<p><b>Container:</b> Ein Container hat nur die App und ihre Bibliotheken. Er hat <b>kein eigenes Betriebssystem</b>. Alle Container teilen sich den Kern vom Host.</p><p><b>Vorteil:</b> Container sind klein. Sie starten in Sekunden. Das ist wie bei <b>Wohnungen in einem Haus</b>.</p><p>👉 Klicke auf <b>Schiffscontainer</b>.</p>'],
+      schiff: ['<p>Schiffscontainer haben <b>immer dieselben Maße</b>, egal, was darin steckt. Darum passen sie auf jedes Schiff und jeden Lkw.</p><p>Docker-Container laufen genauso <b>überall gleich</b>: auf dem Laptop, auf dem Schulserver und in der Cloud.</p>',
+        '<p>Schiffscontainer haben <b>immer dieselbe Größe</b>. Egal, was drin ist. Darum passen sie auf jedes Schiff und jeden Lkw.</p><p>Docker-Container laufen genauso <b>überall gleich</b>: auf dem Laptop, auf dem Schulserver und in der Cloud.</p>']
     };
     function erklaere(modus) {
       var t = L(TEXT_WOHNEN[modus][0], TEXT_WOHNEN[modus][1]), sz = PAKET.tafel.szenen.filter(function (x) { return x.id === 'wohnen'; })[0];
@@ -188,9 +188,126 @@
     return {};
   }
 
+
+  /* ---------- Erklärung rechts passend zum Zustand der Szene ----------
+     tafel.js zeigt PAKET.tafel.szenen[i].erklaerung; die Szenen setzen den Text bei
+     jedem Klick neu (Standard/Einfach über L), so steht rechts nur das Passende. */
+  function erklaereSz(id, paar) {
+    var t = L(paar[0], paar[1]), sz = PAKET.tafel.szenen.filter(function (x) { return x.id === id; })[0];
+    sz.erklaerung = t;
+    var feld = document.querySelector('.tafel-erkl .tafel-text');
+    if (feld && document.querySelector('.tafel-szene[data-szene="' + id + '"]')) feld.innerHTML = t;
+  }
+  var TX = {
+    klasse: {
+      start: ['<p>Ein <b>Image</b> ist ein Bauplan: Programm, Bibliotheken und Einstellungen. Es ist schreibgeschützt.</p><p>👉 Klicke auf <b>docker run</b>.</p>',
+        '<p>Ein <b>Image</b> ist ein Bauplan. Darin sind das Programm, die Bibliotheken und die Einstellungen. Man kann es nicht ändern.</p><p>👉 Klicke auf <b>docker run</b>.</p>'],
+      run: ['<p>Jedes <code>docker run</code> baut aus dem Bauplan einen <b>neuen Container</b>. Aus einem Image können viele Container laufen.</p><p>👉 Klicke noch einmal auf <b>docker run</b> und dann auf <b>wie in Java</b>.</p>',
+        '<p>Jedes <code>docker run</code> baut aus dem Bauplan einen <b>neuen Container</b>. Aus 1 Image können viele Container laufen.</p><p>👉 Klicke noch einmal auf <b>docker run</b>. Klicke dann auf <b>wie in Java</b>.</p>'],
+      java: ['<p>Wie in Java: Das Image ist die <b>Klasse</b>, jeder Container ein <b>Objekt</b>. <code>docker run</code> entspricht <code>new Webserver()</code>.</p><p>👉 Klicke auf <b>docker rm</b>.</p>',
+        '<p>Das ist wie in Java: Das Image ist die <b>Klasse</b>. Jeder Container ist ein <b>Objekt</b>. <code>docker run</code> ist wie <code>new</code>.</p><p>👉 Klicke auf <b>docker rm</b>.</p>'],
+      rm: ['<p><code>docker rm</code> löscht einen Container. Das <b>Image bleibt</b> – du kannst jederzeit neue Container daraus bauen.</p>',
+        '<p><code>docker rm</code> löscht einen Container. Das <b>Image bleibt</b>. Du kannst daraus immer neue Container bauen.</p>']
+    },
+    run: {
+      s0: ['<p>Was passiert, wenn du <code>docker run hello-world</code> eintippst?</p><p>👉 Klicke auf <b>Schritt</b>.</p>',
+        '<p>Was passiert bei <code>docker run hello-world</code>?</p><p>👉 Klicke auf <b>Schritt</b>.</p>'],
+      s1: ['<p>① Du tippst den Befehl im <b>Client</b>. Der Client schickt ihn an den <b>Docker Daemon</b>, der im Hintergrund auf dem Host läuft.</p>',
+        '<p>① Du tippst den Befehl im <b>Client</b>. Der Client schickt ihn an den <b>Docker Daemon</b>. Der Daemon läuft auf dem Host.</p>'],
+      s2: ['<p>② Der Daemon sucht das Image <code>hello-world</code> auf dem Host. Es ist noch <b>nicht da</b>.</p>',
+        '<p>② Der Daemon sucht das Image <code>hello-world</code>. Es ist noch <b>nicht da</b>.</p>'],
+      s2da: ['<p>② Der Daemon sucht das Image. Diesmal ist es <b>schon da</b> – kein Download nötig.</p>',
+        '<p>② Der Daemon sucht das Image. Diesmal ist es <b>schon da</b>. Er muss nichts laden.</p>'],
+      s3: ['<p>③ Der Daemon lädt das Image aus der <b>Registry</b> herunter, hier von Docker Hub. Das heißt <b>pull</b>.</p>',
+        '<p>③ Der Daemon lädt das Image aus der <b>Registry</b>. Das heißt <b>pull</b>.</p>'],
+      s4: ['<p>④ Aus dem Image erstellt der Daemon einen <b>Container</b> und startet ihn.</p>',
+        '<p>④ Der Daemon macht aus dem Image einen <b>Container</b> und startet ihn.</p>'],
+      s5: ['<p>⑤ Die Ausgabe des Containers erscheint in deinem Terminal.</p><p>👉 Klicke auf <b>noch einmal</b>. Was ist beim zweiten Mal anders?</p>',
+        '<p>⑤ Die Ausgabe kommt in dein Terminal.</p><p>👉 Klicke auf <b>noch einmal</b>. Was ist beim 2. Mal anders?</p>'],
+      nochmal: ['<p>Jetzt startest du denselben Befehl ein zweites Mal.</p><p>👉 Klicke auf <b>Schritt</b>.</p>',
+        '<p>Jetzt kommt derselbe Befehl ein 2. Mal.</p><p>👉 Klicke auf <b>Schritt</b>.</p>'],
+      s5da: ['<p>⑤ Fertig – ohne pull, also schneller. Aus demselben Image gibt es jetzt <b>zwei</b> Container.</p>',
+        '<p>⑤ Fertig. Ohne pull geht es schneller. Aus 1 Image gibt es jetzt <b>2</b> Container.</p>']
+    },
+    leben: {
+      image: ['<p>Aus einem <b>Image</b> entsteht ein Container.</p><p>👉 Klicke auf <b>create</b> oder gleich auf <b>run</b>.</p>',
+        '<p>Aus einem <b>Image</b> entsteht ein Container.</p><p>👉 Klicke auf <b>create</b> oder auf <b>run</b>.</p>'],
+      created: ['<p><b>Created:</b> Der Container ist angelegt, läuft aber noch nicht. <code>docker ps -a</code> zeigt ihn schon, <code>docker ps</code> noch nicht.</p><p>👉 Klicke auf <b>start</b>.</p>',
+        '<p><b>Created:</b> Der Container ist da. Er läuft aber noch nicht. <code>docker ps -a</code> zeigt ihn schon.</p><p>👉 Klicke auf <b>start</b>.</p>'],
+      running: ['<p><b>Running:</b> Der Container läuft. Jetzt zeigt ihn auch <code>docker ps</code>. Übrigens: <code>docker run</code> = create + start.</p><p>👉 Klicke auf <b>stop</b>.</p>',
+        '<p><b>Running:</b> Der Container läuft. Jetzt zeigt ihn auch <code>docker ps</code>. <code>docker run</code> macht create und start auf einmal.</p><p>👉 Klicke auf <b>stop</b>.</p>'],
+      exited: ['<p><b>Exited:</b> Der Container ist gestoppt, aber <b>noch da</b>. Nur <code>docker ps -a</code> zeigt ihn. Mit <b>start</b> läuft er wieder.</p><p>👉 Klicke auf <b>rm</b>.</p>',
+        '<p><b>Exited:</b> Der Container ist gestoppt. Er ist aber <b>noch da</b>. Nur <code>docker ps -a</code> zeigt ihn.</p><p>👉 Klicke auf <b>rm</b>.</p>'],
+      removed: ['<p><b>Removed:</b> Erst <code>docker rm</code> löscht den Container. Jetzt zeigt ihn keine Liste mehr.</p><p>👉 Klicke auf <b>run</b> und dann auf <b>rm</b>.</p>',
+        '<p><b>Removed:</b> Erst <code>docker rm</code> löscht den Container. Jetzt ist er in keiner Liste mehr.</p><p>👉 Klicke auf <b>run</b>. Klicke dann auf <b>rm</b>.</p>'],
+      rmLaeuft: ['<p>Einen <b>laufenden</b> Container kannst du nicht einfach löschen. Stoppe ihn zuerst mit <b>stop</b> – oder erzwinge das Löschen mit <code>docker rm -f</code>.</p>',
+        '<p>Ein Container, der <b>läuft</b>, lässt sich nicht einfach löschen. Stoppe ihn zuerst mit <b>stop</b>. Oder lösche mit <code>docker rm -f</code>.</p>']
+    },
+    build: {
+      b0: ['<p>Im <b>Dockerfile</b> steht das Rezept: <code>FROM</code> nennt das Basis-Image, <code>COPY</code> kopiert eigene Dateien hinein.</p><p>👉 Klicke auf <b>Schritt</b>.</p>',
+        '<p>Im <b>Dockerfile</b> steht das Rezept. <code>FROM</code> ist das Basis-Image. <code>COPY</code> bringt eigene Dateien hinein.</p><p>👉 Klicke auf <b>Schritt</b>.</p>'],
+      b1: ['<p><b>Build:</b> <code>docker build</code> macht aus dem Dockerfile ein <b>Image</b>. Änderst du später eine Datei, musst du neu bauen.</p>',
+        '<p><b>Build:</b> <code>docker build</code> baut aus dem Dockerfile ein <b>Image</b>. Hast du eine Datei geändert? Dann musst du neu bauen.</p>'],
+      b2: ['<p><b>Ship:</b> <code>docker push</code> lädt das Image in eine <b>Registry</b> hoch, z. B. Docker Hub.</p>',
+        '<p><b>Ship:</b> <code>docker push</code> lädt das Image in eine <b>Registry</b>.</p>'],
+      b3: ['<p><code>docker pull</code> holt das Image aus der Registry auf einen anderen Rechner, z. B. auf den Server.</p>',
+        '<p><code>docker pull</code> holt das Image auf einen anderen Rechner, zum Beispiel auf den Server.</p>'],
+      b4: ['<p><b>Run:</b> <code>docker run</code> startet dort Container – genau so wie auf deinem Rechner.</p>',
+        '<p><b>Run:</b> <code>docker run</code> startet dort Container. Sie laufen genauso wie bei dir.</p>']
+    },
+    ports: {
+      start: ['<p>Ein Container ist von außen erst erreichbar, wenn du einen Port weiterleitest. <code>-p 8080:80</code> heißt: <b>Host-Port 8080</b> → <b>Container-Port 80</b>.</p><p>👉 Schalte <b>-p 8081:80</b> ein.</p>',
+        '<p>Von außen kommst du nur mit einer Weiterleitung an den Container. <code>-p 8080:80</code>: Links ist der Port vom <b>Host</b>, rechts der Port im <b>Container</b>.</p><p>👉 Schalte <b>-p 8081:80</b> an.</p>'],
+      zwei: ['<p>Beide Container nutzen innen Port 80. Auf dem Host brauchen sie aber <b>verschiedene</b> Ports: 8080 und 8081.</p><p>👉 Klicke auf <b>2× 8080</b>.</p>',
+        '<p>Innen haben beide Container Port 80. Auf dem Host brauchen sie <b>verschiedene</b> Ports: 8080 und 8081.</p><p>👉 Klicke auf <b>2× 8080</b>.</p>'],
+      konflikt: ['<p>Jeden Host-Port gibt es nur <b>einmal</b>. Ist 8080 schon belegt, meldet Docker <code>port is already allocated</code>.</p>',
+        '<p>Jeden Host-Port gibt es nur <b>1-mal</b>. Ist 8080 schon belegt, meldet Docker: <code>port is already allocated</code>.</p>'],
+      ohne: ['<p>Ohne <code>-p</code> ist der Container von außen <b>nicht erreichbar</b>. Der Browser findet ihn nicht.</p>',
+        '<p>Ohne <code>-p</code> kommst du von außen <b>nicht</b> an den Container. Der Browser findet ihn nicht.</p>']
+    },
+    daten: {
+      start: ['<p>Der Container schreibt in seine eigene <b>Container-Schicht</b> (<code>notiz.txt</code>). Daten im <b>Volume</b> und im <b>Ordner</b> liegen außerhalb.</p><p>👉 Klicke auf <b>docker rm</b>.</p>',
+        '<p>Der Container speichert in seiner eigenen <b>Schicht</b> (<code>notiz.txt</code>). Das <b>Volume</b> und der <b>Ordner</b> liegen außerhalb.</p><p>👉 Klicke auf <b>docker rm</b>.</p>'],
+      schreiben: ['<p>Neue Dateien landen in der Container-Schicht. Sie gehören nur diesem Container.</p><p>👉 Klicke auf <b>docker rm</b>.</p>',
+        '<p>Neue Dateien kommen in die Schicht vom Container. Sie gehören nur diesem Container.</p><p>👉 Klicke auf <b>docker rm</b>.</p>'],
+      rm: ['<p>Nach <code>docker rm</code> ist die Container-Schicht weg – wie ein <b>Hotelzimmer</b> nach dem Auszug. <b>Volume</b> (Schließfach) und <b>Ordner</b> bleiben.</p><p>👉 Klicke auf <b>neuer Container -v</b>.</p>',
+        '<p>Nach <code>docker rm</code> ist die Schicht weg. Das ist wie bei einem <b>Hotelzimmer</b> nach dem Auszug. Das <b>Volume</b> und der <b>Ordner</b> bleiben.</p><p>👉 Klicke auf <b>neuer Container -v</b>.</p>'],
+      neu: ['<p>Der neue Container bindet das Volume mit <code>-v</code> wieder ein: <code>hello.txt</code> ist noch da.</p><p>👉 Klicke auf <b>down -v</b>.</p>',
+        '<p>Der neue Container holt das Volume mit <code>-v</code> wieder dazu. <code>hello.txt</code> ist noch da.</p><p>👉 Klicke auf <b>down -v</b>.</p>'],
+      neuOhne: ['<p>Der neue Container startet mit leerer Schicht. Das Volume wurde gelöscht – seine Daten sind weg.</p>',
+        '<p>Der neue Container ist leer. Das Volume ist gelöscht. Seine Daten sind weg.</p>'],
+      downv: ['<p><code>docker compose down -v</code> löscht auch das <b>Named Volume</b>. Den <b>Ordner</b> <code>./export</code> auf dem Host löscht Docker nie.</p>',
+        '<p><code>down -v</code> löscht auch das <b>Volume</b>. Den <b>Ordner</b> <code>./export</code> auf dem Host löscht Docker nie.</p>']
+    },
+    netz: {
+      start: ['<p>Zwei Container laufen einzeln: <code>web</code> und <code>db</code>. Ohne gemeinsames Netzwerk findet <code>web</code> die Datenbank <b>nicht über ihren Namen</b>.</p><p>👉 Klicke auf <b>network create</b>.</p>',
+        '<p>Zwei Container laufen allein: <code>web</code> und <code>db</code>. Ohne gemeinsames Netzwerk findet <code>web</code> die Datenbank <b>nicht</b> über ihren Namen.</p><p>👉 Klicke auf <b>network create</b>.</p>'],
+      netz: ['<p>Ein <b>Netzwerk</b> ist wie ein gemeinsamer Flur: Nur wer daran wohnt, kann sich besuchen. Das Netzwerk ist jetzt da, aber noch leer.</p><p>👉 Klicke auf <b>--network netz</b>.</p>',
+        '<p>Ein <b>Netzwerk</b> ist wie ein gemeinsamer Flur. Nur wer am Flur wohnt, kann sich besuchen. Der Flur ist jetzt da, aber noch leer.</p><p>👉 Klicke auf <b>--network netz</b>.</p>'],
+      drin: ['<p>Beide Container hängen jetzt im selben Netzwerk. <code>web</code> erreicht <code>db</code> über ihren <b>Namen</b>. Von außen kommt aber noch niemand an <code>web</code>.</p><p>👉 Schalte <b>-p 8080:80</b> ein.</p>',
+        '<p>Beide Container sind jetzt im selben Netzwerk. <code>web</code> findet <code>db</code> über ihren <b>Namen</b>. Von außen kommt aber noch niemand an <code>web</code>.</p><p>👉 Schalte <b>-p 8080:80</b> an.</p>'],
+      fertig: ['<p>Mit <code>-p 8080:80</code> ist <code>web</code> von außen erreichbar. <code>db</code> hat keinen Port nach außen: Sie ist <b>nur im Netzwerk</b> erreichbar – das ist sicherer.</p><p>👉 Klicke auf <b>compose up -d</b>.</p>',
+        '<p>Mit <code>-p 8080:80</code> kommt der Browser an <code>web</code>. <code>db</code> hat keinen Port nach außen. Sie ist <b>nur im Netzwerk</b> erreichbar. Das ist sicherer.</p><p>👉 Klicke auf <b>compose up -d</b>.</p>'],
+      portOhneNetz: ['<p>Der Browser erreicht <code>web</code> jetzt, aber <code>web</code> findet die Datenbank nicht: Die beiden hängen in <b>keinem gemeinsamen Netzwerk</b>.</p>',
+        '<p>Der Browser kommt an <code>web</code>. Aber <code>web</code> findet die Datenbank nicht. Die beiden sind in <b>keinem gemeinsamen Netzwerk</b>.</p>'],
+      compose: ['<p><b>Compose</b> macht das alles automatisch: Es legt das Netzwerk <code>projekt_default</code> an, hängt alle Dienste hinein und öffnet nur die Ports, die unter <code>ports:</code> stehen.</p>',
+        '<p><b>Compose</b> macht das alles von selbst. Es legt das Netzwerk <code>projekt_default</code> an. Es bringt alle Dienste hinein. Es öffnet nur die Ports unter <code>ports:</code>.</p>']
+    },
+    compose: {
+      start: ['<p>In der <code>docker-compose.yml</code> stehen alle Dienste: hier <code>web</code> und <code>db</code>.</p><p>👉 Klicke auf <b>docker compose up -d</b>.</p>',
+        '<p>In der <code>docker-compose.yml</code> stehen alle Dienste: <code>web</code> und <code>db</code>.</p><p>👉 Klicke auf <b>docker compose up -d</b>.</p>'],
+      up: ['<p>Compose startet alle Dienste und legt ein <b>Netzwerk</b> an. Darin ist jeder Dienst unter seinem <b>Service-Namen</b> erreichbar – <code>db</code> wie im <b>Telefonbuch</b>.</p><p>👉 Schalte die <b>localhost-Falle</b> ein.</p>',
+        '<p>Compose startet alle Dienste und macht ein <b>Netzwerk</b>. Darin ist der <b>Service-Name</b> die Adresse, zum Beispiel <code>db</code>. Das ist wie ein <b>Telefonbuch</b>.</p><p>👉 Schalte die <b>localhost-Falle</b> an.</p>'],
+      falle: ['<p><code>localhost</code> ist im Container der <b>Container selbst</b>. Mit <code>localhost:5432</code> sucht <code>web</code> die Datenbank bei sich – und findet nichts.</p>',
+        '<p><code>localhost</code> im Container ist der <b>Container selbst</b>. Mit <code>localhost</code> sucht <code>web</code> die Datenbank bei sich. Dort ist sie nicht.</p>'],
+      down: ['<p><code>docker compose down</code> stoppt alle Dienste und entfernt Container und Netzwerk. Das Volume <code>pgdata</code> bleibt erhalten.</p>',
+        '<p><code>docker compose down</code> stoppt alle Dienste. Container und Netzwerk sind dann weg. Das Volume <code>pgdata</code> bleibt.</p>']
+    }
+  };
+
   /* ---------- 2 · Image und Container ---------- */
   function szKlasse(box, api) {
-    var d = buehne(box), namen = ['a', 'b', 'c', 'd'], n = 0, java = false;
+    var d = buehne(box), namen = ['a', 'b', 'c', 'd'], n = 0, java = false, letzte = 'start';
     var img = kasten('dk-img', 'Image <code>webserver</code>', L('Bauplan · read-only', 'Bauplan · nur lesen'));
     img.insertBefore(bild(BILD.bauplan()), img.firstChild);
     var cons = E('div', { class: 'dk-reihe', style: 'min-height:120px' });
@@ -205,10 +322,11 @@
       var z = [];
       for (var k = 0; k < n; k++) z.push(java ? 'Webserver ' + namen[k] + ' = new Webserver();' : '$ docker run -d --name ' + namen[k] + ' webserver');
       befehl.textContent = z.join('\n') || (java ? '// ' : '$ ') + '…';
+      erklaereSz('klasse', TX.klasse[letzte]);
     }
-    api.werkzeug({ icon: '▶', text: 'docker run', taste: 'r', aktion: function () { if (n < namen.length) { n++; zeichne(); } } });
-    api.werkzeug({ icon: '🗑', text: 'docker rm', taste: 'x', aktion: function () { if (n) { n--; zeichne(); } } });
-    api.werkzeug({ icon: '☕', text: L('wie in Java', 'wie in Java'), taste: 'j', typ: 'schalter', aktion: function (an) { java = an; zeichne(); } });
+    api.werkzeug({ icon: '▶', text: 'docker run', taste: 'r', aktion: function () { if (n < namen.length) { n++; letzte = java ? 'java' : 'run'; zeichne(); } } });
+    api.werkzeug({ icon: '🗑', text: 'docker rm', taste: 'x', aktion: function () { if (n) { n--; letzte = 'rm'; zeichne(); } } });
+    api.werkzeug({ icon: '☕', text: L('wie in Java', 'wie in Java'), taste: 'j', typ: 'schalter', aktion: function (an) { java = an; letzte = an ? 'java' : (n ? 'run' : 'start'); zeichne(); } });
     zeichne();
     return {};
   }
@@ -247,6 +365,7 @@
       var t = texte[schritt][0];
       if (schritt === 2) t += hatImg ? ' <span class="dk-ok">✓ ' + L('ja – kein pull nötig', 'ja – kein pull') + '</span>' : ' <span class="dk-bad">✗ ' + L('nicht vorhanden', 'nicht da') + '</span>';
       info.innerHTML = t || '<span class="dk-etikett">' + L('▶ Schritt drücken', '▶ Schritt drücken') + '</span>';
+      erklaereSz('run', TX.run[schritt === 0 ? (schonDa ? 'nochmal' : 's0') : (schonDa && (schritt === 2 || schritt === 5)) ? 's' + schritt + 'da' : 's' + schritt]);
     }
     api.werkzeug({ icon: '▶', text: L('Schritt', 'Schritt'), taste: 's', aktion: function () {
       if (schritt >= 5) return;
@@ -269,7 +388,8 @@
     var meld = E('div', { class: 'dk-gross', 'aria-live': 'polite' });
     d.appendChild(E('div', { class: 'dk-reihe' }, [ps, psa]));
     d.appendChild(meld);
-    function zeichne(m) {
+    function zeichne(m, key) {
+      erklaereSz('leben', TX.leben[key || zustand]);
       Object.keys(Z).forEach(function (k) { Z[k].classList.toggle('dk-an', k === zustand); });
       var zeile = 'web  ' + ({ created: 'Created', running: 'Up 3 seconds', exited: 'Exited (0)' }[zustand] || '');
       ps.querySelector('.dk-liste').textContent = zustand === 'running' ? zeile : L('(leer)', '(leer)');
@@ -281,7 +401,7 @@
     api.werkzeug({ icon: '▶', text: 'start', taste: 's', aktion: geh(['created', 'exited'], 'running', L('Erst create ausführen', 'Zuerst create')) });
     api.werkzeug({ icon: '⏹', text: 'stop', taste: 't', aktion: geh(['running'], 'exited', L('Läuft gerade nicht', 'Läuft nicht')) });
     api.werkzeug({ icon: '🗑', text: 'rm', taste: 'x', aktion: function () {
-      if (zustand === 'running') return zeichne('<span class="dk-bad">✗ ' + L('läuft noch – erst stop oder rm -f', 'läuft noch – erst stop oder rm -f') + '</span>');
+      if (zustand === 'running') return zeichne('<span class="dk-bad">✗ ' + L('läuft noch – erst stop oder rm -f', 'läuft noch – erst stop oder rm -f') + '</span>', 'rmLaeuft');
       geh(['created', 'exited'], 'removed', L('Es gibt keinen Container', 'Es gibt keinen Container'))();
     } });
     api.werkzeug({ icon: '🚀', text: 'run = create + start', taste: 'r', aktion: geh(['image', 'removed'], 'running', L('Es gibt den Container schon', 'Den Container gibt es schon')) });
@@ -313,6 +433,7 @@
       teile.forEach(function (t, i) { t.classList.toggle('dk-aus', i >= schritt); t.classList.toggle('dk-an', i === schritt - 1); });
       p.forEach(function (t, i) { t.classList.toggle('dk-aus', i >= schritt); });
       info.innerHTML = schritt ? '<code>' + texte[schritt] + '</code>' : '<span class="dk-etikett">' + L('▶ Schritt drücken', '▶ Schritt drücken') + '</span>';
+      erklaereSz('build', TX.build['b' + schritt]);
     }
     api.werkzeug({ icon: '▶', text: L('Schritt', 'Schritt'), taste: 's', aktion: function () { if (schritt < 4) { schritt++; zeichne(); } } });
     api.werkzeug({ icon: '↺', text: L('von vorn', 'von vorn'), taste: 'r', aktion: function () { schritt = 0; zeichne(); } });
@@ -335,6 +456,7 @@
       return E('div', { class: 'dk-reihe', style: 'flex-wrap:nowrap' }, [browser, pfeil(an ? '➜' : '✗'), hp, pfeil(an ? '➜' : '·'), con]);
     }
     function zeichne() {
+      erklaereSz('ports', TX.ports[konflikt ? 'konflikt' : !A ? 'ohne' : B ? 'zwei' : 'start']);
       wrap.innerHTML = '';
       wrap.appendChild(zeile('localhost:8080', A, A ? '8080' : '', 'steckbrief'));
       wrap.appendChild(zeile('localhost:8081', B, B ? '8081' : '', 'steckbrief2'));
@@ -354,7 +476,8 @@
     var meld = E('div', { class: 'dk-gross', 'aria-live': 'polite' });
     d.appendChild(E('div', { class: 'dk-reihe' }, [conEl, pfeil('⇄', '-v'), E('div', { class: 'dk-spalte' }, [volEl, bindEl])]));
     d.appendChild(meld);
-    function zeichne(m) {
+    function zeichne(m, key) {
+      erklaereSz('daten', TX.daten[key || 'start']);
       conEl.innerHTML = ''; volEl.innerHTML = ''; bindEl.innerHTML = '';
       if (con) conEl.appendChild(E('div', { class: 'dk-spalte' }, [
         bild(BILD.bett()), E('div', { class: 'dk-etikett', text: L('Container ', 'Container ') + con + ' ≈ ' + L('Hotelzimmer', 'Hotelzimmer') }),
@@ -367,10 +490,10 @@
       bindEl.firstChild.insertBefore(bild(BILD.ordner()), bindEl.firstChild.firstChild);
       meld.innerHTML = m || '';
     }
-    api.werkzeug({ icon: '✍️', text: L('Datei schreiben', 'Datei schreiben'), taste: 'w', aktion: function () { if (!con) return zeichne(); if (schicht.indexOf('ping') < 0) schicht.push('ping'); zeichne(); } });
-    api.werkzeug({ icon: '🗑', text: 'docker rm', taste: 'x', aktion: function () { if (!con) return; con = 0; zeichne('<span class="dk-bad">' + L('notiz.txt ist weg', 'notiz.txt ist weg') + '</span> · <span class="dk-ok">hello.txt ' + L('bleibt', 'bleibt') + '</span>'); } });
-    api.werkzeug({ icon: '▶', text: L('neuer Container -v', 'neuer Container -v'), taste: 'n', aktion: function () { if (con) return; con = 2; schicht = []; zeichne(vol ? '<span class="dk-ok">hello.txt ' + L('ist noch da!', 'ist noch da!') + '</span>' : ''); } });
-    api.werkzeug({ icon: '💣', text: 'down -v', taste: 'v', aktion: function () { con = 0; vol = false; schicht = []; zeichne('<span class="dk-bad">Volume ' + L('gelöscht', 'gelöscht') + '</span> · <span class="dk-ok">./export ' + L('bleibt', 'bleibt') + '</span>'); } });
+    api.werkzeug({ icon: '✍️', text: L('Datei schreiben', 'Datei schreiben'), taste: 'w', aktion: function () { if (!con) return; if (schicht.indexOf('ping') < 0) schicht.push('ping'); zeichne('', 'schreiben'); } });
+    api.werkzeug({ icon: '🗑', text: 'docker rm', taste: 'x', aktion: function () { if (!con) return; con = 0; zeichne('<span class="dk-bad">' + L('notiz.txt ist weg', 'notiz.txt ist weg') + '</span> · <span class="dk-ok">hello.txt ' + L('bleibt', 'bleibt') + '</span>', 'rm'); } });
+    api.werkzeug({ icon: '▶', text: L('neuer Container -v', 'neuer Container -v'), taste: 'n', aktion: function () { if (con) return; con = 2; schicht = []; zeichne(vol ? '<span class="dk-ok">hello.txt ' + L('ist noch da!', 'ist noch da!') + '</span>' : '', vol ? 'neu' : 'neuOhne'); } });
+    api.werkzeug({ icon: '💣', text: 'down -v', taste: 'v', aktion: function () { con = 0; vol = false; schicht = []; zeichne('<span class="dk-bad">Volume ' + L('gelöscht', 'gelöscht') + '</span> · <span class="dk-ok">./export ' + L('bleibt', 'bleibt') + '</span>', 'downv'); } });
     api.werkzeug({ icon: '↺', text: L('von vorn', 'von vorn'), taste: 'r', aktion: function () { con = 1; schicht = ['notiz.txt']; vol = true; zeichne(); } });
     zeichne();
     return {};
@@ -378,11 +501,12 @@
 
   /* ---------- 8 · Compose: Namen statt IP-Adressen ---------- */
   function szCompose(box, api) {
-    var d = buehne(box), oben = false, falle = false;
+    var d = buehne(box), oben = false, falle = false, runter = false;
     var datei = E('div', { class: 'dk-code', text: 'services:\n  web:\n    build: .\n    ports:\n      - "8080:80"\n    environment:\n      DB_HOST: db\n  db:\n    image: postgres:16-alpine\n    volumes:\n      - pgdata:/var/lib/postgresql/data\nvolumes:\n  pgdata:' });
     var netz = E('div', { class: 'dk-net dk-spalte', style: 'min-width:340px' });
     d.appendChild(E('div', { class: 'dk-reihe' }, [datei, pfeil('➜', 'up -d'), netz]));
     function zeichne() {
+      erklaereSz('compose', TX.compose[oben ? (falle ? 'falle' : 'up') : (runter ? 'down' : 'start')]);
       netz.innerHTML = '';
       netz.appendChild(E('div', { class: 'dk-etikett', html: '🔗 ' + L('Netzwerk', 'Netzwerk') + ' <code>projekt_default</code>' }));
       if (!oben) { netz.appendChild(E('div', { class: 'dk-etikett', style: 'padding:30px 0', text: L('noch nichts gestartet', 'noch nichts gestartet') })); return; }
@@ -396,9 +520,59 @@
       netz.lastChild.firstChild.style.width = 'auto';
       netz.appendChild(kasten('dk-vol', '🔒 pgdata'));
     }
-    api.werkzeug({ icon: '▶', text: 'docker compose up -d', taste: 'u', aktion: function () { oben = true; zeichne(); } });
+    api.werkzeug({ icon: '▶', text: 'docker compose up -d', taste: 'u', aktion: function () { oben = true; runter = false; zeichne(); } });
     api.werkzeug({ icon: '🪤', text: L('localhost-Falle', 'localhost-Falle'), taste: 'l', typ: 'schalter', aktion: function (an) { falle = an; if (!oben) oben = true; zeichne(); } });
-    api.werkzeug({ icon: '⏹', text: 'docker compose down', taste: 'd', aktion: function () { oben = false; zeichne(); } });
+    api.werkzeug({ icon: '⏹', text: 'docker compose down', taste: 'd', aktion: function () { oben = false; runter = true; zeichne(); } });
+    zeichne();
+    return {};
+  }
+
+  /* ---------- 9 · Netzwerk: Wer erreicht wen? ---------- */
+  function szNetz(box, api) {
+    var d = buehne(box), netz = false, drin = false, ports = false, compose = false, meldung = '';
+    var aussen = E('div', { class: 'dk-spalte' }), host = E('div', { class: 'dk-box dk-os', style: 'min-width:380px' });
+    var befehle = E('div', { class: 'dk-code', style: 'font-size:.9rem;min-width:30em' });
+    var meld = E('div', { class: 'dk-gross', 'aria-live': 'polite' });
+    d.appendChild(E('div', { class: 'dk-reihe dk-nw', style: 'align-items:center' }, [aussen, pfeil('➜'), host]));
+    d.appendChild(befehle); d.appendChild(meld);
+    function zustand() { return compose ? 'compose' : (ports && !drin) ? 'portOhneNetz' : (drin && ports) ? 'fertig' : drin ? 'drin' : netz ? 'netz' : 'start'; }
+    function zeichne() {
+      erklaereSz('netz', TX.netz[zustand()]);
+      var name = compose ? 'projekt_default' : 'netz';
+      aussen.innerHTML = '';
+      aussen.appendChild(E('div', { class: 'dk-etikett', text: L('außen: Browser', 'außen: Browser') }));
+      aussen.appendChild(kasten('', '🌐 <code>localhost:8080</code>', ports ? '<span class="dk-ok">✓ web</span>' : '<span class="dk-bad">✗ ' + L('nicht erreichbar', 'nicht erreichbar') + '</span>'));
+      aussen.appendChild(kasten('', '🌐 <code>localhost:5432</code>', '<span class="dk-bad">✗ db ' + L('nur intern', 'nur innen') + '</span>'));
+      host.innerHTML = '';
+      host.appendChild(E('b', { html: '🖥️ Host' + (ports ? ' · <span style="color:var(--ok)">Port 8080 → web:80</span>' : '') }));
+      var web = kasten('dk-con', '📦 web', ':80'), db = kasten('dk-con', '🐘 db', ':5432');
+      if (drin) {
+        var n = E('div', { class: 'dk-net dk-spalte', style: 'margin-top:8px' }, [E('div', { class: 'dk-etikett', html: '🔗 ' + L('Netzwerk', 'Netzwerk') + ' <code>' + name + '</code>' }), web,
+          E('div', { class: 'dk-gross dk-ok', html: '<code>db:5432</code> ↓ ✓' }), db]);
+        host.appendChild(n);
+      } else {
+        host.appendChild(E('div', { class: 'dk-reihe dk-nw', style: 'margin-top:8px;align-items:center' }, [web, E('div', { class: 'dk-gross dk-bad', html: '<code>db</code> ?<br>✗' }), db]));
+        if (netz) host.appendChild(E('div', { class: 'dk-net', style: 'margin-top:8px;min-height:60px' }, [E('div', { class: 'dk-etikett', html: '🔗 ' + L('Netzwerk', 'Netzwerk') + ' <code>' + name + '</code> · ' + L('leer', 'leer') }) ]));
+      }
+      var z = [];
+      if (compose) z = ['services:', '  web:', '    ports:', '      - "8080:80"', '  db:', '    image: postgres:16-alpine', '    # ' + L('kein ports: – nur intern erreichbar', 'kein ports: – nur innen erreichbar'), '# ' + L('Netzwerk legt Compose selbst an', 'Netzwerk macht Compose selbst')];
+      else {
+        if (netz) z.push('$ docker network create netz');
+        z.push('$ docker run -d --name db' + (drin ? ' --network netz' : '') + ' postgres:16-alpine');
+        z.push('$ docker run -d --name web' + (drin ? ' --network netz' : '') + (ports ? ' -p 8080:80' : '') + ' web');
+      }
+      befehle.textContent = z.join('\n');
+      meld.innerHTML = meldung; meldung = '';
+    }
+    api.werkzeug({ icon: '🔗', text: 'network create', taste: 'n', aktion: function () { if (!compose) { netz = true; zeichne(); } } });
+    api.werkzeug({ icon: '🔌', text: '--network netz', taste: 'a', aktion: function () {
+      if (compose) return;
+      if (!netz) { meldung = '<span class="dk-bad">✗ ' + L('Erst muss es das Netzwerk geben: network create', 'Zuerst network create') + '</span>'; return zeichne(); }
+      drin = true; zeichne();
+    } });
+    var pSchalter = api.werkzeug({ icon: '🌐', text: '-p 8080:80', taste: 'p', typ: 'schalter', aktion: function (an) { if (compose) return true; ports = an; zeichne(); } });
+    api.werkzeug({ icon: '🐙', text: 'compose up -d', taste: 'k', aktion: function () { compose = netz = drin = ports = true; pSchalter.setze(true); zeichne(); } });
+    api.werkzeug({ icon: '↺', text: L('von vorn', 'von vorn'), taste: 'r', aktion: function () { compose = netz = drin = ports = false; pSchalter.setze(false); zeichne(); } });
     zeichne();
     return {};
   }
@@ -408,21 +582,23 @@
     dauer: '20 Minuten',
     szenen: [
       { id: 'wohnen', titel: 'Wie wohnen Apps?', station: 'S1', zeichne: szWohnen,
-        erklaerung: '<p><b>Bare Metal</b> heißt: Alle Programme werden direkt auf dem Betriebssystem des Servers installiert – ohne jede Trennung.</p><p><b>Das Problem:</b> Programme brauchen oft verschiedene Versionen derselben Software. App A läuft nur mit Python 3.8, App B braucht Python 3.12. Installiert man beide auf demselben System, kommen sie sich in die Quere: Ein Update für App B kann App A lahmlegen.</p><p>Das ist wie in einer <b>WG, in der alle in einem einzigen Raum wohnen</b>: Alle teilen sich alles, und es gibt ständig Streit.</p><p><b>Probier es aus:</b> Klicke auf <b>VM</b>. Wie lässt sich der Streit lösen?</p>' },
+        erklaerung: '<p><b>Bare Metal:</b> Alle Programme laufen direkt auf einem einzigen Betriebssystem.</p><p><b>Problem:</b> App A braucht Python 3.8, App B braucht Python 3.12. Die beiden kommen sich in die Quere. Das ist wie in einer <b>WG mit nur einem Raum</b>.</p><p>👉 Klicke auf <b>VM</b>.</p>' },
       { id: 'klasse', titel: 'Image und Container', station: 'S1', zeichne: szKlasse,
-        erklaerung: '<p>Ein <b>Image</b> ist ein Bauplan. Es enthält alles, was ein Programm zum Laufen braucht: das Programm selbst, seine Bibliotheken und Einstellungen. Ein Image ist <b>schreibgeschützt</b> und ändert sich nicht, während Container daraus laufen.</p><p>Ein <b>Container</b> ist ein laufendes Exemplar dieses Bauplans. Jedes <code>docker run</code> erzeugt einen <b>neuen</b> Container. Aus einem Image können so beliebig viele Container entstehen, die unabhängig voneinander laufen – zum Beispiel drei Webserver aus demselben Image.</p><p><b>Vergleich mit Java:</b> Das Image entspricht einer Klasse (<code>class Webserver</code>), der Container einem Objekt (<code>new Webserver()</code>). Eine Klasse kann viele Objekte haben, ein Image viele Container.</p><p>Mit <code>docker rm</code> löschst du einen Container; das Image bleibt erhalten. Ein Image löschst du mit <code>docker rmi</code> – aber erst, wenn kein Container mehr daraus besteht, auch kein gestoppter.</p><p><b>Probier es aus:</b> Klicke mehrmals auf <b>docker run</b> und schalte dann <b>wie in Java</b> ein.</p>' },
+        erklaerung: '<p>Ein <b>Image</b> ist ein Bauplan: Programm, Bibliotheken und Einstellungen. Es ist schreibgeschützt.</p><p>👉 Klicke auf <b>docker run</b>.</p>' },
       { id: 'run', titel: 'Was passiert bei docker run?', station: 'S1', zeichne: szRun,
-        erklaerung: '<p>Docker besteht aus zwei Teilen: dem <b>Client</b> – das ist das Programm <code>docker</code>, das du im Terminal aufrufst – und dem <b>Docker Daemon</b> (<code>dockerd</code>). Der Daemon läuft im Hintergrund auf dem Host und erledigt die eigentliche Arbeit.</p><p>Bei <code>docker run hello-world</code> passiert Folgendes:</p><ol><li>Der Client schickt den Befehl an den Daemon.</li><li>Der Daemon prüft, ob das Image <code>hello-world</code> schon auf dem Host liegt.</li><li>Wenn nicht, lädt er es aus einer <b>Registry</b> herunter (<b>pull</b>). Die bekannteste Registry ist Docker Hub; dort liegen Millionen fertiger Images.</li><li>Aus dem Image erstellt er einen Container und startet ihn.</li><li>Die Ausgabe des Containers erscheint in deinem Terminal.</li></ol><p>Beim zweiten Mal liegt das Image schon auf dem Host. Schritt 3 fällt weg, und der Container startet sofort. Deshalb dauert der erste Start eines Images oft länger als alle weiteren.</p><p><b>Probier es aus:</b> Klicke fünfmal auf <b>Schritt</b>, dann auf <b>noch einmal</b> und wieder auf <b>Schritt</b>.</p>' },
+        erklaerung: '<p>Was passiert, wenn du <code>docker run hello-world</code> eintippst?</p><p>👉 Klicke auf <b>Schritt</b>.</p>' },
       { id: 'leben', titel: 'Lebenszyklus eines Containers', station: 'S1', zeichne: szLeben,
-        erklaerung: '<p>Ein Container durchläuft mehrere Zustände:</p><ul><li><b>Created</b> (erstellt): Der Container ist angelegt, läuft aber noch nicht (<code>docker create</code>).</li><li><b>Running</b> (läuft): Das Programm im Container arbeitet (<code>docker start</code>).</li><li><b>Exited</b> (gestoppt): Das Programm ist beendet – entweder weil es fertig ist wie <code>hello-world</code> oder weil du <code>docker stop</code> eingegeben hast. Der Container ist aber noch vorhanden und lässt sich mit <code>docker start</code> wieder starten.</li><li><b>Removed</b> (gelöscht): Erst <code>docker rm</code> entfernt den Container endgültig.</li></ul><p><code>docker run</code> erledigt <i>create</i> und <i>start</i> in einem Schritt.</p><p><code>docker ps</code> zeigt nur laufende Container, <code>docker ps -a</code> zeigt alle, auch die gestoppten. Einen laufenden Container kannst du nicht einfach löschen: Du musst ihn zuerst stoppen oder das Löschen mit <code>docker rm -f</code> erzwingen.</p><p><b>Probier es aus:</b> Klicke auf <b>run</b>, <b>stop</b> und <b>rm</b> und beobachte die beiden Listen. Was passiert, wenn du einen laufenden Container löschen willst?</p>' },
+        erklaerung: '<p>Aus einem <b>Image</b> entsteht ein Container.</p><p>👉 Klicke auf <b>create</b> oder gleich auf <b>run</b>.</p>' },
       { id: 'build', titel: 'Build · Ship · Run', station: 'S2', zeichne: szBuild,
-        erklaerung: '<p>Eigene Images baust du mit einem <b>Dockerfile</b>. Das ist eine Textdatei mit dem Rezept für das Image:</p><ul><li><code>FROM nginx:alpine</code> – das Basis-Image, auf dem du aufbaust, hier ein fertiger Webserver.</li><li><code>COPY index.html …</code> – kopiert eigene Dateien in das Image.</li><li><code>RUN …</code> – führt beim Bauen einen Befehl aus, zum Beispiel eine Installation.</li><li><code>EXPOSE 80</code> – dokumentiert, auf welchem Port die App lauscht.</li><li><code>CMD …</code> – legt fest, welches Programm beim Start des Containers läuft.</li></ul><p>Danach geht es in drei Schritten weiter:</p><ul><li><b>Build:</b> <code>docker build -t steckbrief .</code> baut aus dem Dockerfile ein Image mit dem Namen <code>steckbrief</code>.</li><li><b>Ship:</b> Mit <code>docker push</code> lädst du es in eine Registry hoch, mit <code>docker pull</code> holt es sich ein anderer Rechner.</li><li><b>Run:</b> Dort startet <code>docker run</code> daraus Container.</li></ul><p><b>Wichtig:</b> Ein Image ist eine Momentaufnahme. Änderst du später eine Datei, die mit <code>COPY</code> hineinkopiert wurde, musst du das Image neu bauen und einen neuen Container daraus starten. Sonst zeigt der Container weiter die alte Version.</p>' },
+        erklaerung: '<p>Im <b>Dockerfile</b> steht das Rezept: <code>FROM</code> nennt das Basis-Image, <code>COPY</code> kopiert eigene Dateien hinein.</p><p>👉 Klicke auf <b>Schritt</b>.</p>' },
       { id: 'ports', titel: 'Port-Mapping', station: 'S2', zeichne: szPorts,
-        erklaerung: '<p>Jeder Container ist vom Host abgeschottet. Ein Webserver im Container lauscht zum Beispiel auf Port 80 – aber nur <b>innerhalb</b> des Containers. Von außen, etwa aus deinem Browser, ist er zunächst nicht erreichbar.</p><p>Erst ein <b>Port-Mapping</b> öffnet den Weg: <code>docker run -p 8080:80 steckbrief</code> leitet alles, was auf dem <b>Host</b> an Port 8080 ankommt, an Port 80 im <b>Container</b> weiter. Die Reihenfolge ist immer <b>Host-Port : Container-Port</b>. Im Browser rufst du dann <code>http://localhost:8080</code> auf.</p><p>Mehrere Container dürfen intern denselben Port nutzen: Zwei Webserver können beide auf Port 80 lauschen. Auf dem Host darf aber jeder Port nur <b>einmal</b> vergeben werden. Der zweite Container braucht also einen anderen Host-Port, zum Beispiel <code>-p 8081:80</code>. Sonst meldet Docker <code>port is already allocated</code>.</p><p><b>Probier es aus:</b> Schalte <b>-p 8081:80</b> ein und klicke danach auf <b>2× 8080</b>.</p>' },
+        erklaerung: '<p>Ein Container ist von außen erst erreichbar, wenn du einen Port weiterleitest. <code>-p 8080:80</code> heißt: <b>Host-Port 8080</b> → <b>Container-Port 80</b>.</p><p>👉 Schalte <b>-p 8081:80</b> ein.</p>' },
       { id: 'daten', titel: 'Container vergessen alles', station: 'S3', zeichne: szDaten,
-        erklaerung: '<p>Ein Container besteht aus den schreibgeschützten Schichten seines Images und einer dünnen <b>Container-Schicht</b>, in die er schreiben darf. Alles, was das Programm im Container speichert, landet in dieser Schicht. Wird der Container mit <code>docker rm</code> gelöscht, ist auch diese Schicht weg: Container sind <b>ephemer</b> (flüchtig). Das ist wie bei einem Hotelzimmer, das nach dem Auszug aufgeräumt wird.</p><p>Damit Daten bleiben, legst du sie <b>außerhalb</b> des Containers ab und bindest sie mit <code>-v</code> ein. Dafür gibt es zwei Möglichkeiten:</p><ul><li><b>Named Volume</b>, z. B. <code>-v meine-daten:/daten</code>: Links steht ein <b>Name</b>. Docker verwaltet den Speicher selbst – wie ein Schließfach, zu dem Docker den Schlüssel hat. Das eignet sich für Datenbanken und App-Daten, die niemand direkt öffnen muss.</li><li><b>Bind Mount</b>, z. B. <code>-v ./export:/app/export</code>: Links steht ein <b>Pfad</b>. Ein normaler Ordner auf dem Host wird in den Container eingeblendet – du bringst deinen eigenen Ordner mit. Das eignet sich für Dateien, die du auf dem Host sehen oder bearbeiten willst, zum Beispiel Fotos, Konfigurationen oder Exporte.</li></ul><p>Beide überleben <code>docker rm</code> und <code>docker compose down</code>. <code>docker compose down -v</code> löscht zusätzlich die Named Volumes. Einen Bind-Mount-Ordner löscht Docker nie.</p><p><b>Probier es aus:</b> Klicke auf <b>docker rm</b>, dann auf <b>neuer Container -v</b> und zum Schluss auf <b>down -v</b>.</p>' },
+        erklaerung: '<p>Der Container schreibt in seine eigene <b>Container-Schicht</b> (<code>notiz.txt</code>). Daten im <b>Volume</b> und im <b>Ordner</b> liegen außerhalb.</p><p>👉 Klicke auf <b>docker rm</b>.</p>' },
       { id: 'compose', titel: 'Compose: Namen statt IP-Adressen', station: 'S4', zeichne: szCompose,
-        erklaerung: '<p>Größere Anwendungen bestehen aus mehreren Containern, zum Beispiel aus einer Web-App und einer Datenbank. Mit einzelnen <code>docker run</code>-Befehlen müsstest du jeden Container von Hand starten, ein Netzwerk anlegen und alle Optionen jedes Mal neu eintippen.</p><p><b>Docker Compose</b> fasst alles in einer Datei zusammen, der <code>docker-compose.yml</code>. Unter <code>services:</code> steht jeder Dienst mit Image, Ports, Volumes und Umgebungsvariablen. <code>docker compose up -d</code> startet alle Dienste im Hintergrund, <code>docker compose down</code> stoppt und entfernt sie wieder.</p><p>Compose legt automatisch ein gemeinsames <b>Netzwerk</b> an. Darin ist jeder Dienst unter seinem <b>Service-Namen</b> erreichbar: Das eingebaute DNS übersetzt <code>db</code> in die IP-Adresse des Datenbank-Containers – wie ein Telefonbuch, in dem du den Namen statt der Nummer nachschlägst. Deshalb steht in der Datei <code>DB_HOST: db</code>.</p><p><b>Vorsicht, localhost-Falle:</b> <code>localhost</code> bedeutet im Container immer „dieser Container selbst“. Sucht die Web-App die Datenbank unter <code>localhost:5432</code>, sucht sie bei sich selbst und findet nichts.</p><p>Mit <code>depends_on</code> und <code>condition: service_healthy</code> wartet ein Dienst außerdem, bis die Datenbank wirklich bereit ist.</p><p><b>Probier es aus:</b> Klicke auf <b>docker compose up -d</b> und schalte dann die <b>localhost-Falle</b> ein.</p>' }
+        erklaerung: '<p>In der <code>docker-compose.yml</code> stehen alle Dienste: hier <code>web</code> und <code>db</code>.</p><p>👉 Klicke auf <b>docker compose up -d</b>.</p>' },
+      { id: 'netz', titel: 'Netzwerk: Wer erreicht wen?', station: 'S4', zeichne: szNetz,
+        erklaerung: '<p>Zwei Container laufen einzeln: <code>web</code> und <code>db</code>. Ohne gemeinsames Netzwerk findet <code>web</code> die Datenbank <b>nicht über ihren Namen</b>.</p><p>👉 Klicke auf <b>network create</b>.</p>' }
     ]
   };
 
