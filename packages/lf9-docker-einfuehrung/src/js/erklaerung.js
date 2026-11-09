@@ -613,7 +613,7 @@
       var k = original.apply(this, arguments), h = k.querySelector('h2'), p = k.querySelector('p'), b = k.querySelector('button');
       stil(); k.classList.add('dk-start');
       if (h) h.textContent = L('Was ist eigentlich Docker?', 'Was ist eigentlich Docker?');
-      if (p) p.innerHTML = L('In 8 kurzen Szenen zum Anklicken siehst du, wie Docker funktioniert: vom Image über den Container bis zu Compose. Daneben steht jeweils eine Erklärung. Du findest die Szenen auch oben unter <b>Tafelbild</b> und in den Räumen 1–4 unter <b>💡</b>.', 'In 8 kurzen Szenen siehst du, wie Docker funktioniert. Daneben steht eine Erklärung. Du findest sie auch oben unter <b>Tafelbild</b> und in den Räumen unter <b>💡</b>.');
+      if (p) p.innerHTML = L('In ' + PAKET.tafel.szenen.length + ' kurzen Szenen zum Anklicken siehst du, wie Docker funktioniert: vom Image über den Container bis zu Compose und dem Netzwerk. Daneben steht jeweils eine Erklärung. Du findest die Szenen auch oben unter <b>Tafelbild</b> und in den Räumen 1–4 unter <b>💡</b>.', 'In ' + PAKET.tafel.szenen.length + ' kurzen Szenen siehst du, wie Docker funktioniert. Daneben steht eine Erklärung. Du findest sie auch oben unter <b>Tafelbild</b> und in den Räumen unter <b>💡</b>.');
       if (b) b.lastChild.textContent = ' ' + L('Erklärung ansehen', 'Erklärung ansehen');
       return k;
     };
