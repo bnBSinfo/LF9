@@ -188,9 +188,112 @@
     return {};
   }
 
+
+  /* ---------- Erklärung rechts passend zum Zustand der Szene ----------
+     tafel.js zeigt PAKET.tafel.szenen[i].erklaerung; die Szenen setzen den Text bei
+     jedem Klick neu (Standard/Einfach über L), so steht rechts nur das Passende. */
+  function erklaereSz(id, paar) {
+    var t = L(paar[0], paar[1]), sz = PAKET.tafel.szenen.filter(function (x) { return x.id === id; })[0];
+    sz.erklaerung = t;
+    var feld = document.querySelector('.tafel-erkl .tafel-text');
+    if (feld && document.querySelector('.tafel-szene[data-szene="' + id + '"]')) feld.innerHTML = t;
+  }
+  var TX = {
+    klasse: {
+      start: ['<p>Ein <b>Image</b> ist ein Bauplan: Programm, Bibliotheken und Einstellungen. Es ist schreibgeschützt.</p><p>👉 Klicke auf <b>docker run</b>.</p>',
+        '<p>Ein <b>Image</b> ist ein Bauplan. Darin sind das Programm, die Bibliotheken und die Einstellungen. Man kann es nicht ändern.</p><p>👉 Klicke auf <b>docker run</b>.</p>'],
+      run: ['<p>Jedes <code>docker run</code> baut aus dem Bauplan einen <b>neuen Container</b>. Aus einem Image können viele Container laufen.</p><p>👉 Klicke noch einmal auf <b>docker run</b> und dann auf <b>wie in Java</b>.</p>',
+        '<p>Jedes <code>docker run</code> baut aus dem Bauplan einen <b>neuen Container</b>. Aus 1 Image können viele Container laufen.</p><p>👉 Klicke noch einmal auf <b>docker run</b>. Klicke dann auf <b>wie in Java</b>.</p>'],
+      java: ['<p>Wie in Java: Das Image ist die <b>Klasse</b>, jeder Container ein <b>Objekt</b>. <code>docker run</code> entspricht <code>new Webserver()</code>.</p><p>👉 Klicke auf <b>docker rm</b>.</p>',
+        '<p>Das ist wie in Java: Das Image ist die <b>Klasse</b>. Jeder Container ist ein <b>Objekt</b>. <code>docker run</code> ist wie <code>new</code>.</p><p>👉 Klicke auf <b>docker rm</b>.</p>'],
+      rm: ['<p><code>docker rm</code> löscht einen Container. Das <b>Image bleibt</b> – du kannst jederzeit neue Container daraus bauen.</p>',
+        '<p><code>docker rm</code> löscht einen Container. Das <b>Image bleibt</b>. Du kannst daraus immer neue Container bauen.</p>']
+    },
+    run: {
+      s0: ['<p>Was passiert, wenn du <code>docker run hello-world</code> eintippst?</p><p>👉 Klicke auf <b>Schritt</b>.</p>',
+        '<p>Was passiert bei <code>docker run hello-world</code>?</p><p>👉 Klicke auf <b>Schritt</b>.</p>'],
+      s1: ['<p>① Du tippst den Befehl im <b>Client</b>. Der Client schickt ihn an den <b>Docker Daemon</b>, der im Hintergrund auf dem Host läuft.</p>',
+        '<p>① Du tippst den Befehl im <b>Client</b>. Der Client schickt ihn an den <b>Docker Daemon</b>. Der Daemon läuft auf dem Host.</p>'],
+      s2: ['<p>② Der Daemon sucht das Image <code>hello-world</code> auf dem Host. Es ist noch <b>nicht da</b>.</p>',
+        '<p>② Der Daemon sucht das Image <code>hello-world</code>. Es ist noch <b>nicht da</b>.</p>'],
+      s2da: ['<p>② Der Daemon sucht das Image. Diesmal ist es <b>schon da</b> – kein Download nötig.</p>',
+        '<p>② Der Daemon sucht das Image. Diesmal ist es <b>schon da</b>. Er muss nichts laden.</p>'],
+      s3: ['<p>③ Der Daemon lädt das Image aus der <b>Registry</b> herunter, hier von Docker Hub. Das heißt <b>pull</b>.</p>',
+        '<p>③ Der Daemon lädt das Image aus der <b>Registry</b>. Das heißt <b>pull</b>.</p>'],
+      s4: ['<p>④ Aus dem Image erstellt der Daemon einen <b>Container</b> und startet ihn.</p>',
+        '<p>④ Der Daemon macht aus dem Image einen <b>Container</b> und startet ihn.</p>'],
+      s5: ['<p>⑤ Die Ausgabe des Containers erscheint in deinem Terminal.</p><p>👉 Klicke auf <b>noch einmal</b>. Was ist beim zweiten Mal anders?</p>',
+        '<p>⑤ Die Ausgabe kommt in dein Terminal.</p><p>👉 Klicke auf <b>noch einmal</b>. Was ist beim 2. Mal anders?</p>'],
+      nochmal: ['<p>Jetzt startest du denselben Befehl ein zweites Mal.</p><p>👉 Klicke auf <b>Schritt</b>.</p>',
+        '<p>Jetzt kommt derselbe Befehl ein 2. Mal.</p><p>👉 Klicke auf <b>Schritt</b>.</p>'],
+      s5da: ['<p>⑤ Fertig – ohne pull, also schneller. Aus demselben Image gibt es jetzt <b>zwei</b> Container.</p>',
+        '<p>⑤ Fertig. Ohne pull geht es schneller. Aus 1 Image gibt es jetzt <b>2</b> Container.</p>']
+    },
+    leben: {
+      image: ['<p>Aus einem <b>Image</b> entsteht ein Container.</p><p>👉 Klicke auf <b>create</b> oder gleich auf <b>run</b>.</p>',
+        '<p>Aus einem <b>Image</b> entsteht ein Container.</p><p>👉 Klicke auf <b>create</b> oder auf <b>run</b>.</p>'],
+      created: ['<p><b>Created:</b> Der Container ist angelegt, läuft aber noch nicht. <code>docker ps -a</code> zeigt ihn schon, <code>docker ps</code> noch nicht.</p><p>👉 Klicke auf <b>start</b>.</p>',
+        '<p><b>Created:</b> Der Container ist da. Er läuft aber noch nicht. <code>docker ps -a</code> zeigt ihn schon.</p><p>👉 Klicke auf <b>start</b>.</p>'],
+      running: ['<p><b>Running:</b> Der Container läuft. Jetzt zeigt ihn auch <code>docker ps</code>. Übrigens: <code>docker run</code> = create + start.</p><p>👉 Klicke auf <b>stop</b>.</p>',
+        '<p><b>Running:</b> Der Container läuft. Jetzt zeigt ihn auch <code>docker ps</code>. <code>docker run</code> macht create und start auf einmal.</p><p>👉 Klicke auf <b>stop</b>.</p>'],
+      exited: ['<p><b>Exited:</b> Der Container ist gestoppt, aber <b>noch da</b>. Nur <code>docker ps -a</code> zeigt ihn. Mit <b>start</b> läuft er wieder.</p><p>👉 Klicke auf <b>rm</b>.</p>',
+        '<p><b>Exited:</b> Der Container ist gestoppt. Er ist aber <b>noch da</b>. Nur <code>docker ps -a</code> zeigt ihn.</p><p>👉 Klicke auf <b>rm</b>.</p>'],
+      removed: ['<p><b>Removed:</b> Erst <code>docker rm</code> löscht den Container. Jetzt zeigt ihn keine Liste mehr.</p><p>👉 Klicke auf <b>run</b> und dann auf <b>rm</b>.</p>',
+        '<p><b>Removed:</b> Erst <code>docker rm</code> löscht den Container. Jetzt ist er in keiner Liste mehr.</p><p>👉 Klicke auf <b>run</b>. Klicke dann auf <b>rm</b>.</p>'],
+      rmLaeuft: ['<p>Einen <b>laufenden</b> Container kannst du nicht einfach löschen. Stoppe ihn zuerst mit <b>stop</b> – oder erzwinge das Löschen mit <code>docker rm -f</code>.</p>',
+        '<p>Ein Container, der <b>läuft</b>, lässt sich nicht einfach löschen. Stoppe ihn zuerst mit <b>stop</b>. Oder lösche mit <code>docker rm -f</code>.</p>']
+    },
+    build: {
+      b0: ['<p>Im <b>Dockerfile</b> steht das Rezept: <code>FROM</code> nennt das Basis-Image, <code>COPY</code> kopiert eigene Dateien hinein.</p><p>👉 Klicke auf <b>Schritt</b>.</p>',
+        '<p>Im <b>Dockerfile</b> steht das Rezept. <code>FROM</code> ist das Basis-Image. <code>COPY</code> bringt eigene Dateien hinein.</p><p>👉 Klicke auf <b>Schritt</b>.</p>'],
+      b1: ['<p><b>Build:</b> <code>docker build</code> macht aus dem Dockerfile ein <b>Image</b>. Änderst du später eine Datei, musst du neu bauen.</p>',
+        '<p><b>Build:</b> <code>docker build</code> baut aus dem Dockerfile ein <b>Image</b>. Hast du eine Datei geändert? Dann musst du neu bauen.</p>'],
+      b2: ['<p><b>Ship:</b> <code>docker push</code> lädt das Image in eine <b>Registry</b> hoch, z. B. Docker Hub.</p>',
+        '<p><b>Ship:</b> <code>docker push</code> lädt das Image in eine <b>Registry</b>.</p>'],
+      b3: ['<p><code>docker pull</code> holt das Image aus der Registry auf einen anderen Rechner, z. B. auf den Server.</p>',
+        '<p><code>docker pull</code> holt das Image auf einen anderen Rechner, zum Beispiel auf den Server.</p>'],
+      b4: ['<p><b>Run:</b> <code>docker run</code> startet dort Container – genau so wie auf deinem Rechner.</p>',
+        '<p><b>Run:</b> <code>docker run</code> startet dort Container. Sie laufen genauso wie bei dir.</p>']
+    },
+    ports: {
+      start: ['<p>Ein Container ist von außen erst erreichbar, wenn du einen Port weiterleitest. <code>-p 8080:80</code> heißt: <b>Host-Port 8080</b> → <b>Container-Port 80</b>.</p><p>👉 Schalte <b>-p 8081:80</b> ein.</p>',
+        '<p>Von außen kommst du nur mit einer Weiterleitung an den Container. <code>-p 8080:80</code>: Links ist der Port vom <b>Host</b>, rechts der Port im <b>Container</b>.</p><p>👉 Schalte <b>-p 8081:80</b> an.</p>'],
+      zwei: ['<p>Beide Container nutzen innen Port 80. Auf dem Host brauchen sie aber <b>verschiedene</b> Ports: 8080 und 8081.</p><p>👉 Klicke auf <b>2× 8080</b>.</p>',
+        '<p>Innen haben beide Container Port 80. Auf dem Host brauchen sie <b>verschiedene</b> Ports: 8080 und 8081.</p><p>👉 Klicke auf <b>2× 8080</b>.</p>'],
+      konflikt: ['<p>Jeden Host-Port gibt es nur <b>einmal</b>. Ist 8080 schon belegt, meldet Docker <code>port is already allocated</code>.</p>',
+        '<p>Jeden Host-Port gibt es nur <b>1-mal</b>. Ist 8080 schon belegt, meldet Docker: <code>port is already allocated</code>.</p>'],
+      ohne: ['<p>Ohne <code>-p</code> ist der Container von außen <b>nicht erreichbar</b>. Der Browser findet ihn nicht.</p>',
+        '<p>Ohne <code>-p</code> kommst du von außen <b>nicht</b> an den Container. Der Browser findet ihn nicht.</p>']
+    },
+    daten: {
+      start: ['<p>Der Container schreibt in seine eigene <b>Container-Schicht</b> (<code>notiz.txt</code>). Daten im <b>Volume</b> und im <b>Ordner</b> liegen außerhalb.</p><p>👉 Klicke auf <b>docker rm</b>.</p>',
+        '<p>Der Container speichert in seiner eigenen <b>Schicht</b> (<code>notiz.txt</code>). Das <b>Volume</b> und der <b>Ordner</b> liegen außerhalb.</p><p>👉 Klicke auf <b>docker rm</b>.</p>'],
+      schreiben: ['<p>Neue Dateien landen in der Container-Schicht. Sie gehören nur diesem Container.</p><p>👉 Klicke auf <b>docker rm</b>.</p>',
+        '<p>Neue Dateien kommen in die Schicht vom Container. Sie gehören nur diesem Container.</p><p>👉 Klicke auf <b>docker rm</b>.</p>'],
+      rm: ['<p>Nach <code>docker rm</code> ist die Container-Schicht weg – wie ein <b>Hotelzimmer</b> nach dem Auszug. <b>Volume</b> (Schließfach) und <b>Ordner</b> bleiben.</p><p>👉 Klicke auf <b>neuer Container -v</b>.</p>',
+        '<p>Nach <code>docker rm</code> ist die Schicht weg. Das ist wie bei einem <b>Hotelzimmer</b> nach dem Auszug. Das <b>Volume</b> und der <b>Ordner</b> bleiben.</p><p>👉 Klicke auf <b>neuer Container -v</b>.</p>'],
+      neu: ['<p>Der neue Container bindet das Volume mit <code>-v</code> wieder ein: <code>hello.txt</code> ist noch da.</p><p>👉 Klicke auf <b>down -v</b>.</p>',
+        '<p>Der neue Container holt das Volume mit <code>-v</code> wieder dazu. <code>hello.txt</code> ist noch da.</p><p>👉 Klicke auf <b>down -v</b>.</p>'],
+      neuOhne: ['<p>Der neue Container startet mit leerer Schicht. Das Volume wurde gelöscht – seine Daten sind weg.</p>',
+        '<p>Der neue Container ist leer. Das Volume ist gelöscht. Seine Daten sind weg.</p>'],
+      downv: ['<p><code>docker compose down -v</code> löscht auch das <b>Named Volume</b>. Den <b>Ordner</b> <code>./export</code> auf dem Host löscht Docker nie.</p>',
+        '<p><code>down -v</code> löscht auch das <b>Volume</b>. Den <b>Ordner</b> <code>./export</code> auf dem Host löscht Docker nie.</p>']
+    },
+    compose: {
+      start: ['<p>In der <code>docker-compose.yml</code> stehen alle Dienste: hier <code>web</code> und <code>db</code>.</p><p>👉 Klicke auf <b>docker compose up -d</b>.</p>',
+        '<p>In der <code>docker-compose.yml</code> stehen alle Dienste: <code>web</code> und <code>db</code>.</p><p>👉 Klicke auf <b>docker compose up -d</b>.</p>'],
+      up: ['<p>Compose startet alle Dienste und legt ein <b>Netzwerk</b> an. Darin ist jeder Dienst unter seinem <b>Service-Namen</b> erreichbar – <code>db</code> wie im <b>Telefonbuch</b>.</p><p>👉 Schalte die <b>localhost-Falle</b> ein.</p>',
+        '<p>Compose startet alle Dienste und macht ein <b>Netzwerk</b>. Darin ist der <b>Service-Name</b> die Adresse, zum Beispiel <code>db</code>. Das ist wie ein <b>Telefonbuch</b>.</p><p>👉 Schalte die <b>localhost-Falle</b> an.</p>'],
+      falle: ['<p><code>localhost</code> ist im Container der <b>Container selbst</b>. Mit <code>localhost:5432</code> sucht <code>web</code> die Datenbank bei sich – und findet nichts.</p>',
+        '<p><code>localhost</code> im Container ist der <b>Container selbst</b>. Mit <code>localhost</code> sucht <code>web</code> die Datenbank bei sich. Dort ist sie nicht.</p>'],
+      down: ['<p><code>docker compose down</code> stoppt alle Dienste und entfernt Container und Netzwerk. Das Volume <code>pgdata</code> bleibt erhalten.</p>',
+        '<p><code>docker compose down</code> stoppt alle Dienste. Container und Netzwerk sind dann weg. Das Volume <code>pgdata</code> bleibt.</p>']
+    }
+  };
+
   /* ---------- 2 · Image und Container ---------- */
   function szKlasse(box, api) {
-    var d = buehne(box), namen = ['a', 'b', 'c', 'd'], n = 0, java = false;
+    var d = buehne(box), namen = ['a', 'b', 'c', 'd'], n = 0, java = false, letzte = 'start';
     var img = kasten('dk-img', 'Image <code>webserver</code>', L('Bauplan · read-only', 'Bauplan · nur lesen'));
     img.insertBefore(bild(BILD.bauplan()), img.firstChild);
     var cons = E('div', { class: 'dk-reihe', style: 'min-height:120px' });
@@ -205,10 +308,11 @@
       var z = [];
       for (var k = 0; k < n; k++) z.push(java ? 'Webserver ' + namen[k] + ' = new Webserver();' : '$ docker run -d --name ' + namen[k] + ' webserver');
       befehl.textContent = z.join('\n') || (java ? '// ' : '$ ') + '…';
+      erklaereSz('klasse', TX.klasse[letzte]);
     }
-    api.werkzeug({ icon: '▶', text: 'docker run', taste: 'r', aktion: function () { if (n < namen.length) { n++; zeichne(); } } });
-    api.werkzeug({ icon: '🗑', text: 'docker rm', taste: 'x', aktion: function () { if (n) { n--; zeichne(); } } });
-    api.werkzeug({ icon: '☕', text: L('wie in Java', 'wie in Java'), taste: 'j', typ: 'schalter', aktion: function (an) { java = an; zeichne(); } });
+    api.werkzeug({ icon: '▶', text: 'docker run', taste: 'r', aktion: function () { if (n < namen.length) { n++; letzte = java ? 'java' : 'run'; zeichne(); } } });
+    api.werkzeug({ icon: '🗑', text: 'docker rm', taste: 'x', aktion: function () { if (n) { n--; letzte = 'rm'; zeichne(); } } });
+    api.werkzeug({ icon: '☕', text: L('wie in Java', 'wie in Java'), taste: 'j', typ: 'schalter', aktion: function (an) { java = an; letzte = an ? 'java' : (n ? 'run' : 'start'); zeichne(); } });
     zeichne();
     return {};
   }
@@ -247,6 +351,7 @@
       var t = texte[schritt][0];
       if (schritt === 2) t += hatImg ? ' <span class="dk-ok">✓ ' + L('ja – kein pull nötig', 'ja – kein pull') + '</span>' : ' <span class="dk-bad">✗ ' + L('nicht vorhanden', 'nicht da') + '</span>';
       info.innerHTML = t || '<span class="dk-etikett">' + L('▶ Schritt drücken', '▶ Schritt drücken') + '</span>';
+      erklaereSz('run', TX.run[schritt === 0 ? (schonDa ? 'nochmal' : 's0') : (schonDa && (schritt === 2 || schritt === 5)) ? 's' + schritt + 'da' : 's' + schritt]);
     }
     api.werkzeug({ icon: '▶', text: L('Schritt', 'Schritt'), taste: 's', aktion: function () {
       if (schritt >= 5) return;
@@ -269,7 +374,8 @@
     var meld = E('div', { class: 'dk-gross', 'aria-live': 'polite' });
     d.appendChild(E('div', { class: 'dk-reihe' }, [ps, psa]));
     d.appendChild(meld);
-    function zeichne(m) {
+    function zeichne(m, key) {
+      erklaereSz('leben', TX.leben[key || zustand]);
       Object.keys(Z).forEach(function (k) { Z[k].classList.toggle('dk-an', k === zustand); });
       var zeile = 'web  ' + ({ created: 'Created', running: 'Up 3 seconds', exited: 'Exited (0)' }[zustand] || '');
       ps.querySelector('.dk-liste').textContent = zustand === 'running' ? zeile : L('(leer)', '(leer)');
@@ -281,7 +387,7 @@
     api.werkzeug({ icon: '▶', text: 'start', taste: 's', aktion: geh(['created', 'exited'], 'running', L('Erst create ausführen', 'Zuerst create')) });
     api.werkzeug({ icon: '⏹', text: 'stop', taste: 't', aktion: geh(['running'], 'exited', L('Läuft gerade nicht', 'Läuft nicht')) });
     api.werkzeug({ icon: '🗑', text: 'rm', taste: 'x', aktion: function () {
-      if (zustand === 'running') return zeichne('<span class="dk-bad">✗ ' + L('läuft noch – erst stop oder rm -f', 'läuft noch – erst stop oder rm -f') + '</span>');
+      if (zustand === 'running') return zeichne('<span class="dk-bad">✗ ' + L('läuft noch – erst stop oder rm -f', 'läuft noch – erst stop oder rm -f') + '</span>', 'rmLaeuft');
       geh(['created', 'exited'], 'removed', L('Es gibt keinen Container', 'Es gibt keinen Container'))();
     } });
     api.werkzeug({ icon: '🚀', text: 'run = create + start', taste: 'r', aktion: geh(['image', 'removed'], 'running', L('Es gibt den Container schon', 'Den Container gibt es schon')) });
@@ -313,6 +419,7 @@
       teile.forEach(function (t, i) { t.classList.toggle('dk-aus', i >= schritt); t.classList.toggle('dk-an', i === schritt - 1); });
       p.forEach(function (t, i) { t.classList.toggle('dk-aus', i >= schritt); });
       info.innerHTML = schritt ? '<code>' + texte[schritt] + '</code>' : '<span class="dk-etikett">' + L('▶ Schritt drücken', '▶ Schritt drücken') + '</span>';
+      erklaereSz('build', TX.build['b' + schritt]);
     }
     api.werkzeug({ icon: '▶', text: L('Schritt', 'Schritt'), taste: 's', aktion: function () { if (schritt < 4) { schritt++; zeichne(); } } });
     api.werkzeug({ icon: '↺', text: L('von vorn', 'von vorn'), taste: 'r', aktion: function () { schritt = 0; zeichne(); } });
@@ -335,6 +442,7 @@
       return E('div', { class: 'dk-reihe', style: 'flex-wrap:nowrap' }, [browser, pfeil(an ? '➜' : '✗'), hp, pfeil(an ? '➜' : '·'), con]);
     }
     function zeichne() {
+      erklaereSz('ports', TX.ports[konflikt ? 'konflikt' : !A ? 'ohne' : B ? 'zwei' : 'start']);
       wrap.innerHTML = '';
       wrap.appendChild(zeile('localhost:8080', A, A ? '8080' : '', 'steckbrief'));
       wrap.appendChild(zeile('localhost:8081', B, B ? '8081' : '', 'steckbrief2'));
@@ -354,7 +462,8 @@
     var meld = E('div', { class: 'dk-gross', 'aria-live': 'polite' });
     d.appendChild(E('div', { class: 'dk-reihe' }, [conEl, pfeil('⇄', '-v'), E('div', { class: 'dk-spalte' }, [volEl, bindEl])]));
     d.appendChild(meld);
-    function zeichne(m) {
+    function zeichne(m, key) {
+      erklaereSz('daten', TX.daten[key || 'start']);
       conEl.innerHTML = ''; volEl.innerHTML = ''; bindEl.innerHTML = '';
       if (con) conEl.appendChild(E('div', { class: 'dk-spalte' }, [
         bild(BILD.bett()), E('div', { class: 'dk-etikett', text: L('Container ', 'Container ') + con + ' ≈ ' + L('Hotelzimmer', 'Hotelzimmer') }),
@@ -367,10 +476,10 @@
       bindEl.firstChild.insertBefore(bild(BILD.ordner()), bindEl.firstChild.firstChild);
       meld.innerHTML = m || '';
     }
-    api.werkzeug({ icon: '✍️', text: L('Datei schreiben', 'Datei schreiben'), taste: 'w', aktion: function () { if (!con) return zeichne(); if (schicht.indexOf('ping') < 0) schicht.push('ping'); zeichne(); } });
-    api.werkzeug({ icon: '🗑', text: 'docker rm', taste: 'x', aktion: function () { if (!con) return; con = 0; zeichne('<span class="dk-bad">' + L('notiz.txt ist weg', 'notiz.txt ist weg') + '</span> · <span class="dk-ok">hello.txt ' + L('bleibt', 'bleibt') + '</span>'); } });
-    api.werkzeug({ icon: '▶', text: L('neuer Container -v', 'neuer Container -v'), taste: 'n', aktion: function () { if (con) return; con = 2; schicht = []; zeichne(vol ? '<span class="dk-ok">hello.txt ' + L('ist noch da!', 'ist noch da!') + '</span>' : ''); } });
-    api.werkzeug({ icon: '💣', text: 'down -v', taste: 'v', aktion: function () { con = 0; vol = false; schicht = []; zeichne('<span class="dk-bad">Volume ' + L('gelöscht', 'gelöscht') + '</span> · <span class="dk-ok">./export ' + L('bleibt', 'bleibt') + '</span>'); } });
+    api.werkzeug({ icon: '✍️', text: L('Datei schreiben', 'Datei schreiben'), taste: 'w', aktion: function () { if (!con) return; if (schicht.indexOf('ping') < 0) schicht.push('ping'); zeichne('', 'schreiben'); } });
+    api.werkzeug({ icon: '🗑', text: 'docker rm', taste: 'x', aktion: function () { if (!con) return; con = 0; zeichne('<span class="dk-bad">' + L('notiz.txt ist weg', 'notiz.txt ist weg') + '</span> · <span class="dk-ok">hello.txt ' + L('bleibt', 'bleibt') + '</span>', 'rm'); } });
+    api.werkzeug({ icon: '▶', text: L('neuer Container -v', 'neuer Container -v'), taste: 'n', aktion: function () { if (con) return; con = 2; schicht = []; zeichne(vol ? '<span class="dk-ok">hello.txt ' + L('ist noch da!', 'ist noch da!') + '</span>' : '', vol ? 'neu' : 'neuOhne'); } });
+    api.werkzeug({ icon: '💣', text: 'down -v', taste: 'v', aktion: function () { con = 0; vol = false; schicht = []; zeichne('<span class="dk-bad">Volume ' + L('gelöscht', 'gelöscht') + '</span> · <span class="dk-ok">./export ' + L('bleibt', 'bleibt') + '</span>', 'downv'); } });
     api.werkzeug({ icon: '↺', text: L('von vorn', 'von vorn'), taste: 'r', aktion: function () { con = 1; schicht = ['notiz.txt']; vol = true; zeichne(); } });
     zeichne();
     return {};
@@ -378,11 +487,12 @@
 
   /* ---------- 8 · Compose: Namen statt IP-Adressen ---------- */
   function szCompose(box, api) {
-    var d = buehne(box), oben = false, falle = false;
+    var d = buehne(box), oben = false, falle = false, runter = false;
     var datei = E('div', { class: 'dk-code', text: 'services:\n  web:\n    build: .\n    ports:\n      - "8080:80"\n    environment:\n      DB_HOST: db\n  db:\n    image: postgres:16-alpine\n    volumes:\n      - pgdata:/var/lib/postgresql/data\nvolumes:\n  pgdata:' });
     var netz = E('div', { class: 'dk-net dk-spalte', style: 'min-width:340px' });
     d.appendChild(E('div', { class: 'dk-reihe' }, [datei, pfeil('➜', 'up -d'), netz]));
     function zeichne() {
+      erklaereSz('compose', TX.compose[oben ? (falle ? 'falle' : 'up') : (runter ? 'down' : 'start')]);
       netz.innerHTML = '';
       netz.appendChild(E('div', { class: 'dk-etikett', html: '🔗 ' + L('Netzwerk', 'Netzwerk') + ' <code>projekt_default</code>' }));
       if (!oben) { netz.appendChild(E('div', { class: 'dk-etikett', style: 'padding:30px 0', text: L('noch nichts gestartet', 'noch nichts gestartet') })); return; }
@@ -396,9 +506,9 @@
       netz.lastChild.firstChild.style.width = 'auto';
       netz.appendChild(kasten('dk-vol', '🔒 pgdata'));
     }
-    api.werkzeug({ icon: '▶', text: 'docker compose up -d', taste: 'u', aktion: function () { oben = true; zeichne(); } });
+    api.werkzeug({ icon: '▶', text: 'docker compose up -d', taste: 'u', aktion: function () { oben = true; runter = false; zeichne(); } });
     api.werkzeug({ icon: '🪤', text: L('localhost-Falle', 'localhost-Falle'), taste: 'l', typ: 'schalter', aktion: function (an) { falle = an; if (!oben) oben = true; zeichne(); } });
-    api.werkzeug({ icon: '⏹', text: 'docker compose down', taste: 'd', aktion: function () { oben = false; zeichne(); } });
+    api.werkzeug({ icon: '⏹', text: 'docker compose down', taste: 'd', aktion: function () { oben = false; runter = true; zeichne(); } });
     zeichne();
     return {};
   }
@@ -410,19 +520,19 @@
       { id: 'wohnen', titel: 'Wie wohnen Apps?', station: 'S1', zeichne: szWohnen,
         erklaerung: '<p><b>Bare Metal:</b> Alle Programme laufen direkt auf einem einzigen Betriebssystem.</p><p><b>Problem:</b> App A braucht Python 3.8, App B braucht Python 3.12. Die beiden kommen sich in die Quere. Das ist wie in einer <b>WG mit nur einem Raum</b>.</p><p>👉 Klicke auf <b>VM</b>.</p>' },
       { id: 'klasse', titel: 'Image und Container', station: 'S1', zeichne: szKlasse,
-        erklaerung: '<p>Ein <b>Image</b> ist ein Bauplan mit Programm, Bibliotheken und Einstellungen. Es ist schreibgeschützt.</p><p>Jedes <code>docker run</code> baut daraus einen neuen <b>Container</b> – so wie <code>new</code> aus einer Klasse ein Objekt erzeugt.</p><p><code>docker rm</code> löscht einen Container; das Image bleibt.</p><p>👉 Klicke mehrmals auf <b>docker run</b> und dann auf <b>wie in Java</b>.</p>' },
+        erklaerung: '<p>Ein <b>Image</b> ist ein Bauplan: Programm, Bibliotheken und Einstellungen. Es ist schreibgeschützt.</p><p>👉 Klicke auf <b>docker run</b>.</p>' },
       { id: 'run', titel: 'Was passiert bei docker run?', station: 'S1', zeichne: szRun,
-        erklaerung: '<p>Der <b>Client</b> (<code>docker</code> im Terminal) schickt deinen Befehl an den <b>Docker Daemon</b> auf dem Host.</p><p>Fehlt das Image, lädt der Daemon es aus der <b>Registry</b> herunter, z. B. von Docker Hub (<b>pull</b>). Dann startet er den Container.</p><p>Beim zweiten Mal ist das Image schon da, und der Start geht schneller.</p><p>👉 Klicke fünfmal auf <b>Schritt</b> und dann auf <b>noch einmal</b>.</p>' },
+        erklaerung: '<p>Was passiert, wenn du <code>docker run hello-world</code> eintippst?</p><p>👉 Klicke auf <b>Schritt</b>.</p>' },
       { id: 'leben', titel: 'Lebenszyklus eines Containers', station: 'S1', zeichne: szLeben,
-        erklaerung: '<p>Ein Container ist zuerst <b>Created</b>, dann <b>Running</b>. Nach <code>docker stop</code> ist er <b>Exited</b>: gestoppt, aber noch vorhanden. Erst <code>docker rm</code> löscht ihn.</p><p><code>docker ps</code> zeigt nur laufende Container, <code>docker ps -a</code> zeigt alle.</p><p>👉 Klicke auf <b>run</b>, <b>stop</b> und <b>rm</b> und beobachte die Listen.</p>' },
+        erklaerung: '<p>Aus einem <b>Image</b> entsteht ein Container.</p><p>👉 Klicke auf <b>create</b> oder gleich auf <b>run</b>.</p>' },
       { id: 'build', titel: 'Build · Ship · Run', station: 'S2', zeichne: szBuild,
-        erklaerung: '<p>Im <b>Dockerfile</b> steht das Rezept: <code>FROM</code> nennt das Basis-Image, <code>COPY</code> kopiert eigene Dateien hinein.</p><p><b>Build:</b> <code>docker build</code> macht daraus ein Image. <b>Ship:</b> Mit <code>push</code> und <code>pull</code> kommt es über die Registry auf andere Rechner. <b>Run:</b> <code>docker run</code> startet dort Container.</p><p>Änderst du eine Datei, musst du das Image neu bauen.</p><p>👉 Klicke viermal auf <b>Schritt</b>.</p>' },
+        erklaerung: '<p>Im <b>Dockerfile</b> steht das Rezept: <code>FROM</code> nennt das Basis-Image, <code>COPY</code> kopiert eigene Dateien hinein.</p><p>👉 Klicke auf <b>Schritt</b>.</p>' },
       { id: 'ports', titel: 'Port-Mapping', station: 'S2', zeichne: szPorts,
-        erklaerung: '<p>Ein Container ist von außen erst erreichbar, wenn du einen Port weiterleitest.</p><p><code>-p 8080:80</code> heißt: <b>Host-Port 8080</b> → <b>Container-Port 80</b>. Im Browser öffnest du dann <code>localhost:8080</code>.</p><p>Jeden Host-Port gibt es nur <b>einmal</b>. Ein zweiter Container braucht z. B. <code>-p 8081:80</code>.</p><p>👉 Schalte <b>-p 8081:80</b> ein und klicke auf <b>2× 8080</b>.</p>' },
+        erklaerung: '<p>Ein Container ist von außen erst erreichbar, wenn du einen Port weiterleitest. <code>-p 8080:80</code> heißt: <b>Host-Port 8080</b> → <b>Container-Port 80</b>.</p><p>👉 Schalte <b>-p 8081:80</b> ein.</p>' },
       { id: 'daten', titel: 'Container vergessen alles', station: 'S3', zeichne: szDaten,
-        erklaerung: '<p>Was ein Container selbst speichert, ist nach <code>docker rm</code> weg – wie bei einem <b>Hotelzimmer</b> nach dem Auszug.</p><p>Damit Daten bleiben, bindest du sie mit <code>-v</code> ein:</p><ul><li><b>Named Volume</b> (<code>meine-daten:/daten</code>): Docker verwaltet den Speicher – wie ein <b>Schließfach</b>.</li><li><b>Bind Mount</b> (<code>./export:/app/export</code>): ein normaler <b>Ordner</b> auf dem Host.</li></ul><p><code>docker compose down -v</code> löscht Named Volumes, einen Ordner auf dem Host aber nie.</p><p>👉 Klicke auf <b>docker rm</b>, <b>neuer Container -v</b> und <b>down -v</b>.</p>' },
+        erklaerung: '<p>Der Container schreibt in seine eigene <b>Container-Schicht</b> (<code>notiz.txt</code>). Daten im <b>Volume</b> und im <b>Ordner</b> liegen außerhalb.</p><p>👉 Klicke auf <b>docker rm</b>.</p>' },
       { id: 'compose', titel: 'Compose: Namen statt IP-Adressen', station: 'S4', zeichne: szCompose,
-        erklaerung: '<p><b>Docker Compose</b> startet mehrere Container aus einer Datei, der <code>docker-compose.yml</code>, mit <code>docker compose up -d</code>.</p><p>Im gemeinsamen Netzwerk ist jeder Dienst unter seinem <b>Service-Namen</b> erreichbar, z. B. <code>db</code> – wie in einem <b>Telefonbuch</b>.</p><p><b>Vorsicht:</b> <code>localhost</code> ist im Container der Container selbst, nicht die Datenbank.</p><p>👉 Klicke auf <b>docker compose up -d</b> und dann auf <b>localhost-Falle</b>.</p>' }
+        erklaerung: '<p>In der <code>docker-compose.yml</code> stehen alle Dienste: hier <code>web</code> und <code>db</code>.</p><p>👉 Klicke auf <b>docker compose up -d</b>.</p>' }
     ]
   };
 
