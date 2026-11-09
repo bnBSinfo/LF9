@@ -279,6 +279,20 @@
       downv: ['<p><code>docker compose down -v</code> löscht auch das <b>Named Volume</b>. Den <b>Ordner</b> <code>./export</code> auf dem Host löscht Docker nie.</p>',
         '<p><code>down -v</code> löscht auch das <b>Volume</b>. Den <b>Ordner</b> <code>./export</code> auf dem Host löscht Docker nie.</p>']
     },
+    netz: {
+      start: ['<p>Zwei Container laufen einzeln: <code>web</code> und <code>db</code>. Ohne gemeinsames Netzwerk findet <code>web</code> die Datenbank <b>nicht über ihren Namen</b>.</p><p>👉 Klicke auf <b>network create</b>.</p>',
+        '<p>Zwei Container laufen allein: <code>web</code> und <code>db</code>. Ohne gemeinsames Netzwerk findet <code>web</code> die Datenbank <b>nicht</b> über ihren Namen.</p><p>👉 Klicke auf <b>network create</b>.</p>'],
+      netz: ['<p>Ein <b>Netzwerk</b> ist wie ein gemeinsamer Flur: Nur wer daran wohnt, kann sich besuchen. Das Netzwerk ist jetzt da, aber noch leer.</p><p>👉 Klicke auf <b>--network netz</b>.</p>',
+        '<p>Ein <b>Netzwerk</b> ist wie ein gemeinsamer Flur. Nur wer am Flur wohnt, kann sich besuchen. Der Flur ist jetzt da, aber noch leer.</p><p>👉 Klicke auf <b>--network netz</b>.</p>'],
+      drin: ['<p>Beide Container hängen jetzt im selben Netzwerk. <code>web</code> erreicht <code>db</code> über ihren <b>Namen</b>. Von außen kommt aber noch niemand an <code>web</code>.</p><p>👉 Schalte <b>-p 8080:80</b> ein.</p>',
+        '<p>Beide Container sind jetzt im selben Netzwerk. <code>web</code> findet <code>db</code> über ihren <b>Namen</b>. Von außen kommt aber noch niemand an <code>web</code>.</p><p>👉 Schalte <b>-p 8080:80</b> an.</p>'],
+      fertig: ['<p>Mit <code>-p 8080:80</code> ist <code>web</code> von außen erreichbar. <code>db</code> hat keinen Port nach außen: Sie ist <b>nur im Netzwerk</b> erreichbar – das ist sicherer.</p><p>👉 Klicke auf <b>compose up -d</b>.</p>',
+        '<p>Mit <code>-p 8080:80</code> kommt der Browser an <code>web</code>. <code>db</code> hat keinen Port nach außen. Sie ist <b>nur im Netzwerk</b> erreichbar. Das ist sicherer.</p><p>👉 Klicke auf <b>compose up -d</b>.</p>'],
+      portOhneNetz: ['<p>Der Browser erreicht <code>web</code> jetzt, aber <code>web</code> findet die Datenbank nicht: Die beiden hängen in <b>keinem gemeinsamen Netzwerk</b>.</p>',
+        '<p>Der Browser kommt an <code>web</code>. Aber <code>web</code> findet die Datenbank nicht. Die beiden sind in <b>keinem gemeinsamen Netzwerk</b>.</p>'],
+      compose: ['<p><b>Compose</b> macht das alles automatisch: Es legt das Netzwerk <code>projekt_default</code> an, hängt alle Dienste hinein und öffnet nur die Ports, die unter <code>ports:</code> stehen.</p>',
+        '<p><b>Compose</b> macht das alles von selbst. Es legt das Netzwerk <code>projekt_default</code> an. Es bringt alle Dienste hinein. Es öffnet nur die Ports unter <code>ports:</code>.</p>']
+    },
     compose: {
       start: ['<p>In der <code>docker-compose.yml</code> stehen alle Dienste: hier <code>web</code> und <code>db</code>.</p><p>👉 Klicke auf <b>docker compose up -d</b>.</p>',
         '<p>In der <code>docker-compose.yml</code> stehen alle Dienste: <code>web</code> und <code>db</code>.</p><p>👉 Klicke auf <b>docker compose up -d</b>.</p>'],
@@ -513,6 +527,56 @@
     return {};
   }
 
+  /* ---------- 9 · Netzwerk: Wer erreicht wen? ---------- */
+  function szNetz(box, api) {
+    var d = buehne(box), netz = false, drin = false, ports = false, compose = false, meldung = '';
+    var aussen = E('div', { class: 'dk-spalte' }), host = E('div', { class: 'dk-box dk-os', style: 'min-width:380px' });
+    var befehle = E('div', { class: 'dk-code', style: 'font-size:.9rem;min-width:30em' });
+    var meld = E('div', { class: 'dk-gross', 'aria-live': 'polite' });
+    d.appendChild(E('div', { class: 'dk-reihe dk-nw', style: 'align-items:center' }, [aussen, pfeil('➜'), host]));
+    d.appendChild(befehle); d.appendChild(meld);
+    function zustand() { return compose ? 'compose' : (ports && !drin) ? 'portOhneNetz' : (drin && ports) ? 'fertig' : drin ? 'drin' : netz ? 'netz' : 'start'; }
+    function zeichne() {
+      erklaereSz('netz', TX.netz[zustand()]);
+      var name = compose ? 'projekt_default' : 'netz';
+      aussen.innerHTML = '';
+      aussen.appendChild(E('div', { class: 'dk-etikett', text: L('außen: Browser', 'außen: Browser') }));
+      aussen.appendChild(kasten('', '🌐 <code>localhost:8080</code>', ports ? '<span class="dk-ok">✓ web</span>' : '<span class="dk-bad">✗ ' + L('nicht erreichbar', 'nicht erreichbar') + '</span>'));
+      aussen.appendChild(kasten('', '🌐 <code>localhost:5432</code>', '<span class="dk-bad">✗ db ' + L('nur intern', 'nur innen') + '</span>'));
+      host.innerHTML = '';
+      host.appendChild(E('b', { html: '🖥️ Host' + (ports ? ' · <span style="color:var(--ok)">Port 8080 → web:80</span>' : '') }));
+      var web = kasten('dk-con', '📦 web', ':80'), db = kasten('dk-con', '🐘 db', ':5432');
+      if (drin) {
+        var n = E('div', { class: 'dk-net dk-spalte', style: 'margin-top:8px' }, [E('div', { class: 'dk-etikett', html: '🔗 ' + L('Netzwerk', 'Netzwerk') + ' <code>' + name + '</code>' }), web,
+          E('div', { class: 'dk-gross dk-ok', html: '<code>db:5432</code> ↓ ✓' }), db]);
+        host.appendChild(n);
+      } else {
+        host.appendChild(E('div', { class: 'dk-reihe dk-nw', style: 'margin-top:8px;align-items:center' }, [web, E('div', { class: 'dk-gross dk-bad', html: '<code>db</code> ?<br>✗' }), db]));
+        if (netz) host.appendChild(E('div', { class: 'dk-net', style: 'margin-top:8px;min-height:60px' }, [E('div', { class: 'dk-etikett', html: '🔗 ' + L('Netzwerk', 'Netzwerk') + ' <code>' + name + '</code> · ' + L('leer', 'leer') }) ]));
+      }
+      var z = [];
+      if (compose) z = ['services:', '  web:', '    ports:', '      - "8080:80"', '  db:', '    image: postgres:16-alpine', '    # ' + L('kein ports: – nur intern erreichbar', 'kein ports: – nur innen erreichbar'), '# ' + L('Netzwerk legt Compose selbst an', 'Netzwerk macht Compose selbst')];
+      else {
+        if (netz) z.push('$ docker network create netz');
+        z.push('$ docker run -d --name db' + (drin ? ' --network netz' : '') + ' postgres:16-alpine');
+        z.push('$ docker run -d --name web' + (drin ? ' --network netz' : '') + (ports ? ' -p 8080:80' : '') + ' web');
+      }
+      befehle.textContent = z.join('\n');
+      meld.innerHTML = meldung; meldung = '';
+    }
+    api.werkzeug({ icon: '🔗', text: 'network create', taste: 'n', aktion: function () { if (!compose) { netz = true; zeichne(); } } });
+    api.werkzeug({ icon: '🔌', text: '--network netz', taste: 'a', aktion: function () {
+      if (compose) return;
+      if (!netz) { meldung = '<span class="dk-bad">✗ ' + L('Erst muss es das Netzwerk geben: network create', 'Zuerst network create') + '</span>'; return zeichne(); }
+      drin = true; zeichne();
+    } });
+    var pSchalter = api.werkzeug({ icon: '🌐', text: '-p 8080:80', taste: 'p', typ: 'schalter', aktion: function (an) { if (compose) return true; ports = an; zeichne(); } });
+    api.werkzeug({ icon: '🐙', text: 'compose up -d', taste: 'k', aktion: function () { compose = netz = drin = ports = true; pSchalter.setze(true); zeichne(); } });
+    api.werkzeug({ icon: '↺', text: L('von vorn', 'von vorn'), taste: 'r', aktion: function () { compose = netz = drin = ports = false; pSchalter.setze(false); zeichne(); } });
+    zeichne();
+    return {};
+  }
+
   PAKET.tafel = {
     titel: 'So funktioniert Docker',
     dauer: '20 Minuten',
@@ -532,7 +596,9 @@
       { id: 'daten', titel: 'Container vergessen alles', station: 'S3', zeichne: szDaten,
         erklaerung: '<p>Der Container schreibt in seine eigene <b>Container-Schicht</b> (<code>notiz.txt</code>). Daten im <b>Volume</b> und im <b>Ordner</b> liegen außerhalb.</p><p>👉 Klicke auf <b>docker rm</b>.</p>' },
       { id: 'compose', titel: 'Compose: Namen statt IP-Adressen', station: 'S4', zeichne: szCompose,
-        erklaerung: '<p>In der <code>docker-compose.yml</code> stehen alle Dienste: hier <code>web</code> und <code>db</code>.</p><p>👉 Klicke auf <b>docker compose up -d</b>.</p>' }
+        erklaerung: '<p>In der <code>docker-compose.yml</code> stehen alle Dienste: hier <code>web</code> und <code>db</code>.</p><p>👉 Klicke auf <b>docker compose up -d</b>.</p>' },
+      { id: 'netz', titel: 'Netzwerk: Wer erreicht wen?', station: 'S4', zeichne: szNetz,
+        erklaerung: '<p>Zwei Container laufen einzeln: <code>web</code> und <code>db</code>. Ohne gemeinsames Netzwerk findet <code>web</code> die Datenbank <b>nicht über ihren Namen</b>.</p><p>👉 Klicke auf <b>network create</b>.</p>' }
     ]
   };
 
