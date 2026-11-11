@@ -274,7 +274,7 @@ PAKET.nachweis = {
   dauer: '45 Minuten',
   einleitung: 'Heute bist du allein beim neuen Kunden: der Schülerzeitung <b>Lechpost</b>. Ich bin nicht da – kein Regelbuch, keine Tipps, keine Erklärungen zu Fehlermeldungen. <b>Teil A und Teil B müssen jeweils mindestens 80 % erreichen.</b> Als Ergebnis zählt der kleinere der beiden Werte.',
   teilA: { titel: 'Raum „Redaktion“ – die Lechpost geht online', figur: 'redaktion',
-    auftrag: 'Bring die Webseite der Schülerzeitung unter <code>http://localhost:8088</code> zum Laufen: Ergänze die <code>docker-compose.yml</code> und starte sie im Terminal. Notiere vorher, wie viele Container es auf dem Server schon gibt. Danach bearbeitest du die zwei Tickets.',
+    auftrag: 'Die Webseite der Schülerzeitung soll unter <code>http://localhost:8088</code> laufen.<br>1. <b>Zähle</b> die Container, die es auf dem Server schon gibt.<br>2. <b>Ergänze</b> die <code>docker-compose.yml</code>.<br>3. <b>Starte</b> die Webseite im Terminal.<br>4. <b>Bearbeite</b> die zwei Tickets.',
     interaktion: redaktion },
   teilB: { proLZ: 2 }
 };

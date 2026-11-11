@@ -58,7 +58,7 @@
         kachel(170, 180, 110, 40, GRUEN[0], GRUEN[1], 'App A', -9) + kachel(310, 190, 110, 40, BLAU[0], BLAU[1], 'App B', 7) + kachel(235, 214, 110, 40, GELB[0], GELB[1], 'App C', -3) +
         balken(135, 265, 330, 34, '#475569', L('ein Betriebssystem für alle', 'ein Betriebssystem für alle')) +
         balken(110, 299, 380, 34, '#1e293b', 'Hardware'),
-        L('Ein Haus mit einem Raum, drei Apps darin', 'Ein Haus mit einem Raum, drei Apps darin'));
+        L('Ein Haus mit einem Raum, drei Apps darin', '1 Haus mit 1 Raum und 3 Apps'));
     },
     /* Reihenhäuser: jedes Haus mit Dach, Schornstein (eigene Heizung) und eigenem Fundament */
     reihenhaus: function () {
@@ -74,7 +74,7 @@
           '<text x="' + (x + 65) + '" y="276" font-size="15" fill="#475569" ' + TXT + '>🔥 ' + L('eigene Heizung', 'eigene Heizung') + '</text>';
       });
       return svg('0 0 600 350', '640px', h + balken(60, 284, 480, 30, '#94a3b8', 'Hypervisor') + balken(40, 314, 520, 34, '#1e293b', L('Host-Betriebssystem · Hardware', 'Host-Betriebssystem · Hardware')),
-        L('Drei Reihenhäuser, jedes mit eigenem Fundament und eigener Heizung', 'Drei Reihenhäuser, jedes mit eigenem Fundament'));
+        L('Drei Reihenhäuser, jedes mit eigenem Fundament und eigener Heizung', '3 Reihenhäuser, jedes mit eigenem Fundament'));
     },
     /* Mehrfamilienhaus: drei Wohnungen, eigene Türen, ein gemeinsames Fundament */
     mehrfamilienhaus: function () {
@@ -85,7 +85,7 @@
         h += kachel(204, y + 8, 120, 40, a[1][0], a[1][1], a[0]) + '<rect x="350" y="' + (y + 2) + '" width="34" height="54" rx="3" fill="#94a3b8"/><circle cx="377" cy="' + (y + 31) + '" r="3" fill="#334155"/>';
       });
       return svg('0 0 600 340', '620px', h + balken(170, 232, 260, 32, '#2563eb', 'Docker Engine') + balken(140, 264, 320, 36, '#e11d48', L('gemeinsamer Linux-Kernel', 'gemeinsamer Linux-Kernel')) + balken(110, 300, 380, 36, '#1e293b', 'Hardware'),
-        L('Ein Mehrfamilienhaus mit drei Wohnungen auf einem Fundament', 'Ein Haus mit drei Wohnungen auf einem Fundament'));
+        L('Ein Mehrfamilienhaus mit drei Wohnungen auf einem Fundament', '1 Haus mit 3 Wohnungen auf 1 Fundament'));
     },
     /* Schiff mit lauter gleich großen Containern */
     schiff: function () {
@@ -149,7 +149,7 @@
       vm: ['<p><b>VM:</b> Jede App bekommt einen eigenen virtuellen Rechner mit <b>eigenem Betriebssystem</b>. So sind die Apps sauber getrennt.</p><p><b>Nachteil:</b> Jede VM braucht viel Speicher und startet langsam. Das ist wie bei <b>Reihenhäusern</b> mit eigener Heizung.</p><p>👉 Klicke auf <b>Container</b>.</p>',
         '<p><b>VM:</b> Jede App bekommt einen eigenen Rechner aus Software. Jeder hat ein <b>eigenes Betriebssystem</b>. So sind die Apps getrennt.</p><p><b>Nachteil:</b> Das braucht viel Speicher. Der Start dauert lange. Das ist wie bei <b>Reihenhäusern</b> mit eigener Heizung.</p><p>👉 Klicke auf <b>Container</b>.</p>'],
       container: ['<p><b>Container:</b> Ein Container enthält nur die App und ihre Bibliotheken, aber <b>kein eigenes Betriebssystem</b>. Alle Container teilen sich den Linux-Kernel des Hosts.</p><p><b>Vorteil:</b> Container sind klein und starten in Sekunden. Das ist wie bei <b>Wohnungen in einem Mehrfamilienhaus</b>.</p><p>👉 Klicke auf <b>Schiffscontainer</b>.</p>',
-        '<p><b>Container:</b> Ein Container hat nur die App und ihre Bibliotheken. Er hat <b>kein eigenes Betriebssystem</b>. Alle Container teilen sich den Kern vom Host.</p><p><b>Vorteil:</b> Container sind klein. Sie starten in Sekunden. Das ist wie bei <b>Wohnungen in einem Haus</b>.</p><p>👉 Klicke auf <b>Schiffscontainer</b>.</p>'],
+        '<p><b>Container:</b> Ein Container hat nur die App und ihre Bibliotheken. Der Container hat <b>kein eigenes Betriebssystem</b>. Alle Container teilen sich den Kern vom Host.</p><p><b>Vorteil:</b> Container sind klein. Sie starten in Sekunden. Das ist wie bei <b>Wohnungen in einem Haus</b>.</p><p>👉 Klicke auf <b>Schiffscontainer</b>.</p>'],
       schiff: ['<p>Schiffscontainer haben <b>immer dieselben Maße</b>, egal, was darin steckt. Darum passen sie auf jedes Schiff und jeden Lkw.</p><p>Docker-Container laufen genauso <b>überall gleich</b>: auf dem Laptop, auf dem Schulserver und in der Cloud.</p>',
         '<p>Schiffscontainer haben <b>immer dieselbe Größe</b>. Egal, was drin ist. Darum passen sie auf jedes Schiff und jeden Lkw.</p><p>Docker-Container laufen genauso <b>überall gleich</b>: auf dem Laptop, auf dem Schulserver und in der Cloud.</p>']
     };
@@ -215,9 +215,9 @@
       s1: ['<p>① Du tippst den Befehl im <b>Client</b>. Der Client schickt ihn an den <b>Docker Daemon</b>, der im Hintergrund auf dem Host läuft.</p>',
         '<p>① Du tippst den Befehl im <b>Client</b>. Der Client schickt ihn an den <b>Docker Daemon</b>. Der Daemon läuft auf dem Host.</p>'],
       s2: ['<p>② Der Daemon sucht das Image <code>hello-world</code> auf dem Host. Es ist noch <b>nicht da</b>.</p>',
-        '<p>② Der Daemon sucht das Image <code>hello-world</code>. Es ist noch <b>nicht da</b>.</p>'],
+        '<p>② Der Daemon sucht das Image <code>hello-world</code>. Das Image ist noch <b>nicht da</b>.</p>'],
       s2da: ['<p>② Der Daemon sucht das Image. Diesmal ist es <b>schon da</b> – kein Download nötig.</p>',
-        '<p>② Der Daemon sucht das Image. Diesmal ist es <b>schon da</b>. Er muss nichts laden.</p>'],
+        '<p>② Der Daemon sucht das Image. Diesmal ist das Image <b>schon da</b>. Der Daemon muss nichts laden.</p>'],
       s3: ['<p>③ Der Daemon lädt das Image aus der <b>Registry</b> herunter, hier von Docker Hub. Das heißt <b>pull</b>.</p>',
         '<p>③ Der Daemon lädt das Image aus der <b>Registry</b>. Das heißt <b>pull</b>.</p>'],
       s4: ['<p>④ Aus dem Image erstellt der Daemon einen <b>Container</b> und startet ihn.</p>',
@@ -233,11 +233,11 @@
       image: ['<p>Aus einem <b>Image</b> entsteht ein Container.</p><p>👉 Klicke auf <b>create</b> oder gleich auf <b>run</b>.</p>',
         '<p>Aus einem <b>Image</b> entsteht ein Container.</p><p>👉 Klicke auf <b>create</b> oder auf <b>run</b>.</p>'],
       created: ['<p><b>Created:</b> Der Container ist angelegt, läuft aber noch nicht. <code>docker ps -a</code> zeigt ihn schon, <code>docker ps</code> noch nicht.</p><p>👉 Klicke auf <b>start</b>.</p>',
-        '<p><b>Created:</b> Der Container ist da. Er läuft aber noch nicht. <code>docker ps -a</code> zeigt ihn schon.</p><p>👉 Klicke auf <b>start</b>.</p>'],
+        '<p><b>Created:</b> Der Container ist da. Der Container läuft aber noch nicht. <code>docker ps -a</code> zeigt ihn schon.</p><p>👉 Klicke auf <b>start</b>.</p>'],
       running: ['<p><b>Running:</b> Der Container läuft. Jetzt zeigt ihn auch <code>docker ps</code>. Übrigens: <code>docker run</code> = create + start.</p><p>👉 Klicke auf <b>stop</b>.</p>',
         '<p><b>Running:</b> Der Container läuft. Jetzt zeigt ihn auch <code>docker ps</code>. <code>docker run</code> macht create und start auf einmal.</p><p>👉 Klicke auf <b>stop</b>.</p>'],
       exited: ['<p><b>Exited:</b> Der Container ist gestoppt, aber <b>noch da</b>. Nur <code>docker ps -a</code> zeigt ihn. Mit <b>start</b> läuft er wieder.</p><p>👉 Klicke auf <b>rm</b>.</p>',
-        '<p><b>Exited:</b> Der Container ist gestoppt. Er ist aber <b>noch da</b>. Nur <code>docker ps -a</code> zeigt ihn.</p><p>👉 Klicke auf <b>rm</b>.</p>'],
+        '<p><b>Exited:</b> Der Container ist gestoppt. Der Container ist aber <b>noch da</b>. Nur <code>docker ps -a</code> zeigt ihn.</p><p>👉 Klicke auf <b>rm</b>.</p>'],
       removed: ['<p><b>Removed:</b> Erst <code>docker rm</code> löscht den Container. Jetzt zeigt ihn keine Liste mehr.</p><p>👉 Klicke auf <b>run</b> und dann auf <b>rm</b>.</p>',
         '<p><b>Removed:</b> Erst <code>docker rm</code> löscht den Container. Jetzt ist er in keiner Liste mehr.</p><p>👉 Klicke auf <b>run</b>. Klicke dann auf <b>rm</b>.</p>'],
       rmLaeuft: ['<p>Einen <b>laufenden</b> Container kannst du nicht einfach löschen. Stoppe ihn zuerst mit <b>stop</b> – oder erzwinge das Löschen mit <code>docker rm -f</code>.</p>',
@@ -257,7 +257,7 @@
     },
     ports: {
       start: ['<p>Ein Container ist von außen erst erreichbar, wenn du einen Port weiterleitest. <code>-p 8080:80</code> heißt: <b>Host-Port 8080</b> → <b>Container-Port 80</b>.</p><p>👉 Schalte <b>-p 8081:80</b> ein.</p>',
-        '<p>Von außen kommst du nur mit einer Weiterleitung an den Container. <code>-p 8080:80</code>: Links ist der Port vom <b>Host</b>, rechts der Port im <b>Container</b>.</p><p>👉 Schalte <b>-p 8081:80</b> an.</p>'],
+        '<p>Von außen kommst du nur mit einer Weiterleitung an den Container. <code>-p 8080:80</code>: Links ist der Port vom <b>Host</b>. Rechts ist der Port im <b>Container</b>.</p><p>👉 Schalte <b>-p 8081:80</b> an.</p>'],
       zwei: ['<p>Beide Container nutzen innen Port 80. Auf dem Host brauchen sie aber <b>verschiedene</b> Ports: 8080 und 8081.</p><p>👉 Klicke auf <b>2× 8080</b>.</p>',
         '<p>Innen haben beide Container Port 80. Auf dem Host brauchen sie <b>verschiedene</b> Ports: 8080 und 8081.</p><p>👉 Klicke auf <b>2× 8080</b>.</p>'],
       konflikt: ['<p>Jeden Host-Port gibt es nur <b>einmal</b>. Ist 8080 schon belegt, meldet Docker <code>port is already allocated</code>.</p>',
@@ -291,7 +291,7 @@
       portOhneNetz: ['<p>Der Browser erreicht <code>web</code> jetzt, aber <code>web</code> findet die Datenbank nicht: Die beiden hängen in <b>keinem gemeinsamen Netzwerk</b>.</p>',
         '<p>Der Browser kommt an <code>web</code>. Aber <code>web</code> findet die Datenbank nicht. Die beiden sind in <b>keinem gemeinsamen Netzwerk</b>.</p>'],
       compose: ['<p><b>Compose</b> macht das alles automatisch: Es legt das Netzwerk <code>projekt_default</code> an, hängt alle Dienste hinein und öffnet nur die Ports, die unter <code>ports:</code> stehen.</p>',
-        '<p><b>Compose</b> macht das alles von selbst. Es legt das Netzwerk <code>projekt_default</code> an. Es bringt alle Dienste hinein. Es öffnet nur die Ports unter <code>ports:</code>.</p>']
+        '<p><b>Compose</b> macht das alles von selbst. Compose legt das Netzwerk <code>projekt_default</code> an. Compose bringt alle Dienste in das Netzwerk. Compose öffnet nur die Ports unter <code>ports:</code>.</p>']
     },
     compose: {
       start: ['<p>In der <code>docker-compose.yml</code> stehen alle Dienste: hier <code>web</code> und <code>db</code>.</p><p>👉 Klicke auf <b>docker compose up -d</b>.</p>',
@@ -618,4 +618,13 @@
       return k;
     };
   } });
+
+  /* Startseite: Leiste mit „Los geht’s: Station 1 →“ ausblenden (Wunsch der Lehrkraft).
+     engine.js bleibt unverändert; die Leiste erscheint auf den anderen Seiten wie gewohnt. */
+  var leiste = document.getElementById('leiste');
+  function leisteStart() {
+    var b = leiste.querySelector('#weiter');
+    leiste.style.display = b && /^Los geht/.test(b.textContent) ? 'none' : '';
+  }
+  if (leiste) { new MutationObserver(leisteStart).observe(leiste, { childList: true }); leisteStart(); }
 })();
