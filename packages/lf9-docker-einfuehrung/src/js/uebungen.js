@@ -234,11 +234,11 @@ var uebungKantine = uebungsRaum({
   setup: function (h) { h.projekt = { dateien: { Dockerfile: DOCKERFILE_U2, 'speiseplan.html': KANTINE.v1 }, seite: KANTINE.v1, basis: 'httpd:alpine', copy: 'COPY speiseplan.html /usr/local/apache2/htdocs/index.html' }; },
   start: function (aus) { aus('cat Dockerfile', true); },
   ziele: [
-    { text: ['Baue aus dem Dockerfile das Image <code>speiseplan</code>.', 'Baue das Image <code>speiseplan</code>.'], ziel: function (h) { return !!h.images['speiseplan:latest']; } },
-    { text: ['Starte den Container <code>kantine</code> im Hintergrund, erreichbar unter <code>localhost:8500</code>. Apache hört im Container auf Port 80.', 'Starte den Container <code>kantine</code>. Er soll unter <code>localhost:8500</code> gehen. Apache hört im Container auf 80.'],
+    { text: ['<b>Baue</b> aus dem Dockerfile das Image <code>speiseplan</code>.', '<b>Baue</b> das Image <code>speiseplan</code>.'], ziel: function (h) { return !!h.images['speiseplan:latest']; } },
+    { text: ['<b>Starte</b> den Container <code>kantine</code> im Hintergrund, erreichbar unter <code>localhost:8500</code>. Apache hört im Container auf Port 80.', '<b>Starte</b> den Container <code>kantine</code>. Der Container soll unter <code>localhost:8500</code> laufen. Apache hört im Container auf Port 80.'],
       ziel: function (h) { return laeuftMit(h, 'kantine', '8500:80'); } },
-    { text: ['Öffne den Speiseplan im Browser.', 'Öffne den Speiseplan im Browser.'], ziel: function (h, st) { return !!(st.browse && st.browse.r.ok && st.browse.r.port === '8500'); } },
-    { text: ['Die Kantine hat <code>speiseplan.html</code> geändert: Mittwoch gibt es Kaiserschmarrn. Bring die neue Version auf <code>localhost:8500</code>.', 'Die Datei ist geändert: Mittwoch gibt es Kaiserschmarrn. Zeig die neue Seite unter <code>localhost:8500</code>.'],
+    { text: ['<b>Öffne</b> den Speiseplan im Browser.', '<b>Öffne</b> den Speiseplan im Browser.'], ziel: function (h, st) { return !!(st.browse && st.browse.r.ok && st.browse.r.port === '8500'); } },
+    { text: ['Die Kantine hat <code>speiseplan.html</code> geändert: Mittwoch gibt es Kaiserschmarrn. <b>Bring</b> die neue Version auf <code>localhost:8500</code>.', 'Die Datei ist geändert: Mittwoch gibt es Kaiserschmarrn. <b>Zeig</b> die neue Seite unter <code>localhost:8500</code>.'],
       sage: ['📨 Kantine: „Wir haben den Mittwoch geändert – die Datei liegt schon im Ordner.“', '📨 Kantine: „Wir haben den Mittwoch geändert.“'],
       vorher: function (h) { h.projekt.dateien['speiseplan.html'] = KANTINE.v2; h.projekt.seite = KANTINE.v2; },
       ziel: function (h, st) { return !!(st.browse && st.browse.r.ok && st.browse.r.port === '8500' && st.browse.r.seite === KANTINE.v2); } }
@@ -287,8 +287,8 @@ var uebungTagebuch = uebungsRaum({
         nr: '③', tipp: ['Unten deklarierst du nur Named Volumes – also den Namen von oben.', 'Unten steht der Name vom Volume.'] }
     },
     anweisung: [
-      ['<b>Datenbank</b> (<code>/app/data</code>): Sie soll bleiben, wenn der Container gelöscht und durch eine neue Version ersetzt wird. Niemand muss die Dateien öffnen – Docker verwaltet sie. Name: <code>notizen-db</code>', '<b>Datenbank</b> (<code>/app/data</code>): Sie soll bleiben, auch wenn der Container gelöscht wird. Docker verwaltet sie. Name: <code>notizen-db</code>'],
-      ['<b>PDF-Exporte</b> (<code>/app/export</code>): Die Trainer wollen sie auf dem Server im Ordner <code>./export</code> öffnen.', '<b>PDFs</b> (<code>/app/export</code>): Die Trainer öffnen sie im Ordner <code>./export</code> auf dem Server.'],
+      ['<b>Datenbank</b> (<code>/app/data</code>): Sie soll bleiben, wenn der Container gelöscht und durch eine neue Version ersetzt wird. Niemand muss die Dateien öffnen – Docker verwaltet sie. Name: <code>notizen-db</code>', '<b>Datenbank</b> (<code>/app/data</code>): Die Datenbank soll bleiben, wenn du den Container löschst. Docker verwaltet die Datenbank. Name: <code>notizen-db</code>'],
+      ['<b>PDF-Exporte</b> (<code>/app/export</code>): Die Trainer wollen sie auf dem Server im Ordner <code>./export</code> öffnen.', '<b>PDFs</b> (<code>/app/export</code>): Die Trainer öffnen die PDFs im Ordner <code>./export</code> auf dem Server.'],
       ['Ganz unten unter <code>volumes:</code>: Melde das Named Volume aus ① an.', 'Ganz unten unter <code>volumes:</code>: Schreib das Volume aus ① hin.']
     ],
     richtig: { db: 'notizen-db', exp: './export', decl: 'notizen-db' },
@@ -300,16 +300,16 @@ var uebungTagebuch = uebungsRaum({
       dienste: function () { return [{ dienst: 'app', image: 'trainingstagebuch:1.4', ports: ['8300:3000'], port: 3000, seite: '<p>Trainingstagebuch</p>', volume: 'notizen-db', bind: '/home/azubi/export' }]; } };
   },
   ziele: [
-    { text: ['Ergänze die drei Lücken in der Datei. Die Arbeitsanweisung steht rechts neben der Datei.', 'Fülle die 3 Lücken aus. Was hinein soll, steht rechts neben der Datei.'], ziel: function (h, st) { return !!st.dateiOk; } },
-    { text: ['Starte die App mit Compose im Hintergrund.', 'Starte die App mit Compose.'], ziel: function (h) { return h.container.some(function (c) { return c.compose === 'tagebuch' && c.status === 'up'; }); } },
-    { text: ['Prüfe, wo die Daten der App jetzt außerhalb des Containers liegen:<br>① Tippe <code>docker volume ls</code>. Die Liste zeigt alle Volumes. Dort steht jetzt <code>tagebuch_notizen-db</code> – das Volume der Datenbank (Compose setzt den Projektnamen <code>tagebuch_</code> davor).<br>② Tippe <code>ls</code>. Die Liste zeigt die Dateien und Ordner im Projektordner auf dem Server. Dort steht jetzt <code>export/</code> – der Ordner für die PDFs.', 'Wo liegen die Daten jetzt? Prüfe es:<br>① Tippe <code>docker volume ls</code>. Du siehst die Volumes. Dort steht <code>tagebuch_notizen-db</code>. Das ist die Datenbank.<br>② Tippe <code>ls</code>. Du siehst die Ordner auf dem Server. Dort steht <code>export/</code>. Das ist der Ordner für die PDFs.'], ziel: function (h, st) { return st.befehle.some(function (b) { return /docker\s+volume\s+ls/.test(b); }) && st.befehle.some(function (b) { return /^ls\b/.test(b); }); } },
-    { text: ['Der Verein will wissen, was beim „großen Aufräumen“ mit den Daten passiert. Tippe <code>docker compose down -v</code> (<code>-v</code> steht für <code>--volumes</code>).', 'Was passiert beim großen Aufräumen? Tippe <code>docker compose down -v</code>.'],
+    { text: ['<b>Ergänze</b> die drei Lücken in der Datei. Die Arbeitsanweisung steht rechts neben der Datei.', '<b>Fülle</b> die 3 Lücken aus. Was hinein soll, steht rechts neben der Datei.'], ziel: function (h, st) { return !!st.dateiOk; } },
+    { text: ['<b>Starte</b> die App mit Compose im Hintergrund.', '<b>Starte</b> die App mit Compose.'], ziel: function (h) { return h.container.some(function (c) { return c.compose === 'tagebuch' && c.status === 'up'; }); } },
+    { text: ['<b>Prüfe</b>, wo die Daten der App jetzt außerhalb des Containers liegen:<br>① <b>Tippe</b> <code>docker volume ls</code>. Die Liste zeigt alle Volumes. Dort steht jetzt <code>tagebuch_notizen-db</code> – das Volume der Datenbank (Compose setzt den Projektnamen <code>tagebuch_</code> davor).<br>② <b>Tippe</b> <code>ls</code>. Die Liste zeigt die Dateien und Ordner im Projektordner auf dem Server. Dort steht jetzt <code>export/</code> – der Ordner für die PDFs.', 'Wo liegen die Daten jetzt? <b>Prüfe</b> es:<br>① <b>Tippe</b> <code>docker volume ls</code>. Du siehst die Volumes. Dort steht <code>tagebuch_notizen-db</code>. Das ist die Datenbank.<br>② <b>Tippe</b> <code>ls</code>. Du siehst die Ordner auf dem Server. Dort steht <code>export/</code>. Das ist der Ordner für die PDFs.'], ziel: function (h, st) { return st.befehle.some(function (b) { return /docker\s+volume\s+ls/.test(b); }) && st.befehle.some(function (b) { return /^ls\b/.test(b); }); } },
+    { text: ['Der Verein will wissen, was beim „großen Aufräumen“ mit den Daten passiert. <b>Tippe</b> <code>docker compose down -v</code> (<code>-v</code> steht für <code>--volumes</code>).', 'Was passiert beim großen Aufräumen? <b>Tippe</b> <code>docker compose down -v</code>.'],
       sage: ['✔ Gefunden: Die Datenbank liegt im Volume <code>tagebuch_notizen-db</code>, die PDFs im Ordner <code>./export</code> auf dem Server.', '✔ Gefunden: Datenbank im Volume, PDFs im Ordner <code>./export</code>.'], ziel: function (h) { return h.compose.unten === 'v'; } },
-    { text: ['Was ist jetzt noch da? Prüfe es im Terminal und wähle.', 'Was ist noch da? Prüfe im Terminal. Dann wähle.'],
+    { text: ['Was ist jetzt noch da? <b>Prüfe</b> es im Terminal und wähle.', 'Was ist noch da? <b>Prüfe</b> im Terminal. Dann wähle.'],
       wahl: { lob: ['Genau: <code>down -v</code> hat das Volume <code>tagebuch_notizen-db</code> gelöscht. Der Ordner <code>./export</code> auf dem Host bleibt.', 'Richtig: Das Volume ist weg. Der Ordner bleibt.'],
         optionen: [
           { t: ['Nur der Ordner <code>./export</code> – die Datenbank ist weg', 'Nur der Ordner <code>./export</code>'], richtig: true },
-          { t: ['Beides – <code>down</code> löscht nur Container', 'Beides ist noch da'], fb: ['Das gilt für <code>down</code> <b>ohne</b> <code>-v</code>. Schau mit <code>docker volume ls</code> nach.', 'Ohne <code>-v</code> ja. Mit <code>-v</code> nicht. Schau mit <code>docker volume ls</code>.'] },
+          { t: ['Beides – <code>down</code> löscht nur Container', 'Beides ist noch da'], fb: ['Das gilt für <code>down</code> <b>ohne</b> <code>-v</code>. Schau mit <code>docker volume ls</code> nach.', 'Ohne <code>-v</code> stimmt das. Mit <code>-v</code> stimmt das nicht. Schau mit <code>docker volume ls</code>.'] },
           { t: ['Nichts – auch <code>./export</code> ist weg', 'Nichts ist mehr da'], fb: ['Bind Mounts sind normale Ordner auf dem Host. Docker löscht sie nicht. Prüfe mit <code>ls</code>.', 'Docker löscht keine Ordner auf dem Rechner. Prüfe mit <code>ls</code>.'] }
         ] } }
   ],
@@ -327,7 +327,7 @@ var uebungForum = uebungsRaum({
   befehle: ['fHost', 'fEnv', 'fDep', 'fPorts', 'ls', 'cp', 'up', 'start', 'cps', 'logs', 'browser'],
   daten: [
     ['Der Datenbank-Service heißt in dieser Datei <code>mariadb</code>. Dieser Name ist auch seine Adresse für das Forum.', 'Die Datenbank heißt hier <code>mariadb</code>. Das ist auch ihre Adresse.'],
-    ['Das Passwort steht als Variable <code>DB_PASSWORD</code> in <code>.env.example</code>. Compose liest aber nur die Datei <code>.env</code>. In der Compose-Datei schreibst du eine Variable so: <code>${NAME}</code>.', 'Das Passwort heißt <code>DB_PASSWORD</code>. Es steht in <code>.env.example</code>. Compose liest nur <code>.env</code>. Variable in der Datei: <code>${NAME}</code>.'],
+    ['Das Passwort steht als Variable <code>DB_PASSWORD</code> in <code>.env.example</code>. Compose liest aber nur die Datei <code>.env</code>. In der Compose-Datei schreibst du eine Variable so: <code>${NAME}</code>.', 'Das Passwort heißt <code>DB_PASSWORD</code>. Das Passwort steht in <code>.env.example</code>. Compose liest nur <code>.env</code>. Variable in der Datei: <code>${NAME}</code>.'],
     ['Datenbank nur intern: <code>ports: []</code> heißt „kein Port nach außen“.', 'Datenbank nur innen: <code>ports: []</code> heißt „kein Port“.'],
     ['Das Forum soll erst starten, wenn die Datenbank „healthy“ ist: <code>service_healthy</code>. <code>service_started</code> wartet nur auf den Start des Containers.', 'Das Forum wartet, bis die Datenbank bereit ist: <code>service_healthy</code>.'],
     ['Forum im Browser: Port <code>8400</code>', 'Forum im Browser: Port <code>8400</code>']
@@ -363,10 +363,10 @@ var uebungForum = uebungsRaum({
       } };
   },
   ziele: [
-    { text: ['Ergänze die vier Lücken in der Datei. Die Arbeitsanweisung steht rechts neben der Datei.', 'Fülle die 4 Lücken aus. Was hinein soll, steht rechts neben der Datei.'], ziel: function (h, st) { return !!st.dateiOk; } },
-    { text: ['Lege die Datei mit dem Passwort an. Schau zuerst mit <code>ls -a</code>, was im Ordner liegt.', 'Lege die Datei mit dem Passwort an. Schau zuerst mit <code>ls -a</code>.'], ziel: function (h) { return !!h.env; } },
-    { text: ['Starte das Forum zum ersten Mal.', 'Starte das Forum zum 1. Mal.'], ziel: function (h) { return h.container.some(function (c) { return c.compose === 'forum' && c.dienst === 'forum' && c.status === 'up'; }); } },
-    { text: ['Prüfe im Browser, ob das Forum antwortet.', 'Prüfe im Browser: Geht das Forum?'], ziel: function (h, st) { return !!(st.browse && st.browse.r.ok && st.browse.r.seite === FORUM); } }
+    { text: ['<b>Ergänze</b> die vier Lücken in der Datei. Die Arbeitsanweisung steht rechts neben der Datei.', '<b>Fülle</b> die 4 Lücken aus. Was hinein soll, steht rechts neben der Datei.'], ziel: function (h, st) { return !!st.dateiOk; } },
+    { text: ['<b>Lege</b> die Datei mit dem Passwort an. <b>Schau</b> zuerst mit <code>ls -a</code>, was im Ordner liegt.', '<b>Lege</b> die Datei mit dem Passwort an. <b>Schau</b> zuerst mit <code>ls -a</code>.'], ziel: function (h) { return !!h.env; } },
+    { text: ['<b>Starte</b> das Forum zum ersten Mal.', '<b>Starte</b> das Forum zum 1. Mal.'], ziel: function (h) { return h.container.some(function (c) { return c.compose === 'forum' && c.dienst === 'forum' && c.status === 'up'; }); } },
+    { text: ['<b>Prüfe</b> im Browser, ob das Forum antwortet.', '<b>Prüfe</b> im Browser: Geht das Forum?'], ziel: function (h, st) { return !!(st.browse && st.browse.r.ok && st.browse.r.seite === FORUM); } }
   ],
   hinweis: function (h, r, z) {
     if (/^ls/.test(z) && !h.env) return null;
@@ -447,22 +447,22 @@ function uebungSprechstunde(box, api) {
 /* ---------- Übungen ins Paket ---------- */
 PAKET.uebungen.push(
   { id: 'U2', titel: 'Die Kantinen-Speisekarte', lz: ['LZ2', 'LZ3'],
-    auftrag: 'Die Kantine Lechwerk will ihren Speiseplan im Netz. Bau das Image, veröffentliche es auf Port 8500 und zeig danach die geänderte Fassung.',
+    auftrag: 'Die Kantine Lechwerk will ihren Speiseplan im Netz.<br>1. <b>Baue</b> das Image.<br>2. <b>Veröffentliche</b> die Seite auf Port 8500.<br>3. <b>Zeige</b> danach die geänderte Fassung.',
     interaktion: uebungKantine,
     tipps: ['Welche Zahl gehört dem Host, welche dem Container? Apache hört im Container auf Port 80.', 'Links 8500, rechts 80: <code>-p 8500:80</code>. Nach der Änderung: <code>COPY</code> legt die Datei ins Image – also neu bauen.', 'Lösung: <code>docker build -t speiseplan .</code> · <code>docker run -d -p 8500:80 --name kantine speiseplan</code> · nach der Änderung <code>docker build -t speiseplan .</code>, <code>docker rm -f kantine</code>, wieder <code>docker run …</code>.'],
     reflexion: { frage: 'Warum reicht <code>docker restart kantine</code> nach der Änderung nicht?', muster: 'Restart startet denselben Container mit demselben Image. Die neue Datei ist erst nach einem neuen Build im Image.' } },
   { id: 'U3', titel: 'Das Trainingstagebuch', lz: ['LZ4'],
-    auftrag: 'Der TSV nutzt eine Notiz-App als Trainingstagebuch. Die App speichert zwei Arten von Daten: eine <b>Datenbank</b> mit allen Einträgen und <b>PDF-Exporte</b> für die Trainer. Lege in der <code>docker-compose.yml</code> fest, wo beide gespeichert werden, damit nichts verloren geht, wenn der Container gelöscht oder erneuert wird.',
+    auftrag: 'Der TSV nutzt eine Notiz-App als Trainingstagebuch. Die App speichert zwei Arten von Daten: eine <b>Datenbank</b> mit allen Einträgen und <b>PDF-Exporte</b> für die Trainer. Nichts davon soll verloren gehen, wenn der Container gelöscht oder erneuert wird.<br><b>Lege</b> in der <code>docker-compose.yml</code> fest, wo beide gespeichert werden.',
     interaktion: uebungTagebuch,
     tipps: ['Welche Daten musst du selbst sehen, welche nicht?', 'Die Datenbank bekommt einen Namen (Named Volume), der Export einen Pfad (Bind Mount).', 'Lösung: <code>notizen-db:/app/data</code>, <code>./export:/app/export</code>, unten <code>notizen-db:</code>. Nach <code>down -v</code> ist das Volume weg, <code>./export</code> bleibt.'],
     reflexion: { frage: 'Wann würdest du für eine Datenbank doch einen Bind Mount nehmen?', muster: 'Wenn ich die Datenbank-Dateien selbst sichern oder auf einen anderen Rechner kopieren will, z. B. bei Immich der Ordner für das Backup.' } },
   { id: 'U4', titel: 'Das Vereins-Forum', lz: ['LZ5'],
-    auftrag: 'Der SV Hochfeld will ein Forum mit MariaDB. Mach die Datei startklar und starte das Forum. Die Datenbank darf nicht von außen erreichbar sein.',
+    auftrag: 'Der SV Hochfeld will ein Forum mit MariaDB. Die Datenbank darf nicht von außen erreichbar sein.<br>1. <b>Mache</b> die Datei startklar.<br>2. <b>Starte</b> das Forum.',
     interaktion: uebungForum,
     tipps: ['Wie heißt der Datenbank-Service in der Datei? So heißt auch der Host.', '<code>DB_HOST: mariadb</code>, kein <code>ports:</code> bei mariadb – und denk an die <code>.env</code>.', 'Lösung: <code>mariadb</code>, <code>${DB_PASSWORD}</code>, <code>service_healthy</code>, <code>[]</code>; dann <code>cp .env.example .env</code> und <code>docker compose up -d</code>; Browser <code>http://localhost:8400</code>.'],
     reflexion: { frage: 'Warum heißt der Host hier <code>mariadb</code> und in Raum 4 <code>db</code>?', muster: 'Der Hostname ist immer der Service-Name aus der Datei.' } },
   { id: 'U5', titel: 'Die Fehler-Sprechstunde', lz: ['LZ6'],
-    auftrag: 'In der Sprechstunde von Hafenblick liegen Tickets anderer Kunden. Finde zu jeder Meldung Ursache und Behebung.',
+    auftrag: 'In der Sprechstunde von Hafenblick liegen Tickets anderer Kunden. <b>Finde</b> zu jeder Meldung Ursache und Behebung.',
     interaktion: uebungSprechstunde,
     tipps: ['Lies jede Meldung Wort für Wort. Welches Wort verrät die Ursache – Port, Variable, Container, https, health, Service?', 'Zwei Zuordnungen: <code>variable is not set</code> → <code>.env</code> fehlt → <code>cp .env.example .env</code>. <code>port is already allocated</code> → Port belegt → links freien Port eintragen.', 'Lösung: Variable → .env kopieren · no container to start → <code>up -d</code> · Port belegt → anderer Host-Port · SSL_ERROR → <code>http://</code> · health: starting → Logs lesen · no such service → <code>--profile ml</code>.'],
     reflexion: { frage: 'Welche Meldung hat dich am meisten überrascht – und warum?', muster: 'Zum Beispiel <code>SSL_ERROR_RX_RECORD_TOO_LONG</code>, weil der Fehler gar nicht von Docker kommt, sondern vom Browser.' } }
@@ -491,11 +491,11 @@ var uebungUmzug = uebungsRaum({
       pw: { nr: '②', optionen: ['${DB_PASSWORD}', 'Geheim123', 'DB_PASSWORD'], richtig: '${DB_PASSWORD}', tipp: ['Passwörter gehören nicht in die Datei, sondern in die <code>.env</code>.', 'Das Passwort kommt aus der <code>.env</code>.'],
         fb: { Geheim123: ['Das funktioniert, aber das Passwort stünde dann in jeder Kopie der Datei (z. B. im Git-Repo). Nimm die Variable aus der <code>.env</code>.', 'Dann steht das Passwort offen in der Datei. Nimm die Variable.'], DB_PASSWORD: ['Ohne <code>${…}</code> wäre das Passwort wörtlich „DB_PASSWORD“.', 'Ohne <code>${ }</code> ist es nur ein Wort.'] } },
       dbvol: { nr: '③', optionen: ['clouddb', '/srv/cloud', './clouddb'], richtig: 'clouddb', tipp: ['Aus <code>-v clouddb:/var/lib/mysql</code> – links steht das Volume.', 'Nimm das Volume aus dem alten Befehl: <code>clouddb</code>.'],
-        fb: { '/srv/cloud': ['<code>/srv/cloud</code> gehört zur Cloud, nicht zur Datenbank.', 'Das ist der Ordner der Cloud.'], './clouddb': ['Ein Pfad wäre ein neuer, leerer Ordner. Die Daten liegen im Volume <code>clouddb</code>.', 'Das wäre ein neuer leerer Ordner.'] } },
+        fb: { '/srv/cloud': ['<code>/srv/cloud</code> gehört zur Cloud, nicht zur Datenbank.', 'Das ist der Ordner der Cloud.'], './clouddb': ['Ein Pfad wäre ein neuer, leerer Ordner. Die Daten liegen im Volume <code>clouddb</code>.', 'Das ist dann ein neuer leerer Ordner.'] } },
       port: { nr: '④', optionen: ['8443:80', '80:8443', '8443:8443'], richtig: '8443:80', tipp: ['Aus <code>-p 8443:80</code> wird <code>ports: - "8443:80"</code> – gleiche Reihenfolge.', 'Gleiche Zahlen wie bei <code>-p</code>: <code>8443:80</code>.'],
         fb: { '80:8443': ['Die Reihenfolge bleibt wie bei <code>-p</code>: Host links, Container rechts.', 'Links der Rechner, rechts der Container.'], '8443:8443': ['Im Container hört Nextcloud auf 80 – so stand es auch rechts bei <code>-p</code>.', 'Im Container ist es Port 80.'] } },
       daten: { nr: '⑤', optionen: ['/srv/cloud', 'cloud', '/var/www/html'], richtig: '/srv/cloud', tipp: ['Aus <code>-v /srv/cloud:/var/www/html</code> – links steht der Ordner auf dem Host.', 'Nimm den Ordner aus dem alten Befehl: <code>/srv/cloud</code>.'],
-        fb: { cloud: ['Ein Name wäre ein neues, leeres Volume. Die Dateien liegen im Host-Ordner <code>/srv/cloud</code>.', 'Das wäre ein neues leeres Volume.'], '/var/www/html': ['Das ist der Pfad im Container (rechts). Links steht der Host-Ordner.', 'Das ist der Pfad im Container.'] } },
+        fb: { cloud: ['Ein Name wäre ein neues, leeres Volume. Die Dateien liegen im Host-Ordner <code>/srv/cloud</code>.', 'Das ist dann ein neues leeres Volume.'], '/var/www/html': ['Das ist der Pfad im Container (rechts). Links steht der Host-Ordner.', 'Das ist der Pfad im Container.'] } },
       host: { nr: '⑥', optionen: ['db', 'cloud-db', 'localhost'], richtig: 'db', tipp: ['Im Compose-Netz heißt der Host wie der <b>Service</b> in dieser Datei.', 'Der Host heißt wie der Service: <code>db</code>.'],
         fb: { 'cloud-db': ['So hieß der alte Container. In Compose ist der Service-Name die Adresse – hier <code>db</code>.', 'Das war der alte Name. Jetzt heißt der Service <code>db</code>.'], localhost: ['<code>localhost</code> ist im Cloud-Container die Cloud selbst.', '<code>localhost</code> ist die Cloud selbst.'] } },
       cond: { nr: '⑦', optionen: ['service_healthy', 'service_started'], richtig: 'service_healthy', tipp: ['Die Cloud soll erst starten, wenn die Datenbank bereit ist.', 'Die Cloud wartet, bis die Datenbank bereit ist.'],
@@ -525,12 +525,12 @@ var uebungUmzug = uebungsRaum({
   },
   start: function (aus) { aus('cat alte-befehle.txt', true); },
   ziele: [
-    { text: ['Übersetze die zwei alten <code>docker run</code>-Befehle in die <code>docker-compose.yml</code>. Die Arbeitsanweisung zu jeder Lücke steht rechts neben der Datei.', 'Schreibe die 2 alten Befehle in die Datei. Was in jede Lücke soll, steht rechts neben der Datei.'], ziel: function (h, st) { return !!st.dateiOk; } },
-    { text: ['Entferne die zwei alten Container. Die Daten in <code>clouddb</code> und <code>/srv/cloud</code> dürfen nicht verloren gehen.', 'Lösche die 2 alten Container. Die Daten müssen bleiben.'],
+    { text: ['<b>Übersetze</b> die zwei alten <code>docker run</code>-Befehle in die <code>docker-compose.yml</code>. Die Arbeitsanweisung zu jeder Lücke steht rechts neben der Datei.', '<b>Schreibe</b> die 2 alten Befehle in die Datei. Was in jede Lücke soll, steht rechts neben der Datei.'], ziel: function (h, st) { return !!st.dateiOk; } },
+    { text: ['Entferne die zwei alten Container. Die Daten in <code>clouddb</code> und <code>/srv/cloud</code> dürfen nicht verloren gehen.', '<b>Lösche</b> die 2 alten Container. Die Daten müssen bleiben.'],
       ziel: function (h) { return !h.container.some(function (c) { return c.name === 'cloud' || c.name === 'cloud-db'; }); } },
-    { text: ['Lege die <code>.env</code> mit dem Passwort an.', 'Lege die <code>.env</code> an.'], ziel: function (h) { return !!h.env; } },
-    { text: ['Starte alles mit Compose.', 'Starte alles mit Compose.'], ziel: function (h) { return h.container.some(function (c) { return c.compose === 'cloud' && c.dienst === 'cloud' && c.status === 'up'; }); } },
-    { text: ['Prüfe im Browser: Ist die Cloud mit allen Noten wieder da?', 'Prüfe im Browser: Sind die Noten noch da?'], ziel: function (h, st) { return !!(st.browse && st.browse.r.ok && st.browse.r.seite === CLOUD && st.browse.r.c.compose === 'cloud'); } },
+    { text: ['<b>Lege</b> die <code>.env</code> mit dem Passwort an.', '<b>Lege</b> die <code>.env</code> an.'], ziel: function (h) { return !!h.env; } },
+    { text: ['<b>Starte</b> alles mit Compose.', '<b>Starte</b> alles mit Compose.'], ziel: function (h) { return h.container.some(function (c) { return c.compose === 'cloud' && c.dienst === 'cloud' && c.status === 'up'; }); } },
+    { text: ['<b>Prüfe</b> im Browser: Ist die Cloud mit allen Noten wieder da?', '<b>Prüfe</b> im Browser: Sind die Noten noch da?'], ziel: function (h, st) { return !!(st.browse && st.browse.r.ok && st.browse.r.seite === CLOUD && st.browse.r.c.compose === 'cloud'); } },
     { text: ['Was ist an der Compose-Datei besser als an den zwei langen Befehlen?', 'Was ist an der Datei besser?'],
       wahl: { lob: ['Genau: Alles steht in einer Datei, kann versioniert und weitergegeben werden, und der Start ist ein Befehl.', 'Richtig: 1 Datei, 1 Befehl. Man kann sie weitergeben.'],
         optionen: [
@@ -542,7 +542,7 @@ var uebungUmzug = uebungsRaum({
   hinweis: function (h, r, z) {
     if (r.fehler === 'portBelegt') return ['Port 8443 gehört noch dem alten Container <code>cloud</code>. Erst die alten Container entfernen.', 'Der alte Container hat noch Port 8443. Lösche ihn zuerst.'];
     if (/docker\s+volume\s+rm/.test(z) || r.volumeWeg) return ['Achtung: Damit hättest du die Datenbank der Musikschule gelöscht! Volumes nie beim Umzug löschen.', 'Achtung: Das Volume hat die Daten. Nie löschen!'];
-    if (r.fehler === 'laeuft') return ['Der Container läuft noch. Mit <code>-f</code> wird er gestoppt und gelöscht – die Daten im Volume und im Ordner bleiben.', 'Er läuft noch. Nimm <code>docker rm -f</code>.'];
+    if (r.fehler === 'laeuft') return ['Der Container läuft noch. Mit <code>-f</code> wird er gestoppt und gelöscht – die Daten im Volume und im Ordner bleiben.', 'Der Container läuft noch. Nimm <code>docker rm -f</code>.'];
     return null;
   },
   hinweisBrowser: function (h, r) {
@@ -556,7 +556,7 @@ var uebungUmzug = uebungsRaum({
 });
 PAKET.uebungen.push(
   { id: 'U6', titel: '🚀 Der Umzug (freiwillig)', lz: ['LZ1', 'LZ3', 'LZ4', 'LZ5', 'LZ6'],
-    auftrag: 'Die Musikschule Tonleiter betreibt ihre Cloud mit zwei langen <code>docker run</code>-Befehlen. Zieh sie auf Compose um – ohne dass Noten oder Datenbank verloren gehen.',
+    auftrag: 'Die Musikschule Tonleiter betreibt ihre Cloud mit zwei langen <code>docker run</code>-Befehlen. Noten und Datenbank dürfen nicht verloren gehen.<br><b>Ziehe</b> die Cloud auf Compose um.',
     interaktion: uebungUmzug,
     tipps: ['Jede Option von <code>docker run</code> hat eine Zeile in Compose: <code>-p</code> → <code>ports:</code>, <code>-v</code> → <code>volumes:</code>, <code>-e</code> → <code>environment:</code>. Aus <code>--name</code> wird der Service-Name.', 'Datei: <code>mariadb:11</code>, <code>${DB_PASSWORD}</code>, <code>clouddb</code>, <code>8443:80</code>, <code>/srv/cloud</code>, <code>db</code>, <code>service_healthy</code>. Dann die alten Container mit <code>docker rm -f</code> entfernen – Volume und Ordner bleiben.', 'Lösung: Datei wie in Tipp 2 · <code>docker rm -f cloud cloud-db</code> · <code>cp .env.example .env</code> · <code>docker compose up -d</code> · Browser <code>http://localhost:8443</code>.'],
     reflexion: { frage: 'Warum steht unten beim Volume <code>external: true</code>?', muster: 'Sonst würde Compose ein neues Volume <code>cloud_clouddb</code> anlegen – leer. Mit <code>external: true</code> nutzt es das vorhandene Volume <code>clouddb</code> mit den Daten.' } }

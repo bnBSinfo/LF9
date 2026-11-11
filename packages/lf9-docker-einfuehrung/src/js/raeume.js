@@ -358,7 +358,7 @@ function laeuftMit(h, name, port) { return h.container.some(function (c) { retur
 function seiteZeigen(box, h, titel) { rwStil(); box.appendChild(KIT.el('div', { class: 'sr-editor', text: titel + '\n' + String(h.projekt.dateien[titel] || '') })); }
 
 RAEUME.push({ id: 'S2', nr: 2, titel: ['Raum 2 · Die Vereinsseite', 'Raum 2 · Die Vereinsseite'], vm: 'Übung 2 Steckbrief-Webserver',
-  auftrag: ['Der TSV braucht eine Startseite. Bau aus dem Dockerfile ein Image und mach die Seite im Browser erreichbar.', 'Der Verein braucht eine Webseite. Baue aus dem Dockerfile ein Image. Mach die Seite im Browser sichtbar.'],
+  auftrag: ['Der TSV braucht eine Startseite.<br>1. <b>Baue</b> aus dem Dockerfile ein Image.<br>2. <b>Mache</b> die Seite im Browser erreichbar.', 'Der Verein braucht eine Webseite.<br>1. <b>Baue</b> aus dem Dockerfile ein Image.<br>2. <b>Mache</b> die Seite im Browser sichtbar.'],
   regeln: [
     ['<code>docker build -t name .</code> baut aus dem Dockerfile im aktuellen Ordner ein Image. Der Punkt ist der Ordner.', '<code>docker build -t name .</code> baut ein Image. Der Punkt heißt: hier im Ordner.'],
     ['Was per <code>COPY</code> ins Image kommt, steckt fest im Image. Nach einer Änderung: <b>neu bauen, alten Container löschen, neu starten.</b>', 'Was mit <code>COPY</code> ins Image kommt, ist fest drin. Nach einer Änderung: <b>neu bauen, alten Container löschen, neu starten.</b>'],
@@ -385,21 +385,21 @@ RAEUME.push({ id: 'S2', nr: 2, titel: ['Raum 2 · Die Vereinsseite', 'Raum 2 · 
   satzanfaenge: [['80 steht rechts, weil …', '80 steht rechts, weil …'], ['Links steht immer …', 'Links steht …']],
   geschafftText: ['Schloss 2 ist offen: Du baust Images und setzt Ports.', 'Schloss 2 ist offen.'],
   faelle: [
-    { id: 'r2a', typ: 'befehl', auftrag: ['Baue aus dem Dockerfile das Image <code>vereinsseite</code>.', 'Baue das Image <code>vereinsseite</code>.'], loesung: ['docker build -t vereinsseite .'],
+    { id: 'r2a', typ: 'befehl', auftrag: ['<b>Baue</b> aus dem Dockerfile das Image <code>vereinsseite</code>.', '<b>Baue</b> das Image <code>vereinsseite</code>.'], loesung: ['docker build -t vereinsseite .'],
       ziel: function (h, r) { return r.gebaut === 'vereinsseite'; },
       falsch: function (r) { return r.fehler === 'buildPunkt' ? ['Der Punkt fehlt: Er sagt Docker, dass Dockerfile und index.html hier im Ordner liegen.', 'Der Punkt fehlt. Der Punkt heißt: Die Dateien sind hier im Ordner.'] : null; },
       tipp: ['Wie bei Jana: <code>docker build -t NAME .</code>', 'Schreibe: <code>docker build -t vereinsseite .</code>'] },
-    { id: 'r2b', typ: 'befehl', auftrag: ['Starte einen Container <code>tsv</code> aus <code>vereinsseite</code> im Hintergrund, erreichbar unter <code>localhost:8080</code>.', 'Starte den Container <code>tsv</code>. Er soll unter <code>localhost:8080</code> erreichbar sein.'],
+    { id: 'r2b', typ: 'befehl', auftrag: ['<b>Starte</b> einen Container <code>tsv</code> aus <code>vereinsseite</code> im Hintergrund, erreichbar unter <code>localhost:8080</code>.', '<b>Starte</b> den Container <code>tsv</code>. Der Container soll unter <code>localhost:8080</code> erreichbar sein.'],
       loesung: ['docker run -d -p 8080:80 --name tsv vereinsseite'],
       ziel: function (h) { return laeuftMit(h, 'tsv', '8080:80'); },
       falsch: function (r, z) { return /-p\s+80:8080/.test(z) ? ['Der Container läuft – aber das Schild zeigt <code>80 → 8080</code>. Im Container hört nginx auf 80, nicht auf 8080. Lösche ihn mit <code>docker rm -f tsv</code> und starte richtig herum.', 'Die Zahlen sind vertauscht. Links der Rechner (8080), rechts der Container (80). Lösche mit <code>docker rm -f tsv</code>. Dann neu starten.'] : r.fehler === 'konflikt' ? ['Den Namen <code>tsv</code> gibt es schon. Lösche den alten Container zuerst mit <code>docker rm -f tsv</code>.', 'Den Namen gibt es schon. Lösche zuerst: <code>docker rm -f tsv</code>.'] : null; },
       teil: function (h, r) { return r.geloescht && r.geloescht.length ? ['Der alte Container ist weg. Jetzt neu starten.', 'Der alte Container ist weg. Jetzt neu starten.'] : null; },
       tipp: ['<code>docker run -d -p HOST:CONTAINER --name tsv vereinsseite</code> – nginx hört im Container auf 80.', 'Schreibe: <code>docker run -d -p 8080:80 --name tsv vereinsseite</code>'] },
-    { id: 'r2c', typ: 'eigen', auftrag: ['Öffne die Vereinsseite im Browser.', 'Öffne die Seite im Browser.'],
+    { id: 'r2c', typ: 'eigen', auftrag: ['<b>Öffne</b> die Vereinsseite im Browser.', '<b>Öffne</b> die Seite im Browser.'],
       zeichne: browserFall({ start: 'http://localhost:', ziel: function (r) { return r.ok && r.port === '8080'; }, tipp: ['Welchen Host-Port hast du beim Start angegeben?', 'Nimm den Port links: 8080.'],
         falsch: function (r) { return r.port === '80' ? ['Port 80 ist der Port <b>im Container</b>. Der Browser fragt den <b>Host</b> – also 8080.', 'Port 80 ist im Container. Der Browser braucht den Port vom Rechner: 8080.'] : null; } }),
       loese: function () {} },
-    { id: 'r2d', typ: 'befehl', auftrag: ['Tomás möchte „<b>Herzlich</b> willkommen“. Jana hat <code>index.html</code> schon geändert. Sorge dafür, dass die neue Seite unter <code>localhost:8080</code> erscheint.', 'Tomás will „<b>Herzlich</b> willkommen“. Die Datei ist schon geändert. Die neue Seite soll unter <code>localhost:8080</code> erscheinen.'],
+    { id: 'r2d', typ: 'befehl', auftrag: ['Tomás möchte „<b>Herzlich</b> willkommen“. Jana hat <code>index.html</code> schon geändert. <b>Sorge</b> dafür, dass die neue Seite unter <code>localhost:8080</code> erscheint.', 'Tomás will „<b>Herzlich</b> willkommen“. Die Datei ist schon geändert. Die neue Seite soll unter <code>localhost:8080</code> erscheinen.'],
       vorherTun: function (h) { h.projekt.dateien['index.html'] = SEITE.tsv2; h.projekt.seite = SEITE.tsv2; },
       loesung: ['docker rm -f tsv', 'docker build -t vereinsseite .', 'docker run -d -p 8080:80 --name tsv vereinsseite'],
       ziel: function (h) { var r = hostBrowse(h, 'http://localhost:8080'); return r.ok && r.seite === SEITE.tsv2; },
@@ -422,7 +422,7 @@ RAEUME.push({ id: 'S2', nr: 2, titel: ['Raum 2 · Die Vereinsseite', 'Raum 2 · 
         { t: ['Der Build ist fehlgeschlagen.', 'Das Bauen hat nicht geklappt.'], fb: ['Der Build ist erfolgreich – er spart nur Arbeit, weil sich nichts geändert hat.', 'Das Bauen hat geklappt. Docker spart nur Arbeit.'] }] }
   ],
   ticket: [
-    { id: 'r2t1', typ: 'befehl', ticket: true, auftrag: ['Tomás: „Die Senioren wollen auch eine Seite. Mein Neffe hat <code>docker run -d -p 8080:80 --name senioren vereinsseite</code> getippt – jetzt kommt ein Fehler!“ Starte <code>senioren</code> richtig.', 'Tomás: „Die Senioren wollen auch eine Seite. Es kommt ein Fehler!“ Starte <code>senioren</code> richtig.'],
+    { id: 'r2t1', typ: 'befehl', ticket: true, auftrag: ['Tomás: „Die Senioren wollen auch eine Seite. Mein Neffe hat <code>docker run -d -p 8080:80 --name senioren vereinsseite</code> getippt – jetzt kommt ein Fehler!“ <b>Starte</b> <code>senioren</code> richtig.', 'Tomás: „Die Senioren wollen auch eine Seite. Es kommt ein Fehler!“ <b>Starte</b> <code>senioren</code> richtig.'],
       loesung: ['docker run -d -p 8082:80 --name senioren vereinsseite'],
       ziel: function (h) { return h.container.some(function (c) { return c.name === 'senioren' && c.status === 'up' && /^\d+:80$/.test(c.ports[0] || ''); }); },
       falsch: function (r) { return r.fehler === 'portBelegt' ? ['Genau der Fehler des Neffen: Der Host-Port ist schon belegt.', 'Der Port ist schon belegt.'] : null; },
@@ -434,7 +434,7 @@ RAEUME.push({ id: 'S2', nr: 2, titel: ['Raum 2 · Die Vereinsseite', 'Raum 2 · 
 
 /* ---------- Raum 3: Daten, die bleiben ---------- */
 RAEUME.push({ id: 'S3', nr: 3, titel: ['Raum 3 · Daten, die bleiben', 'Raum 3 · Daten, die bleiben'], vm: 'Übung 3 Daten',
-  auftrag: ['Der Verein will Fotos und Listen speichern. Finde heraus, wo Daten einen gelöschten Container überleben.', 'Der Verein will Fotos speichern. Sie dürfen nicht verloren gehen. Wo bleiben Daten sicher?'],
+  auftrag: ['Der Verein will Fotos und Listen speichern. <b>Finde</b> heraus, wo Daten einen gelöschten Container überleben.', 'Der Verein will Fotos speichern. Die Fotos dürfen nicht verloren gehen.<br><b>Finde</b> heraus: Wo bleiben Daten sicher?'],
   regeln: [
     ['Container sind <b>ephemer</b>: Was nur im Container liegt, ist mit dem Container weg.', 'Daten <b>nur im Container</b> sind weg, wenn der Container weg ist.'],
     ['<b>Named Volume:</b> links nur ein Name (<code>vereinsdaten:/daten</code>). Docker verwaltet den Speicher. Gut für Datenbanken.', '<b>Volume:</b> links steht nur ein Name. Docker verwaltet den Speicher. Gut für Datenbanken.'],
@@ -452,7 +452,7 @@ RAEUME.push({ id: 'S3', nr: 3, titel: ['Raum 3 · Daten, die bleiben', 'Raum 3 �
     { cmd: 'exit', warum: ['<code>--rm</code> löscht den Container beim Beenden – mit allem, was darin lag.', '<code>--rm</code> löscht den Container. Alles darin ist weg.'] },
     { cmd: 'docker run -it --rm -v einkauf:/daten ubuntu:22.04', warum: ['Diesmal mit Volume <code>einkauf</code> unter <code>/daten</code>.', 'Diesmal mit dem Volume <code>einkauf</code>.'] },
     { cmd: 'echo "Kaffee" > /daten/liste.txt', warum: ['Die Datei landet im Volume – rechts im Server zu sehen.', 'Die Datei ist jetzt im Volume. Schau rechts.'], selbst: true,
-      antwort: ['Das Volume gehört nicht zum Container. Wird der Container gelöscht, bleibt das Volume mit der Datei stehen.', 'Das Volume gehört nicht zum Container. Es bleibt. Die Datei auch.'] },
+      antwort: ['Das Volume gehört nicht zum Container. Wird der Container gelöscht, bleibt das Volume mit der Datei stehen.', 'Das Volume gehört nicht zum Container. Das Volume bleibt. Die Datei bleibt auch.'] },
     { cmd: 'exit', warum: ['Container weg – das Volume <code>einkauf</code> mit <code>liste.txt</code> bleibt.', 'Der Container ist weg. Das Volume bleibt.'] }
   ],
   selbsterklaerung: ['Warum ist die Liste im Volume noch da, obwohl der Container gelöscht wurde?', 'Warum ist die Liste im Volume noch da?'],
@@ -461,20 +461,20 @@ RAEUME.push({ id: 'S3', nr: 3, titel: ['Raum 3 · Daten, die bleiben', 'Raum 3 �
   faelle: [
     { id: 'r3a', typ: 'wahl', auftrag: ['Vorhersage: Container <b>ohne</b> Volume, Datei anlegen, Container löschen, neuen Container starten. Ist die Datei da?', 'Container <b>ohne</b> Volume. Datei anlegen. Container löschen. Neuer Container. Ist die Datei da?'],
       optionen: [{ t: ['Nein – sie lag nur im gelöschten Container.', 'Nein. Sie war nur im alten Container.'], richtig: true },
-        { t: ['Ja – es ist ja dasselbe Image.', 'Ja. Es ist dasselbe Image.'], fb: ['Das Image ändert sich nie. Die Datei lag nur im Container – und der ist weg.', 'Das Image ändert sich nicht. Die Datei war nur im Container.'] }] },
-    { id: 'r3b', typ: 'befehl', auftrag: ['Lege das Volume <code>vereinsdaten</code> an und speichere darin <code>mitglieder.txt</code> – über einen Container mit <code>-v vereinsdaten:/daten</code>. Am Ende mit <code>exit</code> hinaus.', 'Lege das Volume <code>vereinsdaten</code> an. Speichere darin <code>mitglieder.txt</code>. Nimm <code>-v vereinsdaten:/daten</code>. Dann <code>exit</code>.'],
+        { t: ['Ja – es ist ja dasselbe Image.', 'Ja. Das Image ist dasselbe.'], fb: ['Das Image ändert sich nie. Die Datei lag nur im Container – und der ist weg.', 'Das Image ändert sich nicht. Die Datei war nur im Container.'] }] },
+    { id: 'r3b', typ: 'befehl', auftrag: ['<b>Lege</b> das Volume <code>vereinsdaten</code> an und speichere darin <code>mitglieder.txt</code> – über einen Container mit <code>-v vereinsdaten:/daten</code>. Am Ende mit <code>exit</code> hinaus.', '<b>Lege</b> das Volume <code>vereinsdaten</code> an. <b>Speichere</b> darin <code>mitglieder.txt</code>. <b>Nimm</b> <code>-v vereinsdaten:/daten</code>. Dann <code>exit</code>.'],
       loesung: ['docker volume create vereinsdaten', 'docker run -it --rm -v vereinsdaten:/daten ubuntu:22.04', 'echo "Mitglieder" > /daten/mitglieder.txt', 'exit'],
       ziel: function (h) { return !h.shell && !!h.volumes.vereinsdaten && h.volumes.vereinsdaten['mitglieder.txt'] !== undefined; },
       teil: function (h, r) { return r.volume ? ['Volume angelegt. Jetzt einen Container damit starten.', 'Das Volume ist da. Starte jetzt einen Container.'] : h.shell && r.gestartet ? ['Du bist im Container. Speichere die Datei unter /daten.', 'Du bist im Container. Speichere die Datei in /daten.'] : r.geschrieben && r.mount ? ['Gespeichert im Volume. Jetzt exit.', 'Gespeichert. Jetzt exit.'] : null; },
       falsch: function (r, z, h) { return r.exit && !(h.volumes.vereinsdaten || {})['mitglieder.txt'] ? ['Die Datei ist mit dem Container verschwunden: Sie lag nicht in <code>/daten</code>. Nur was im eingehängten Ordner liegt, landet im Volume.', 'Die Datei ist weg. Sie war nicht in <code>/daten</code>.'] : r.geschrieben && !r.mount ? ['Achtung: <code>' + r.geschrieben + '</code> liegt im Container, nicht im Volume. Schreib nach <code>/daten/…</code>.', 'Achtung: Die Datei ist nicht im Volume. Schreibe nach <code>/daten/…</code>.'] : null; },
       tipp: ['<code>docker volume create vereinsdaten</code> → <code>docker run -it --rm -v vereinsdaten:/daten ubuntu:22.04</code> → <code>echo "…" > /daten/mitglieder.txt</code> → <code>exit</code>', 'Erst das Volume anlegen. Dann Container mit <code>-v vereinsdaten:/daten</code>. Datei nach <code>/daten/</code>. Dann exit.'] },
-    { id: 'r3c', typ: 'befehl', auftrag: ['Binde den Host-Ordner <code>fotos</code> ein und lege darin <code>turnier.jpg</code> an. Prüfe danach auf dem Host mit <code>ls fotos</code>.', 'Binde den Ordner <code>fotos</code> ein. Lege <code>turnier.jpg</code> an. Prüfe dann mit <code>ls fotos</code>.'],
+    { id: 'r3c', typ: 'befehl', auftrag: ['<b>Binde</b> den Host-Ordner <code>fotos</code> ein und lege darin <code>turnier.jpg</code> an. <b>Prüfe</b> danach auf dem Host mit <code>ls fotos</code>.', '<b>Binde</b> den Ordner <code>fotos</code> ein. <b>Lege</b> <code>turnier.jpg</code> an. <b>Prüfe</b> dann mit <code>ls fotos</code>.'],
       loesung: ['docker run -it --rm -v "$(pwd)/fotos":/daten ubuntu:22.04', 'touch /daten/turnier.jpg', 'exit', 'ls fotos'],
       ziel: function (h, r) { return !h.shell && r.ls === 'fotos' && (h.ordner['/home/azubi/fotos'] || {})['turnier.jpg'] !== undefined; },
       teil: function (h, r) { return (h.ordner['/home/azubi/fotos'] || {})['turnier.jpg'] !== undefined ? (h.shell ? ['Datei liegt im Ordner. Jetzt exit und auf dem Host nachsehen.', 'Die Datei ist da. Jetzt exit. Dann <code>ls fotos</code>.'] : ['Fast: Prüfe jetzt mit <code>ls fotos</code>.', 'Prüfe jetzt mit <code>ls fotos</code>.']) : h.shell && r.gestartet && h.shell.c.mounts.some(function (m) { return m.art === 'bind'; }) ? ['Der Ordner ist eingebunden. Lege die Datei in /daten an.', 'Der Ordner ist da. Lege die Datei in /daten an.'] : null; },
       falsch: function (r) { return r.gestartet && r.gestartet.mounts.some(function (m) { return m.art === 'volume' && m.name === 'fotos'; }) ? ['Ohne Pfad links ist <code>fotos</code> ein <b>Named Volume</b>, nicht dein Ordner – schau rechts im Server. Geh mit <code>exit</code> hinaus und nimm <code>"$(pwd)/fotos"</code> oder <code>./fotos</code>.', 'Ohne Pfad ist <code>fotos</code> ein Volume. Nicht dein Ordner. Mach exit. Nimm <code>./fotos</code>.'] : null; },
       tipp: ['Links muss ein <b>Pfad</b> stehen: <code>-v "$(pwd)/fotos":/daten</code>', 'Links steht ein Pfad: <code>-v ./fotos:/daten</code>'] },
-    { id: 'r3d', typ: 'eigen', auftrag: ['Sortiere: Named Volume oder Bind Mount?', 'Sortiere: Volume oder Bind Mount?'],
+    { id: 'r3d', typ: 'eigen', auftrag: ['<b>Sortiere</b>: Named Volume oder Bind Mount?', '<b>Sortiere</b>: Volume oder Bind Mount?'],
       zeichne: sortierFall({ faecher: [{ id: 'v', titel: ['🗄️ Volume', '🗄️ Volume'] }, { id: 'b', titel: ['📁 Bind Mount', '📁 Bind Mount'] }],
         karten: [{ html: 'pgdata:/var/lib/postgresql/data', ziel: 'v' }, { html: './library:/data', ziel: 'b' }, { html: '/home/tsv/archiv:/mnt/import:ro', ziel: 'b' }, { html: 'model-cache:/cache', ziel: 'v' }],
         tipp: ['Schau nur auf den Anfang links: <code>/</code> oder <code>./</code> = Pfad = Bind Mount.', 'Beginnt es mit <code>/</code> oder <code>./</code>? Dann ist es ein Bind Mount.'] }),
@@ -487,7 +487,7 @@ RAEUME.push({ id: 'S3', nr: 3, titel: ['Raum 3 · Daten, die bleiben', 'Raum 3 �
       optionen: [{ t: ['<code>/home/tsv/archiv:/mnt/import:ro</code>', '<code>/home/tsv/archiv:/mnt/import:ro</code>'], richtig: true },
         { t: ['<code>/home/tsv/archiv:/mnt/import</code>', '<code>/home/tsv/archiv:/mnt/import</code>'], fb: ['Ohne Zusatz darf der Container schreiben und löschen.', 'So darf der Container auch löschen.'] },
         { t: ['<code>archiv:/mnt/import:ro</code>', '<code>archiv:/mnt/import:ro</code>'], fb: ['<code>archiv</code> ohne Pfad ist ein neues, leeres Named Volume – nicht der Ordner mit den Fotos.', 'Ohne Pfad ist es ein neues Volume. Nicht der Ordner.'] }] },
-    { id: 'r3g', typ: 'befehl', auftrag: ['Räum auf: Lösche das Volume <code>vereinsdaten</code>.', 'Räum auf. Lösche das Volume <code>vereinsdaten</code>.'],
+    { id: 'r3g', typ: 'befehl', auftrag: ['<b>Räum</b> auf: <b>Lösche</b> das Volume <code>vereinsdaten</code>.', '<b>Räum</b> auf. <b>Lösche</b> das Volume <code>vereinsdaten</code>.'],
       vorherTun: function (h) { h.volumes.vereinsdaten = h.volumes.vereinsdaten || { 'mitglieder.txt': 'Mitglieder' }; },
       loesung: ['docker volume rm vereinsdaten'], ziel: function (h) { return !h.volumes.vereinsdaten; },
       falsch: function (r, z) { return /^docker\s+rm\b/.test(z) ? ['<code>docker rm</code> löscht Container. Volumes löscht <code>docker volume rm</code>.', '<code>docker rm</code> ist für Container. Für Volumes: <code>docker volume rm</code>.'] : null; },
@@ -530,8 +530,8 @@ function adminerFall() {
     box.appendChild(E('div', { class: 'sr-browser' }, [E('div', { class: 'bar' }, [E('span', { text: '🌐' }), E('input', { type: 'text', value: 'http://localhost:8081', readonly: 'readonly', 'aria-label': 'Adresse' })]), E('div', { class: 'seite' }, [E('b', { text: 'Adminer 4.8 – Login' }), form])]));
   };
 }
-RAEUME.push({ id: 'S4', nr: 4, titel: ['Raum 4 · Drei Dienste, eine Datei', 'Raum 4 · Drei Dienste, eine Datei'], vm: 'Übung 4 Compose',
-  auftrag: ['Ab jetzt brauchen wir mehrere Container zusammen. Starte Vereinsseite, Datenbank und Adminer mit einer einzigen Datei.', 'Jetzt brauchen wir mehrere Container. Starte 3 Container mit 1 Datei.'],
+RAEUME.push({ id: 'S4', nr: 4, titel: ['Raum 4 · Drei Dienste, eine Datei', 'Raum 4 · 3 Dienste, 1 Datei'], vm: 'Übung 4 Compose',
+  auftrag: ['Ab jetzt brauchen wir mehrere Container zusammen. <b>Starte</b> Vereinsseite, Datenbank und Adminer mit einer einzigen Datei.', 'Jetzt brauchen wir mehrere Container. <b>Starte</b> 3 Container mit 1 Datei.'],
   regeln: [
     ['Jeder Container ist ein <b>Service</b> in der <code>docker-compose.yml</code>. <code>docker compose up -d</code> startet alle.', 'Jeder Container ist ein <b>Service</b> in der Datei. <code>docker compose up -d</code> startet alle.'],
     ['Im Compose-Netz ist der <b>Service-Name</b> die Adresse: Adminer erreicht die Datenbank unter <code>db</code>. <code>localhost</code> ist im Container der Container selbst.', 'Der <b>Service-Name</b> ist die Adresse. Die Datenbank heißt <code>db</code>. <code>localhost</code> ist der Container selbst.'],
@@ -558,7 +558,7 @@ RAEUME.push({ id: 'S4', nr: 4, titel: ['Raum 4 · Drei Dienste, eine Datei', 'Ra
   satzanfaenge: [['localhost meint im Container …', 'localhost ist …'], ['Die Datenbank erreicht man über …', 'Die Datenbank heißt …']],
   geschafftText: ['Schloss 4 ist offen: Du startest mehrere Dienste mit Compose.', 'Schloss 4 ist offen.'],
   faelle: [
-    { id: 'r4a', typ: 'eigen', breit: true, auftrag: ['Fülle die Lücken in der <code>docker-compose.yml</code> und speichere.', 'Fülle die Lücken in der Datei. Dann speichern.'],
+    { id: 'r4a', typ: 'eigen', breit: true, auftrag: ['<b>Fülle</b> die Lücken in der <code>docker-compose.yml</code> und speichere.', '<b>Fülle</b> die Lücken in der Datei. Dann speichern.'],
       zeichne: lueckenFall({ datei: 'docker-compose.yml', text: COMPOSE_U4,
         luecken: {
           pw: { optionen: ['${DB_PASSWORD}', 'DB_PASSWORD', 'Azubi2026'], richtig: '${DB_PASSWORD}', fb: { DB_PASSWORD: ['Ohne <code>${…}</code> steht der Text „DB_PASSWORD“ als Passwort drin.', 'Ohne <code>${…}</code> ist es nur Text.'], Azubi2026: ['Das Passwort gehört in die <code>.env</code>, nicht in die Compose-Datei (die landet oft im Git).', 'Das Passwort gehört in die <code>.env</code>.'] }, tipp: ['Variable aus der .env: <code>${NAME}</code>', 'Variable: <code>${NAME}</code>'] },
@@ -570,14 +570,14 @@ RAEUME.push({ id: 'S4', nr: 4, titel: ['Raum 4 · Drei Dienste, eine Datei', 'Ra
         },
         speichern: function (h, werte) { h.compose.werte = werte; h.compose.gespeichert = true; } }),
       loese: function (h) { composeFertig(h); } },
-    { id: 'r4b', typ: 'befehl', auftrag: ['Bereite die <code>.env</code> vor und starte den ganzen Stack.', 'Mach die <code>.env</code> fertig. Starte dann alles.'],
+    { id: 'r4b', typ: 'befehl', auftrag: ['<b>Bereite</b> die <code>.env</code> vor und starte den ganzen Stack.', '<b>Mach</b> die <code>.env</code> fertig. <b>Starte</b> dann alles.'],
       loesung: ['cp .env.example .env', 'docker compose up -d'],
       ziel: function (h, r) { return !!r.up; },
       teil: function (h, r) { return r.kopiert === '.env' ? ['.env ist da. Jetzt starten.', '.env ist da. Jetzt starten.'] : null; },
       falsch: function (r) { return r.fehler === 'envFehlt' ? ['<code>variable is not set</code>: Die Datei <code>.env</code> fehlt – die Datenbank hat kein Passwort und stürzt ab. Erst <code>cp .env.example .env</code>, dann <code>up -d</code>.', 'Die Datei <code>.env</code> fehlt. Erst <code>cp .env.example .env</code>. Dann <code>up -d</code>.'] : r.fehler === 'keinStart' ? ['<code>start</code> startet nur Container, die es schon gibt. Beim ersten Mal: <code>docker compose up -d</code>.', 'Beim 1. Mal: <code>docker compose up -d</code>.'] : r.kopiert && r.kopiert !== '.env' ? ['Die Datei muss genau <code>.env</code> heißen.', 'Die Datei muss <code>.env</code> heißen.'] : null; },
       tipp: ['<code>cp .env.example .env</code>, dann <code>docker compose up -d</code>.', 'Erst <code>cp .env.example .env</code>. Dann <code>docker compose up -d</code>.'] },
-    { id: 'r4c', typ: 'eigen', auftrag: ['Melde dich in Adminer an (<code>localhost:8081</code>).', 'Melde dich in Adminer an.'], zeichne: adminerFall(), loese: function () {} },
-    { id: 'r4d', typ: 'befehl', auftrag: ['Jana hat in Adminer die Tabelle <code>mitglieder</code> angelegt. Führe <code>docker compose down</code> und dann wieder <code>up -d</code> aus. Ist sie noch da? Schau rechts auf das Volume.', 'Jana hat die Tabelle <code>mitglieder</code> angelegt. Mach <code>docker compose down</code>. Dann <code>up -d</code>. Schau rechts.'],
+    { id: 'r4c', typ: 'eigen', auftrag: ['<b>Melde</b> dich in Adminer an (<code>localhost:8081</code>).', '<b>Melde</b> dich in Adminer an.'], zeichne: adminerFall(), loese: function () {} },
+    { id: 'r4d', typ: 'befehl', auftrag: ['Jana hat in Adminer die Tabelle <code>mitglieder</code> angelegt. <b>Führe</b> <code>docker compose down</code> und dann wieder <code>up -d</code> aus. Ist sie noch da? <b>Schau</b> rechts auf das Volume.', 'Jana hat die Tabelle <code>mitglieder</code> angelegt. <b>Mach</b> <code>docker compose down</code>. Dann <code>up -d</code>. <b>Schau</b> rechts.'],
       vorherTun: function (h) { var v = 'uebung_' + (h.compose.werte.vol || 'pgdata'); h.volumes[v] = h.volumes[v] || {}; h.volumes[v]['mitglieder (Tabelle)'] = 1; },
       loesung: ['docker compose down', 'docker compose up -d'],
       ziel: function (h, r) { return !!r.up && h.compose.unten === 'ja' && !!h.volumes['uebung_pgdata']; },
@@ -596,7 +596,7 @@ RAEUME.push({ id: 'S4', nr: 4, titel: ['Raum 4 · Drei Dienste, eine Datei', 'Ra
         { t: ['Das wurde vergessen – ohne Port startet die DB nicht.', 'Das wurde vergessen.'], fb: ['Die DB läuft ohne Port-Mapping. <code>ports:</code> braucht nur, wer von außen erreichbar sein soll.', 'Die Datenbank läuft auch ohne Port.'] }] }
   ],
   ticket: [
-    { id: 'r4t1', typ: 'eigen', ticket: true, breit: true, auftrag: ['Tomás: „Ein Bekannter hat diese Datei geschrieben. Geht nicht.“ Finde die <b>drei</b> fehlerhaften Zeilen.', 'Tomás: „Die Datei geht nicht.“ Finde die <b>3</b> falschen Zeilen.'],
+    { id: 'r4t1', typ: 'eigen', ticket: true, breit: true, auftrag: ['Tomás: „Ein Bekannter hat diese Datei geschrieben. Geht nicht.“ <b>Finde</b> die <b>drei</b> fehlerhaften Zeilen.', 'Tomás: „Die Datei geht nicht.“ <b>Finde</b> die <b>3</b> falschen Zeilen.'],
       zeichne: markierFall({ zeilen: [{ text: 'services:' }, { text: '  db:' }, { text: '    image: postgres:16-alpine' }, { text: '    ports:', fehler: 1 }, { text: '      - "5432:5432"', fehler: 1 }, { text: '  adminer:' }, { text: '    environment:' }, { text: '      ADMINER_DEFAULT_SERVER: localhost', fehler: 1 }, { text: '    depends_on:' }, { text: '      - db', fehler: 1 }] }),
       loese: function () {} }
   ],
@@ -621,7 +621,7 @@ function composeImmich(h) {
 }
 function immichFertig(h) { h.compose.werte = { upload: '${UPLOAD_LOCATION}', ro: 'ro', port: '2283', h1: 'service_healthy', h2: 'service_healthy', ml: 'ml', pw: '${DB_PASSWORD}', vol: 'pgdata', vol2: 'pgdata' }; h.compose.gespeichert = true; }
 RAEUME.push({ id: 'S5', nr: 5, titel: ['Raum 5 · Generalprobe Foto-Cloud', 'Raum 5 · Generalprobe Foto-Cloud'], vm: 'Abschlussprojekt Immich',
-  auftrag: ['Jetzt wird’s echt: die Foto-Cloud für den TSV. Ergänze die Immich-Datei, starte sie und bring die alten Vereinsfotos hinein. Dann macht Kai die Tür auf.', 'Jetzt kommt die Foto-Cloud. Ergänze die Datei. Starte Immich. Hole die alten Fotos. Dann geht die Tür auf.'],
+  auftrag: ['Jetzt wird’s echt: die Foto-Cloud für den TSV.<br>1. <b>Ergänze</b> die Immich-Datei.<br>2. <b>Starte</b> Immich.<br>3. <b>Bring</b> die alten Vereinsfotos hinein.<br>Dann macht Kai die Tür auf.', 'Jetzt kommt die Foto-Cloud.<br>1. <b>Ergänze</b> die Immich-Datei.<br>2. <b>Starte</b> Immich.<br>3. <b>Hole</b> die alten Fotos in Immich.<br>Dann geht die Tür auf.'],
   regeln: [
     ['Fehlermeldung zuerst <b>lesen</b>: Sie nennt meist Variable, Port oder Service.', 'Lies zuerst die Fehlermeldung.'],
     ['Status bleibt <code>starting</code> oder <code>Exited</code>? → <code>docker compose logs &lt;service&gt;</code>.', 'Ein Dienst startet nicht? → <code>docker compose logs</code>.'],
@@ -645,7 +645,7 @@ RAEUME.push({ id: 'S5', nr: 5, titel: ['Raum 5 · Generalprobe Foto-Cloud', 'Rau
   satzanfaenge: [['Die linke Zahl ist …, darum …', 'Links ist …'], ['Im Container hört Immich …', 'Im Container …']],
   geschafftText: ['Schloss 5 ist offen: Die Foto-Cloud läuft!', 'Schloss 5 ist offen!'],
   faelle: [
-    { id: 'r5a', typ: 'eigen', breit: true, auftrag: ['Fülle die Lücken in der Immich-<code>docker-compose.yml</code> und speichere.', 'Fülle die Lücken in der Immich-Datei. Dann speichern.'],
+    { id: 'r5a', typ: 'eigen', breit: true, auftrag: ['<b>Fülle</b> die Lücken in der Immich-<code>docker-compose.yml</code> und speichere.', '<b>Fülle</b> die Lücken in der Immich-Datei. Dann speichern.'],
       zeichne: lueckenFall({ datei: 'immich/docker-compose.yml', text: COMPOSE_IMMICH,
         luecken: {
           upload: { optionen: ['${UPLOAD_LOCATION}', 'UPLOAD_LOCATION', 'library'], richtig: '${UPLOAD_LOCATION}', fb: { library: ['Ohne Pfad wäre <code>library</code> ein Named Volume. Die Fotos sollen in den Ordner aus der .env.', 'Ohne Pfad ist es ein Volume. Nimm die Variable aus .env.'] }, tipp: ['Variable aus der .env für den Foto-Ordner.', 'Variable: <code>${UPLOAD_LOCATION}</code>'] },
@@ -664,13 +664,13 @@ RAEUME.push({ id: 'S5', nr: 5, titel: ['Raum 5 · Generalprobe Foto-Cloud', 'Rau
       optionen: [{ t: ['<code>TsvFotos2026</code>', '<code>TsvFotos2026</code>'], richtig: true },
         { t: ['<code>Tsv#Fotos!</code>', '<code>Tsv#Fotos!</code>'], fb: ['<code>#</code> leitet in der .env einen Kommentar ein, Sonderzeichen machen Ärger. Nur A–Z, a–z, 0–9!', '<code>#</code> und <code>!</code> machen Ärger. Nur Buchstaben und Ziffern.'] },
         { t: ['<code>fotos$2026</code>', '<code>fotos$2026</code>'], fb: ['<code>$</code> wird als Variable gelesen – das Passwort kommt verstümmelt an. Nur Buchstaben und Ziffern.', '<code>$</code> macht Ärger. Nur Buchstaben und Ziffern.'] }] },
-    { id: 'r5c', typ: 'befehl', auftrag: ['Bereite die <code>.env</code> vor und starte Immich (ohne KI).', 'Mach die <code>.env</code> fertig. Starte Immich.'],
+    { id: 'r5c', typ: 'befehl', auftrag: ['<b>Bereite</b> die <code>.env</code> vor und starte Immich (ohne KI).', '<b>Mach</b> die <code>.env</code> fertig. <b>Starte</b> Immich.'],
       loesung: ['cp .env.example .env', 'docker compose up -d'],
       ziel: function (h, r) { return !!r.up; },
       teil: function (h, r) { return r.kopiert === '.env' ? ['.env ist da. Jetzt starten.', '.env ist da. Jetzt starten.'] : null; },
       falsch: function (r) { return r.fehler === 'envFehlt' ? ['<code>variable is not set</code> – die <code>.env</code> fehlt.', 'Die <code>.env</code> fehlt.'] : r.fehler === 'keinStart' ? ['Beim ersten Mal: <code>up -d</code>, nicht <code>start</code>.', 'Beim 1. Mal: <code>up -d</code>.'] : null; },
       tipp: ['<code>cp .env.example .env</code> → <code>docker compose up -d</code>', 'Erst <code>cp .env.example .env</code>. Dann <code>docker compose up -d</code>.'] },
-    { id: 'r5d', typ: 'eigen', auftrag: ['Öffne Immich im Browser.', 'Öffne Immich im Browser.'],
+    { id: 'r5d', typ: 'eigen', auftrag: ['<b>Öffne</b> Immich im Browser.', '<b>Öffne</b> Immich im Browser.'],
       zeichne: browserFall({ start: 'https://localhost:2283', ziel: function (r) { return r.ok && r.port === '2283'; }, tipp: ['Port 2283 – und welches Protokoll?', 'Port 2283. Mit http.'],
         falsch: function (r) { return r.ssl ? ['<code>SSL_ERROR_RX_RECORD_TOO_LONG</code>: Immich spricht hier nur <b>http</b>. Tippe <code>http://localhost:2283</code>.', 'Immich spricht nur <b>http</b>. Tippe <code>http://localhost:2283</code>.'] : null; } }),
       loese: function () {} },
@@ -678,7 +678,7 @@ RAEUME.push({ id: 'S5', nr: 5, titel: ['Raum 5 · Generalprobe Foto-Cloud', 'Rau
       optionen: [{ t: ['<code>/mnt/import</code>', '<code>/mnt/import</code>'], richtig: true },
         { t: ['<code>/home/azubi/immich/beispielbilder</code>', '<code>/home/azubi/immich/beispielbilder</code>'], fb: ['Das ist der Pfad auf dem <b>Host</b>. Immich läuft im Container und sieht den Ordner unter <code>/mnt/import</code>. Die Bibliothek bliebe leer.', 'Das ist der Pfad auf dem Rechner. Immich sieht nur <code>/mnt/import</code>.'] },
         { t: ['<code>./beispielbilder</code>', '<code>./beispielbilder</code>'], fb: ['Relative Host-Pfade kennt Immich im Container nicht.', 'Diesen Pfad kennt Immich nicht.'] }] },
-    { id: 'r5f', typ: 'befehl', auftrag: ['Neue Immich-Version: Jana hat <code>IMMICH_VERSION</code> in der <code>.env</code> geändert. Übernimm die Änderung.', 'Jana hat die <code>.env</code> geändert. Übernimm die Änderung.'],
+    { id: 'r5f', typ: 'befehl', auftrag: ['Neue Immich-Version: Jana hat <code>IMMICH_VERSION</code> in der <code>.env</code> geändert. <b>Übernimm</b> die Änderung.', 'Jana hat die <code>.env</code> geändert. <b>Übernimm</b> die Änderung.'],
       vorherTun: function (h) { h.envVersion = 2; },
       loesung: ['docker compose up -d'], ziel: function (h, r) { return !!r.up; },
       falsch: function (r) { return r.restart ? ['<code>restart</code> startet die alten Container mit der alten Einstellung. Nur <code>up -d</code> erstellt geänderte Container neu.', '<code>restart</code> nimmt die alte Einstellung. Nimm <code>up -d</code>.'] : null; },
@@ -688,7 +688,7 @@ RAEUME.push({ id: 'S5', nr: 5, titel: ['Raum 5 · Generalprobe Foto-Cloud', 'Rau
       optionen: [{ t: ['Die Fotos in <code>library/</code> – aber Konto und Alben (Datenbank) sind weg.', 'Die Fotos im Ordner. Konto und Alben sind weg.'], richtig: true },
         { t: ['Gar nichts mehr – auch die Fotos sind gelöscht.', 'Nichts mehr.'], fb: ['Bind Mounts löscht Docker nie – die Dateien in <code>library/</code> bleiben. Weg ist das Volume mit der Datenbank.', 'Der Ordner bleibt. Nur das Volume ist weg.'] },
         { t: ['Alles bleibt – <code>-v</code> heißt nur „verbose“.', 'Alles bleibt.'], fb: ['<code>-v</code> heißt hier <code>--volumes</code>: Das Datenbank-Volume wird gelöscht.', '<code>-v</code> löscht die Volumes.'] }] },
-    { id: 'r5h', typ: 'befehl', auftrag: ['Bonus für den Vereinsserver mit 8 GB RAM: Schalte die KI-Funktion (Gesichtserkennung) zu.', 'Schalte die KI dazu.'],
+    { id: 'r5h', typ: 'befehl', auftrag: ['Bonus für den Vereinsserver mit 8 GB RAM: <b>Schalte</b> die KI-Funktion (Gesichtserkennung) zu.', '<b>Schalte</b> die KI dazu.'],
       loesung: ['docker compose --profile ml up -d'],
       ziel: function (h, r) { return r.up && r.profil === 'ml'; },
       falsch: function (r) { return r.fehler === 'keinService' ? ['<code>no such service: ml</code> – <code>ml</code> ist ein <b>Profil</b>, kein Service-Name. Schreib <code>--profile ml</code> vor <code>up</code>.', '<code>ml</code> ist ein Profil. Schreibe <code>--profile ml</code> vor <code>up</code>.'] : null; },
@@ -721,17 +721,17 @@ ERKL.keinDockerfile = ['Im Ordner liegt kein Dockerfile.', 'Hier ist kein Docker
 /* ---------- Stationen (Level) und Kurz-Checks ---------- */
 PAKET.stationen.push(
   { id: 'S2', titel: 'Raum 2 · Die Vereinsseite', lz: ['LZ2', 'LZ3'], check: ['r2-k1', 'r2-k2', 'r2-k3'],
-    auftrag: 'Der TSV braucht eine Startseite. Bau aus dem Dockerfile ein Image und mach die Seite im Browser erreichbar.',
-    mitdenken: { auftrag: 'Skizziere mit zwei Kästen (Host, Container) und einem Pfeil, was <code>-p 8081:80</code> macht.', muster: 'Kasten „Host“ mit Port 8081 → Pfeil → Kasten „Container“ mit Port 80. Der Browser fragt den Host auf 8081.' } },
+    auftrag: 'Der TSV braucht eine Startseite.<br>1. <b>Baue</b> aus dem Dockerfile ein Image.<br>2. <b>Mache</b> die Seite im Browser erreichbar.',
+    mitdenken: { auftrag: '<b>Skizziere</b> mit zwei Kästen (Host, Container) und einem Pfeil, was <code>-p 8081:80</code> macht.', muster: 'Kasten „Host“ mit Port 8081 → Pfeil → Kasten „Container“ mit Port 80. Der Browser fragt den Host auf 8081.' } },
   { id: 'S3', titel: 'Raum 3 · Daten, die bleiben', lz: ['LZ4'], check: ['r3-k1', 'r3-k2', 'r3-k3'],
-    auftrag: 'Der Verein will Fotos und Listen speichern. Finde heraus, wo Daten einen gelöschten Container überleben.',
-    mitdenken: { auftrag: 'Erkläre Tomás in einfachen Worten, warum seine Listen weg waren und was wir jetzt anders machen.', muster: 'Die Listen lagen nur im Container. Als der Container gelöscht wurde, waren sie weg. Jetzt speichern wir sie in einem Volume, das bleibt.' } },
+    auftrag: 'Der Verein will Fotos und Listen speichern. <b>Finde</b> heraus, wo Daten einen gelöschten Container überleben.',
+    mitdenken: { auftrag: '<b>Erkläre</b> Tomás in einfachen Worten, warum seine Listen weg waren und was wir jetzt anders machen.', muster: 'Die Listen lagen nur im Container. Als der Container gelöscht wurde, waren sie weg. Jetzt speichern wir sie in einem Volume, das bleibt.' } },
   { id: 'S4', titel: 'Raum 4 · Drei Dienste, eine Datei', lz: ['LZ5', 'LZ4'], check: ['r4-k1', 'r4-k2', 'r4-k3'],
-    auftrag: 'Starte Vereinsseite, Datenbank und Adminer mit einer einzigen Datei.',
-    mitdenken: { auftrag: 'Zeichne die drei Services als Kästen. Welche Pfeile gehen von außen hinein, welche bleiben innen?', muster: 'Browser → web (8080), Browser → adminer (8081), adminer → db, db → Volume pgdata. Die db hat keinen Pfeil von außen.' } },
+    auftrag: 'Ab jetzt brauchen wir mehrere Container zusammen. <b>Starte</b> Vereinsseite, Datenbank und Adminer mit einer einzigen Datei.',
+    mitdenken: { auftrag: '<b>Zeichne</b> die drei Services als Kästen. Welche Pfeile gehen von außen hinein, welche bleiben innen?', muster: 'Browser → web (8080), Browser → adminer (8081), adminer → db, db → Volume pgdata. Die db hat keinen Pfeil von außen.' } },
   { id: 'S5', titel: 'Raum 5 · Generalprobe Foto-Cloud', lz: ['LZ5', 'LZ6'], check: ['r5-k1', 'r5-k2', 'r5-k3'],
-    auftrag: 'Ergänze die Immich-Datei, starte sie und bring die alten Vereinsfotos hinein.',
-    mitdenken: { auftrag: 'Schreibe für den Verein eine Notfallkarte mit drei Zeilen: Was darf man nie eingeben? Was hilft, wenn die Seite nicht lädt? Was muss ins Backup?', muster: 'Nie <code>docker compose down -v</code>. Seite lädt nicht → <code>docker compose ps</code> und <code>logs</code>, <code>http://</code> statt <code>https://</code>. Backup: Ordner <code>library/</code> und die Datenbank.' } }
+    auftrag: 'Jetzt wird’s echt: die Foto-Cloud für den TSV.<br>1. <b>Ergänze</b> die Immich-Datei.<br>2. <b>Starte</b> Immich.<br>3. <b>Bring</b> die alten Vereinsfotos hinein.',
+    mitdenken: { auftrag: '<b>Schreibe</b> für den Verein eine Notfallkarte mit drei Zeilen: Was darf man nie eingeben? Was hilft, wenn die Seite nicht lädt? Was muss ins Backup?', muster: 'Nie <code>docker compose down -v</code>. Seite lädt nicht → <code>docker compose ps</code> und <code>logs</code>, <code>http://</code> statt <code>https://</code>. Backup: Ordner <code>library/</code> und die Datenbank.' } }
 );
 PAKET.fragen.push(
   { id: 'r2-k1', lz: 'LZ3', einsatz: ['check', 'nachweis'], typ: 'mc', frage: 'Ein Container wurde mit <code>-p 8081:80</code> gestartet. Welche Adresse öffnest du im Browser?',

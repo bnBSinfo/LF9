@@ -152,7 +152,7 @@ function anzahlAus(h, img) { return h.container.filter(function (c) { return c.i
 
 var RAEUME = [
   { id: 'S1', nr: 1, titel: ['Raum 1 · Hallo, Container!', 'Raum 1 · Hallo, Container!'], vm: 'Übung 1 hello-world',
-    auftrag: ['Bevor wir den Verein beglücken: Starte deinen ersten Container und finde heraus, wo er geblieben ist.', 'Starte deinen ersten Container. Finde dann heraus: Wo ist der Container jetzt?'],
+    auftrag: ['Bevor es für den Verein losgeht, übst du den ersten Befehl.<br>1. <b>Starte</b> deinen ersten Container.<br>2. <b>Finde</b> heraus, wo der Container geblieben ist.', '1. <b>Starte</b> den Container <code>hello-world</code>.<br>2. <b>Finde</b> heraus: Wo ist der Container jetzt?'],
     regeln: [
       ['Ein <b>Image</b> ist der Bauplan, ein <b>Container</b> ist das, was daraus läuft – wie Klasse und Objekt.', 'Ein <b>Image</b> ist ein Bauplan. Ein <b>Container</b> läuft aus dem Bauplan. Wie Klasse und Objekt.'],
       ['Jedes <code>docker run</code> baut aus dem Image einen <b>neuen</b> Container.', 'Jedes <code>docker run</code> macht einen <b>neuen</b> Container.'],
@@ -173,14 +173,14 @@ var RAEUME = [
     demoText: ['Schau zu, wie Jana den ersten Container startet. Danach bist du dran.', 'Schau zu. Jana startet den 1. Container. Dann bist du dran.'],
     geschafftText: ['Schloss 1 ist offen: Du unterscheidest Image und Container.', 'Schloss 1 ist offen.'],
     faelle: [
-      { id: 'r1a', typ: 'befehl', auftrag: ['Starte <code>hello-world</code> ein zweites Mal.', 'Starte <code>hello-world</code> noch einmal.'],
+      { id: 'r1a', typ: 'befehl', auftrag: ['<b>Starte</b> <code>hello-world</code> ein zweites Mal.', '<b>Starte</b> <code>hello-world</code> noch einmal.'],
         loesung: ['docker run hello-world'],
         ziel: function (h, r) { return !!(r.gestartet && r.gestartet.image === 'hello-world') && anzahlAus(h, 'hello-world') >= 2; },
         tipp: ['Das ist derselbe Befehl, den Jana getippt hat.', 'Tippe denselben Befehl wie Jana.'] },
-      { id: 'r1b', typ: 'wahl', auftrag: ['Schau rechts auf den Server: Wie viele Images und wie viele Container gibt es jetzt?', 'Schau rechts auf den Server. Wie viele Images gibt es? Wie viele Container?'],
+      { id: 'r1b', typ: 'wahl', auftrag: ['<b>Schau</b> rechts auf den Server: Wie viele Images und wie viele Container gibt es jetzt?', '<b>Schau</b> rechts auf den Server. Wie viele Images gibt es? Wie viele Container?'],
         optionen: [
           { t: ['1 Image, 2 Container', '1 Image, 2 Container'], richtig: true },
-          { t: ['1 Image, 1 Container – er wurde neu gestartet', '1 Image, 1 Container. Er wurde neu gestartet.'], fb: ['Jedes <code>docker run</code> macht einen <b>neuen</b> Container aus demselben Image. Der alte bleibt beendet in der Liste.', 'Jedes <code>docker run</code> macht einen <b>neuen</b> Container. Der alte Container bleibt da.'] },
+          { t: ['1 Image, 1 Container – er wurde neu gestartet', '1 Image, 1 Container. Docker hat den Container neu gestartet.'], fb: ['Jedes <code>docker run</code> macht einen <b>neuen</b> Container aus demselben Image. Der alte bleibt beendet in der Liste.', 'Jedes <code>docker run</code> macht einen <b>neuen</b> Container. Der alte Container bleibt da.'] },
           { t: ['2 Images, 2 Container', '2 Images, 2 Container'], fb: ['Das Image wurde nur beim ersten Mal geladen. Beide Container stammen aus demselben Bauplan.', 'Docker lädt das Image nur 1-mal. Beide Container kommen aus demselben Image.'] }
         ] },
       { id: 'r1c', typ: 'wahl', auftrag: ['Warum ging der zweite Start schneller?', 'Warum ging der 2. Start schneller?'],
@@ -189,22 +189,22 @@ var RAEUME = [
           { t: ['Der erste Container lief noch und wurde wiederverwendet.', 'Der 1. Container lief noch. Docker hat ihn noch einmal benutzt.'], fb: ['Der erste Container war schon beendet („Exited“). Schau im Terminal: Beim zweiten Mal fehlt die Zeile „Pulling from …“.', 'Der 1. Container war schon beendet. Schau ins Terminal: Beim 2. Mal steht dort kein „Pulling“.'] },
           { t: ['Docker merkt sich die Ausgabe und zeigt sie nur noch an.', 'Docker zeigt nur die alte Ausgabe noch einmal.'], fb: ['Der Container läuft wirklich neu und schreibt den Text neu. Gespart wird nur das Herunterladen des Images.', 'Der Container läuft wirklich neu. Docker spart nur das Laden vom Image.'] }
         ] },
-      { id: 'r1d', typ: 'befehl', auftrag: ['Starte zwei Container aus <code>hello-world</code> mit den Namen <code>hallo1</code> und <code>hallo2</code>.', 'Starte 2 Container aus <code>hello-world</code>. Sie heißen <code>hallo1</code> und <code>hallo2</code>.'],
+      { id: 'r1d', typ: 'befehl', auftrag: ['<b>Starte</b> zwei Container aus <code>hello-world</code> mit den Namen <code>hallo1</code> und <code>hallo2</code>.', '<b>Starte</b> 2 Container aus <code>hello-world</code>. Sie heißen <code>hallo1</code> und <code>hallo2</code>.'],
         loesung: ['docker run --name hallo1 hello-world', 'docker run --name hallo2 hello-world'],
         ziel: function (h) { return hatName(h, 'hallo1') && hatName(h, 'hallo2'); },
         teil: function (h, r, z) { return r.gestartet && /--name\s+hallo[12]/.test(z) ? ['Ein Container steht. Jetzt der zweite.', '1 Container ist da. Jetzt der 2.'] : null; },
         tipp: ['Den Namen gibst du mit <code>--name</code> vor dem Image an.', 'Schreibe <code>--name hallo1</code> vor das Image.'] },
-      { id: 'r1e', typ: 'befehl', auftrag: ['Zeige alle <b>Images</b>, die auf dem Host liegen.', 'Zeige alle <b>Images</b> auf dem Rechner.'],
+      { id: 'r1e', typ: 'befehl', auftrag: ['<b>Zeige</b> alle <b>Images</b>, die auf dem Host liegen.', '<b>Zeige</b> alle <b>Images</b> auf dem Rechner.'],
         loesung: ['docker images'],
         ziel: function (h, r) { return !!r.images; },
         falsch: function (r) { return r.ps ? ['<code>docker ps</code> zeigt <b>Container</b>. Für die Baupläne gibt es <code>docker images</code>.', '<code>docker ps</code> zeigt <b>Container</b>. Images zeigt <code>docker images</code>.'] : null; },
         tipp: ['Der Befehl heißt so wie das, was du sehen willst.', 'Der Befehl heißt wie das Wort „Images“.'] },
-      { id: 'r1f', typ: 'befehl', auftrag: ['Zeige <b>alle</b> Container, auch die beendeten.', 'Zeige <b>alle</b> Container. Auch die beendeten.'],
+      { id: 'r1f', typ: 'befehl', auftrag: ['<b>Zeige</b> <b>alle</b> Container, auch die beendeten.', '<b>Zeige</b> <b>alle</b> Container. Auch die beendeten.'],
         loesung: ['docker ps -a'],
         ziel: function (h, r) { return !!(r.ps && r.ps.alle); },
         falsch: function (r) { return r.ps && !r.ps.alle ? ['Die Liste ist leer, weil <code>docker ps</code> nur <b>laufende</b> Container zeigt. Beendete siehst du nur mit <code>-a</code>.', 'Die Liste ist leer. <code>docker ps</code> zeigt nur Container, die <b>laufen</b>. Hänge <code>-a</code> an.'] : null; },
         tipp: ['Hänge an <code>docker ps</code> eine Option für „all“ an.', 'Schreibe <code>docker ps -a</code>.'], notiz: true },
-      { id: 'r1g', typ: 'befehl', auftrag: ['Räum auf: Lösche die Container <code>hallo1</code> und <code>hallo2</code>.', 'Räum auf. Lösche die Container <code>hallo1</code> und <code>hallo2</code>.'],
+      { id: 'r1g', typ: 'befehl', auftrag: ['<b>Räum</b> auf: <b>Lösche</b> die Container <code>hallo1</code> und <code>hallo2</code>.', '<b>Räum</b> auf. <b>Lösche</b> die Container <code>hallo1</code> und <code>hallo2</code>.'],
         loesung: ['docker rm hallo1 hallo2'],
         ziel: function (h) { return !hatName(h, 'hallo1') && !hatName(h, 'hallo2'); },
         teil: function (h, r) { return r.geloescht && r.geloescht.length && !r.fehler ? ['Einer ist weg. Lösche auch den anderen.', '1 ist weg. Lösche auch den anderen.'] : null; },
@@ -219,7 +219,7 @@ var RAEUME = [
     ],
     /* 🚀 Profi: Support-Ticket vom Verein */
     ticket: [
-      { id: 'r1t1', typ: 'befehl', ticket: true, auftrag: ['Tomás schreibt: „Mein Neffe hat gesagt, ich soll <code>docker ps</code> eingeben. Da steht nichts. Ist der Server kaputt?“ Prüfe den Server selbst.', 'Tomás schreibt: „Bei <code>docker ps</code> steht nichts. Ist der Server kaputt?“ Prüfe den Server.'],
+      { id: 'r1t1', typ: 'befehl', ticket: true, auftrag: ['Tomás schreibt: „Mein Neffe hat gesagt, ich soll <code>docker ps</code> eingeben. Da steht nichts. Ist der Server kaputt?“ <b>Prüfe</b> den Server selbst.', 'Tomás schreibt: „Bei <code>docker ps</code> steht nichts. Ist der Server kaputt?“ <b>Prüfe</b> den Server.'],
         vorher: ['docker run hello-world'], loesung: ['docker ps -a'],
         ziel: function (h, r) { return !!(r.ps && r.ps.alle && r.ps.anzahl > 0); },
         tipp: ['Welche Container zeigt <code>docker ps</code> nicht?', 'Zeige alle Container.'] },
@@ -707,7 +707,7 @@ window.PAKET = {
   id: 'lf9-docker-einfuehrung',
   titel: 'Docker-Einführung',
   untertitel: 'Serverraum 0 – vom ersten Container zur eigenen Foto-Cloud',
-  version: '0.28',
+  version: '0.30',
   bestehen: 80,
   dauer: 'etwa 160 Minuten im Paket, dazu die Übungen in der VM',
   welt: { thema: 'technik', kulisse: 'serverraum', symbol: '🐳' },
@@ -726,25 +726,35 @@ window.PAKET = {
   ],
 
   glossar: [
-    { begriff: 'Image', erklaerung: 'Unveränderlicher Bauplan für Container: Programm, Bibliotheken und Einstellungen. Kommt aus einer Registry oder aus <code>docker build</code>.', vorab: true },
-    { begriff: 'Container', erklaerung: 'Laufende oder beendete Instanz eines Images. Aus einem Image entstehen beliebig viele Container.', vorab: true },
-    { begriff: 'Registry', erklaerung: 'Online-Lager für Images, z. B. Docker Hub. <code>docker pull</code> und <code>docker run</code> laden von dort.' },
-    { begriff: 'Host', erklaerung: 'Der Rechner, auf dem Docker läuft – hier die Linux-VM bzw. der Vereinsserver.' },
-    { begriff: 'Port-Mapping', erklaerung: 'Weiterleitung von einem Port des Hosts zu einem Port im Container: <code>-p Host:Container</code>.', vorab: true },
-    { begriff: 'Volume', erklaerung: 'Von Docker verwalteter Speicher, der Container überlebt. Wird nur mit Namen angegeben, z. B. <code>pgdata:/var/lib/…</code>.', vorab: true },
+    { begriff: 'Image', erklaerung: 'das Image, die Images. Unveränderlicher Bauplan für Container: Programm, Bibliotheken und Einstellungen. Kommt aus einer Registry oder aus <code>docker build</code>.', vorab: true },
+    { begriff: 'Container', erklaerung: 'der Container, die Container. Laufende oder beendete Instanz eines Images. Aus einem Image entstehen beliebig viele Container.', vorab: true },
+    { begriff: 'Registry', erklaerung: 'die Registry, die Registrys. Online-Lager für Images, z. B. Docker Hub. <code>docker pull</code> und <code>docker run</code> laden von dort.' },
+    { begriff: 'Daemon', erklaerung: 'der Docker Daemon (dockerd). Dienst im Hintergrund auf dem Host. Er lädt Images, baut sie und startet Container.' },
+    { begriff: 'Host', erklaerung: 'der Host, die Hosts. Der Rechner, auf dem Docker läuft – hier die Linux-VM bzw. der Vereinsserver.' },
+    { begriff: 'Dockerfile', erklaerung: 'das Dockerfile, die Dockerfiles. Textdatei mit dem Rezept für ein Image, z. B. <code>FROM</code>, <code>COPY</code>, <code>EXPOSE</code>.' },
+    { begriff: 'Port', erklaerung: 'der Port, die Ports. Nummer, unter der ein Programm im Netzwerk erreichbar ist, z. B. 80 für Webserver.' },
+    { begriff: 'Port-Mapping', erklaerung: 'das Port-Mapping, die Port-Mappings. Weiterleitung von einem Port des Hosts zu einem Port im Container: <code>-p Host:Container</code>.', vorab: true },
+    { begriff: 'Volume', erklaerung: 'das Volume, die Volumes. Von Docker verwalteter Speicher, der Container überlebt. Wird nur mit Namen angegeben, z. B. <code>pgdata:/var/lib/…</code>.', vorab: true },
+    { begriff: 'Bind Mount', erklaerung: 'der Bind Mount, die Bind Mounts. Ordner des Hosts, der in einen Container eingeblendet wird, z. B. <code>./export:/app/export</code>. Docker löscht ihn nie.' },
     { begriff: 'Docker Compose', erklaerung: 'Werkzeug, das mehrere Container aus einer Datei (<code>docker-compose.yml</code>) gemeinsam startet und verbindet.', vorab: true },
-    { begriff: 'ephemer', erklaerung: 'Flüchtig: Was nur im Container gespeichert ist, ist weg, wenn der Container gelöscht wird.' }
+    { begriff: 'Netzwerk', erklaerung: 'das Netzwerk, die Netzwerke. Verbindung zwischen Containern. Im selben Netzwerk erreichen sich Container über ihren Namen.' },
+    { begriff: 'Service-Name', erklaerung: 'der Service-Name, die Service-Namen. Name eines Dienstes in der <code>docker-compose.yml</code>, z. B. <code>db</code>. Im Netzwerk ist er zugleich die Adresse des Dienstes.' },
+    { begriff: 'Variable', erklaerung: 'die Variable, die Variablen. Name für einen Wert, z. B. <code>DB_PASSWORD</code>. Compose liest die Werte aus der Datei <code>.env</code>.' },
+    { begriff: 'Healthcheck', erklaerung: 'der Healthcheck, die Healthchecks. Regelmäßiger Test, ob ein Dienst bereit ist. <code>service_healthy</code> wartet auf ihn.' },
+    { begriff: 'virtuelle Maschine', erklaerung: 'die virtuelle Maschine (VM), die virtuellen Maschinen. Rechner, der nur als Software existiert, mit eigenem Betriebssystem.' },
+    { begriff: 'Linux-Kernel', erklaerung: 'der Linux-Kernel. Kern des Betriebssystems. Alle Container auf einem Host teilen sich den Kernel des Hosts.' },
+    { begriff: 'ephemer', erklaerung: 'flüchtig: Was nur im Container gespeichert ist, ist weg, wenn der Container gelöscht wird.' }
   ],
 
   stationen: [
     { id: 'S1', titel: 'Raum 1 · Hallo, Container!', lz: ['LZ1'], check: ['r1-k1', 'r1-k2', 'r1-k3'],
-      auftrag: 'Bevor wir den Verein beglücken: Starte deinen ersten Container und finde heraus, wo er geblieben ist.',
-      mitdenken: { auftrag: 'Erkläre einer Mitschülerin in zwei Sätzen den Unterschied zwischen Image und Container. Benutze ein Beispiel aus der Programmierung.', muster: 'Ein Image ist wie eine Klasse: ein fester Bauplan. Ein Container ist wie ein Objekt: Aus einem Image kann ich mit <code>docker run</code> beliebig viele Container erzeugen.' } }
+      auftrag: 'Bevor es für den Verein losgeht, übst du den ersten Befehl.<br>1. <b>Starte</b> deinen ersten Container.<br>2. <b>Finde</b> heraus, wo der Container geblieben ist.',
+      mitdenken: { auftrag: '<b>Erkläre</b> einer Mitschülerin in zwei Sätzen den Unterschied zwischen Image und Container. <b>Benutze</b> ein Beispiel aus der Programmierung.', muster: 'Ein Image ist wie eine Klasse: ein fester Bauplan. Ein Container ist wie ein Objekt: Aus einem Image kann ich mit <code>docker run</code> beliebig viele Container erzeugen.' } }
   ],
 
   uebungen: [
     { id: 'U1', titel: 'Die Hallenbelegung', lz: ['LZ1'],
-      auftrag: 'Die Bäckerei Krume hat ihren Kassenserver von uns. Zähle die laufenden Container und räume die beendeten weg.',
+      auftrag: 'Die Bäckerei Krume hat ihren Kassenserver von uns.<br>1. <b>Zähle</b> die laufenden Container.<br>2. <b>Lösche</b> die beendeten Container.',
       interaktion: uebungHalle,
       tipps: ['Laufende und beendete Container stehen in derselben Liste von <code>docker ps -a</code>. Schau auf die Spalte STATUS.', '„Up …“ heißt: läuft. „Exited …“ heißt: beendet. Es laufen 2.', 'Lösung: 2 laufen (kasse, bestellungen). Lösche die drei beendeten mit <code>docker rm test1 test2 alt_backup</code> – oder im Profi-Weg alle auf einmal mit <code>docker container prune -f</code>.'],
       reflexion: { frage: 'Woran erkennst du in <code>docker ps -a</code>, aus welchem Image ein Container stammt?', muster: 'An der Spalte IMAGE. Mehrere Container können dasselbe Image haben.' } }
