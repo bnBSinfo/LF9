@@ -387,9 +387,9 @@ var uebungForum = uebungsRaum({
 /* ---------- Übung 5: Die Fehler-Sprechstunde (LZ6) ---------- */
 var SPRECHSTUNDE = [
   { kunde: 'Bäckerei Krume', meldung: 'WARN[0000] The "DB_PASSWORD" variable is not set. Defaulting to a blank string.', u: 0 },
-  { kunde: 'SV Hochfeld', meldung: 'service "forum" has no container to start', u: 1 },
+  { kunde: 'SV Hochfeld', meldung: 'service "forum" has no container to start', u: 1, basis: true },
   { kunde: 'Kantine Lechwerk', meldung: 'Bind for 0.0.0.0:8500 failed: port is already allocated', u: 2 },
-  { kunde: 'TSV Lechwiesen', meldung: 'Browser: Fehlercode SSL_ERROR_RX_RECORD_TOO_LONG', u: 3 },
+  { kunde: 'TSV Lechwiesen', meldung: 'Browser: Fehlercode SSL_ERROR_RX_RECORD_TOO_LONG', u: 3, basis: true },
   { kunde: 'Lechpost', meldung: 'lechpost-db-1   mariadb:11   Up 6 minutes (health: starting)', u: 4, profi: true },
   { kunde: 'Foto-AG', meldung: 'no such service: immich-machine-learning', u: 5, profi: true }
 ];
@@ -406,7 +406,7 @@ function uebungSprechstunde(box, api) {
     ['Zusatzdienste mit <code>profiles:</code> starten nur, wenn man ihr Profil beim Start nennt.', 'Dienste mit <code>profiles:</code> starten nur mit ihrem Profil.']
   ]));
   if (PFAD.stufe === 'profi') box.appendChild(STUFEN.profiBand(L('Sechs Tickets statt vier – auch Healthcheck und Profile', '6 Tickets statt 4')));
-  var tickets = SPRECHSTUNDE.filter(function (t) { return !t.profi || PFAD.stufe === 'profi'; });
+  var tickets = SPRECHSTUNDE.filter(function (t) { return t.profi ? PFAD.stufe === 'profi' : t.basis ? PFAD.stufe !== 'profi' : true; });   // je Weg 4 Tickets
   var nummern = tickets.map(function (t) { return t.u; });
   function mischen(a) { return a.slice().sort(function () { return Math.random() - 0.5; }); }
   var wurzel = E('div', { class: 'sr-spiel', style: 'min-height:0' });

@@ -1,0 +1,77 @@
+Prüfbericht für lf9-docker-einfuehrung_scorm12.zip
+
+🟢 [Format] imsmanifest.xml liegt im Wurzelverzeichnis.
+🟢 [Format] SCORM-Version: 1.2 (Soll: 1.2).
+🟢 [Format] Manifest-Identifier "lf9-docker-einfuehrung" hat das Format <präfix>-<name>.
+🟢 [Datenübergabe] masteryscore im Manifest: 80 (Soll: 80).
+🟢 [Format] Startdatei: index.html.
+🟢 [Format] Alle im Manifest genannten Dateien sind vorhanden.
+🟢 [Format] Alle Dateien sind im Manifest aufgeführt.
+🟢 [Format] Größe: 645 KB (Grenze ByCS: 512 MB).
+🟢 [Datenschutz] Keine Verweise auf externe Server.
+🟢 [Datenübergabe] SCORM-Initialisierung (LMSInitialize) wird verwendet.
+🟢 [Datenübergabe] Punktzahl (cmi.core.score.raw) wird verwendet.
+🟢 [Datenübergabe] Bestanden/Nicht bestanden (cmi.core.lesson_status) wird verwendet.
+🟢 [Datenübergabe] Fortschritt (Wiedereinstieg) (cmi.suspend_data) wird verwendet.
+🟢 [Datenübergabe] Name aus der Lernplattform (cmi.core.student_name) wird verwendet.
+🟢 [Datenübergabe] Ergebnisse je Lernziel (cmi.objectives) werden übertragen.
+🟢 [Datenübergabe] Ergebnisse je Frage (cmi.interactions) werden übertragen.
+🟢 [Technik] JavaScript-Syntax js/abschluss.js: in Ordnung.
+🟢 [Technik] JavaScript-Syntax js/baukasten.js: in Ordnung.
+🟢 [Technik] JavaScript-Syntax js/begriffe.js: in Ordnung.
+🟢 [Technik] JavaScript-Syntax js/engine.js: in Ordnung.
+🟢 [Technik] JavaScript-Syntax js/erklaerung.js: in Ordnung.
+🟢 [Technik] JavaScript-Syntax js/inhalt.js: in Ordnung.
+🟢 [Technik] JavaScript-Syntax js/nachweis.js: in Ordnung.
+🟢 [Technik] JavaScript-Syntax js/pdf.js: in Ordnung.
+🟢 [Technik] JavaScript-Syntax js/raeume.js: in Ordnung.
+🟢 [Technik] JavaScript-Syntax js/sprache.js: in Ordnung.
+🟢 [Technik] JavaScript-Syntax js/stufen.js: in Ordnung.
+🟢 [Technik] JavaScript-Syntax js/tafel.js: in Ordnung.
+🟢 [Technik] JavaScript-Syntax js/uebungen.js: in Ordnung.
+🟢 [Datenübergabe] Paket meldet sich beim (nachgebauten) SCORM-Player an.
+🟢 [Differenzierung] Sprachumschalter Standard/Einfach ist im Kopf vorhanden (P16).
+🟢 [Differenzierung] Einfache Sprache – Lernziele: 6 von 6.
+🟢 [Differenzierung] Einfache Sprache – Stationen (Auftrag): 5 von 5.
+🟢 [Differenzierung] Einfache Sprache – Übungen (Auftrag): 6 von 6.
+🟢 [Differenzierung] Einfache Sprache – Fragen: 39 von 39.
+🟢 [Differenzierung] Einfache Sprache – Glossar: 18 von 18.
+🟢 [Differenzierung] Umschalten auf „Einfach“ und zurück funktioniert.
+🟢 [Differenzierung] Leistungspfad Basis/Profi wird in den Szenen genutzt (P15).
+🟢 [Differenzierung] Basis/Profi in allen Stationen.
+🟢 [Differenzierung] Profi-Inhalte sind gekennzeichnet (🚀/Profi).
+🟢 [Inhalt] Inhaltsprüfung der Vorlage: keine Fehler.
+🟡 [Inhalt] Hinweis: Tafelbild mit 9 Szenen – für etwa 20 Minuten sind höchstens 6–8 sinnvoll.
+🟢 [Bedienung] Versionsnummer „v0.32“ steht sichtbar in der Kopfzeile.
+🟢 [Interaktivität] Jede Station hat eine Szene zum Anfassen.
+🟢 [Interaktivität] Jede Szene hat eine Vorführung („Zeig’s mir“).
+🟢 [Interaktivität] Die Szene steht ohne Scrollen im Blick und ist groß genug.
+🟢 [Interaktivität] Textbudget eingehalten (sichtbarer Text neben der Szene).
+🟢 [Lösbarkeit] Alle Stationen sind mit der Musterlösung lösbar.
+🟢 [Lösbarkeit] Alle Übungen sind mit der Musterlösung lösbar.
+🟢 [Lösbarkeit] Nachweis mit Musterlösung: 100 % (Soll: 100 %).
+🟢 [Datenübergabe] Lernplattform erhält score.raw=100 und lesson_status=passed.
+🟢 [Datenübergabe] Übertragen: 6 Lernziele (objectives), 19 Fragen und Prüfpunkte (interactions).
+🟢 [Datenübergabe] Alle SCORM-Werte wurden angenommen.
+🟢 [Datenübergabe] suspend_data: 210 Zeichen (Grenze 4096).
+🟢 [Datenübergabe] Zweiter, schlechterer Versuch: bestes Ergebnis bleibt erhalten.
+🟢 [Technik] Wiedereinstieg: Fortschritt ist nach dem Neuladen wieder da.
+🔴 [Bedienung] Nicht genau ein Weiter-Knopf: Start (0)
+🟢 [Lernheft] Lernheft als PDF im Abschluss vorhanden (P13).
+🟢 [Lernheft] Knöpfe „📄 … als PDF erstellen“ speichern die PDF-Datei direkt (js/pdf.js).
+🟢 [Lernheft] Jede Station schreibt ihr Ergebnis ins Lernheft (api.erledigt).
+🟢 [Lernheft] Jede Station hält eigene Ergebnisse fest (api.notiere, z. B. Rechenweg).
+🟢 [Lernheft] Lernheft enthält die Ergebnisse aller Stationen und das Wichtigste bzw. die Fachbegriffe.
+🔴 [Bedienung] Tablet (768px): Probleme: start: Weiter-Knopf nicht sichtbar
+🟡 [Bedienung] Handy (390px): Probleme: start: Weiter-Knopf nicht sichtbar
+🟢 [Tafelbild] Zugänge vorhanden: Knopf „Tafelbild“ in der Kopfzeile und Hinweis auf der Startseite.
+🟢 [Tafelbild] 9 Szenen; alle zeichnen etwas, alle Werkzeuge einmal ausgelöst.
+🟡 [Tafelbild] 9 Szenen – für etwa 20 Minuten sind höchstens 6–8 sinnvoll.
+🟢 [Tafelbild] Bedienung per Tastatur (Pfeiltaste, Esc) funktioniert.
+🟢 [Datenübergabe] Tafelbild schreibt nichts an die Lernplattform.
+🟢 [Tafelbild] index.html#tafel startet die Präsentation ohne Erklärungen.
+🟢 [Tafelbild] Kein seitliches Scrollen (Beamer 1600 px, Tablet 768 px).
+🟢 [Tafelbild] Keine Konsolenfehler beim Durchschalten.
+🟢 [Technik] Keine Fehler in der Browser-Konsole.
+
+Ergebnis: 2 rot, 3 gelb, 68 grün.
