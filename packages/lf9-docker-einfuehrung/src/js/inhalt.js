@@ -147,6 +147,8 @@ function hostAusfuehren(h, zeile) {
 }
 
 /* ---------- Räume (Level) ---------- */
+/* Höchstens 4 Aufgaben je Raum (Regel aus LF3): nur: 'basis' | 'profi' wählt nach Weg, Profi-Tickets ersetzen Aufgaben */
+function faelleFuer(R) { return R.faelle.filter(function (f) { return !f.nur || f.nur === PFAD.stufe; }).concat(P([], R.ticket || [])); }
 function hatName(h, n) { return h.container.some(function (c) { return c.name === n; }); }
 function anzahlAus(h, img) { return h.container.filter(function (c) { return c.image === img; }).length; }
 
@@ -173,33 +175,17 @@ var RAEUME = [
     demoText: ['Schau zu, wie Jana den ersten Container startet. Danach bist du dran.', 'Schau zu. Jana startet den 1. Container. Dann bist du dran.'],
     geschafftText: ['Schloss 1 ist offen: Du unterscheidest Image und Container.', 'Schloss 1 ist offen.'],
     faelle: [
-      { id: 'r1a', typ: 'befehl', auftrag: ['<b>Starte</b> <code>hello-world</code> ein zweites Mal.', '<b>Starte</b> <code>hello-world</code> noch einmal.'],
-        loesung: ['docker run hello-world'],
-        ziel: function (h, r) { return !!(r.gestartet && r.gestartet.image === 'hello-world') && anzahlAus(h, 'hello-world') >= 2; },
-        tipp: ['Das ist derselbe Befehl, den Jana getippt hat.', 'Tippe denselben Befehl wie Jana.'] },
-      { id: 'r1b', typ: 'wahl', auftrag: ['<b>Schau</b> rechts auf den Server: Wie viele Images und wie viele Container gibt es jetzt?', '<b>Schau</b> rechts auf den Server. Wie viele Images gibt es? Wie viele Container?'],
-        optionen: [
-          { t: ['1 Image, 2 Container', '1 Image, 2 Container'], richtig: true },
-          { t: ['1 Image, 1 Container – er wurde neu gestartet', '1 Image, 1 Container. Docker hat den Container neu gestartet.'], fb: ['Jedes <code>docker run</code> macht einen <b>neuen</b> Container aus demselben Image. Der alte bleibt beendet in der Liste.', 'Jedes <code>docker run</code> macht einen <b>neuen</b> Container. Der alte Container bleibt da.'] },
-          { t: ['2 Images, 2 Container', '2 Images, 2 Container'], fb: ['Das Image wurde nur beim ersten Mal geladen. Beide Container stammen aus demselben Bauplan.', 'Docker lädt das Image nur 1-mal. Beide Container kommen aus demselben Image.'] }
-        ] },
-      { id: 'r1c', typ: 'wahl', auftrag: ['Warum ging der zweite Start schneller?', 'Warum ging der 2. Start schneller?'],
-        optionen: [
-          { t: ['Das Image lag schon auf dem Host – Docker musste nichts herunterladen.', 'Das Image war schon da. Docker musste nichts laden.'], richtig: true },
-          { t: ['Der erste Container lief noch und wurde wiederverwendet.', 'Der 1. Container lief noch. Docker hat ihn noch einmal benutzt.'], fb: ['Der erste Container war schon beendet („Exited“). Schau im Terminal: Beim zweiten Mal fehlt die Zeile „Pulling from …“.', 'Der 1. Container war schon beendet. Schau ins Terminal: Beim 2. Mal steht dort kein „Pulling“.'] },
-          { t: ['Docker merkt sich die Ausgabe und zeigt sie nur noch an.', 'Docker zeigt nur die alte Ausgabe noch einmal.'], fb: ['Der Container läuft wirklich neu und schreibt den Text neu. Gespart wird nur das Herunterladen des Images.', 'Der Container läuft wirklich neu. Docker spart nur das Laden vom Image.'] }
-        ] },
       { id: 'r1d', typ: 'befehl', auftrag: ['<b>Starte</b> zwei Container aus <code>hello-world</code> mit den Namen <code>hallo1</code> und <code>hallo2</code>.', '<b>Starte</b> 2 Container aus <code>hello-world</code>. Sie heißen <code>hallo1</code> und <code>hallo2</code>.'],
         loesung: ['docker run --name hallo1 hello-world', 'docker run --name hallo2 hello-world'],
         ziel: function (h) { return hatName(h, 'hallo1') && hatName(h, 'hallo2'); },
         teil: function (h, r, z) { return r.gestartet && /--name\s+hallo[12]/.test(z) ? ['Ein Container steht. Jetzt der zweite.', '1 Container ist da. Jetzt der 2.'] : null; },
         tipp: ['Den Namen gibst du mit <code>--name</code> vor dem Image an.', 'Schreibe <code>--name hallo1</code> vor das Image.'] },
-      { id: 'r1e', typ: 'befehl', auftrag: ['<b>Zeige</b> alle <b>Images</b>, die auf dem Host liegen.', '<b>Zeige</b> alle <b>Images</b> auf dem Rechner.'],
+      { id: 'r1e', nur: 'basis', typ: 'befehl', auftrag: ['<b>Zeige</b> alle <b>Images</b>, die auf dem Host liegen.', '<b>Zeige</b> alle <b>Images</b> auf dem Rechner.'],
         loesung: ['docker images'],
         ziel: function (h, r) { return !!r.images; },
         falsch: function (r) { return r.ps ? ['<code>docker ps</code> zeigt <b>Container</b>. Für die Baupläne gibt es <code>docker images</code>.', '<code>docker ps</code> zeigt <b>Container</b>. Images zeigt <code>docker images</code>.'] : null; },
         tipp: ['Der Befehl heißt so wie das, was du sehen willst.', 'Der Befehl heißt wie das Wort „Images“.'] },
-      { id: 'r1f', typ: 'befehl', auftrag: ['<b>Zeige</b> <b>alle</b> Container, auch die beendeten.', '<b>Zeige</b> <b>alle</b> Container. Auch die beendeten.'],
+      { id: 'r1f', nur: 'basis', typ: 'befehl', auftrag: ['<b>Zeige</b> <b>alle</b> Container, auch die beendeten.', '<b>Zeige</b> <b>alle</b> Container. Auch die beendeten.'],
         loesung: ['docker ps -a'],
         ziel: function (h, r) { return !!(r.ps && r.ps.alle); },
         falsch: function (r) { return r.ps && !r.ps.alle ? ['Die Liste ist leer, weil <code>docker ps</code> nur <b>laufende</b> Container zeigt. Beendete siehst du nur mit <code>-a</code>.', 'Die Liste ist leer. <code>docker ps</code> zeigt nur Container, die <b>laufen</b>. Hänge <code>-a</code> an.'] : null; },
@@ -210,12 +196,6 @@ var RAEUME = [
         teil: function (h, r) { return r.geloescht && r.geloescht.length && !r.fehler ? ['Einer ist weg. Lösche auch den anderen.', '1 ist weg. Lösche auch den anderen.'] : null; },
         falsch: function (r, zeile) { return /\brmi\b/.test(zeile) ? ['<code>rmi</code> löscht <b>Images</b> – und das klappt nicht, solange noch Container aus dem Image bestehen. Für Container nimmst du <code>docker rm</code>.', '<code>rmi</code> löscht <b>Images</b>. Für Container nimmst du <code>docker rm</code>.'] : null; },
         tipp: ['Container löscht <code>docker rm</code>, du kannst mehrere Namen hintereinander schreiben.', 'Schreibe <code>docker rm hallo1 hallo2</code>.'] },
-      { id: 'r1h', typ: 'wahl', auftrag: ['Zum Schluss: Ein Image verhält sich zu einem Container wie …', 'Zum Schluss: Ein Image ist für einen Container wie …'],
-        optionen: [
-          { t: ['… eine Klasse zu einem Objekt.', '… eine Klasse für ein Objekt.'], richtig: true },
-          { t: ['… ein Objekt zu einer Klasse.', '… ein Objekt für eine Klasse.'], fb: ['Umgekehrt: Aus einer Klasse entstehen viele Objekte – aus einem Image entstehen viele Container.', 'Umgekehrt. Aus 1 Klasse macht man viele Objekte. Aus 1 Image macht man viele Container.'] },
-          { t: ['… ein Ordner zu einer Datei.', '… ein Ordner für eine Datei.'], fb: ['Ein Container liegt nicht „im“ Image. Das Image ist der feste Bauplan, der Container eine laufende Instanz davon.', 'Der Container liegt nicht im Image. Das Image ist ein Bauplan. Der Container läuft aus dem Bauplan.'] }
-        ] }
     ],
     /* 🚀 Profi: Support-Ticket vom Verein */
     ticket: [
@@ -335,7 +315,7 @@ function serverraum(box, api) {
   function raumStart(behalten) {
     host = neuerHost(); if (R.setup) R.setup(host);
     verlauf = []; nr = 0; fehlversuche = 0; letzteFehler = null; selbstText = '';
-    faelle = R.faelle.concat(P([], R.ticket || []));
+    faelle = faelleFuer(R);
     phase = 'demo'; api.speicher('r', R.nr);
     zeichne();
     if (!behalten) terminal('# ' + T(R.begruessung || ['Jana zeigt dir zuerst, wie es geht.', 'Jana zeigt es dir zuerst.']), 'sr-ko');
@@ -600,7 +580,7 @@ function serverraum(box, api) {
       RAEUME.forEach(function (raum) {
         if (api.geschafft(raum.id)) return;
         R = raum; host = neuerHost(); if (R.setup) R.setup(host);
-        verlauf = []; nr = 0; fehlversuche = 0; faelle = R.faelle.concat(P([], R.ticket || [])); phase = 'spiel';
+        verlauf = []; nr = 0; fehlversuche = 0; faelle = faelleFuer(R); phase = 'spiel';
         R.demo.forEach(function (d) { demoTun(d, true); });
         if (R.demoReset) { host = neuerHost(); if (R.setup) R.setup(host); }
         selbstText = L('(Musterlösung) ', '(Musterlösung) ') + T(R.demo.filter(function (d) { return d.selbst; }).map(function (d) { return d.antwort || ''; })[0] || '');
@@ -707,7 +687,7 @@ window.PAKET = {
   id: 'lf9-docker-einfuehrung',
   titel: 'Docker-Einführung',
   untertitel: 'Serverraum 0 – vom ersten Container zur eigenen Foto-Cloud',
-  version: '0.31',
+  version: '0.32',
   bestehen: 80,
   dauer: 'etwa 160 Minuten im Paket, dazu die Übungen in der VM',
   welt: { thema: 'technik', kulisse: 'serverraum', symbol: '🐳' },

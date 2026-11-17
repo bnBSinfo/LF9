@@ -25,7 +25,7 @@
     '.dk-liste{font-family:ui-monospace,Consolas,monospace;font-size:1rem;text-align:left;margin-top:6px}' +
     '.dk-chip{display:inline-block;border-radius:999px;padding:2px 10px;margin:3px;font-family:ui-monospace,Consolas,monospace;font-size:1rem;background:#dcfce7;border:2px solid #16a34a}' +
     '.dk-nw{flex-wrap:nowrap}.dk-nw>.dk-box{min-width:0;padding:8px 10px}.dk-nw>.dk-pfeil{min-width:46px}' +
-    /* Startkarte „Was ist eigentlich Docker?“ hervorheben – gleiche Farbe wie der 💡-Knopf in den Räumen */
+    /* Startkarte „Wichtige Infos zum Thema Docker“ (wie in LF3) hervorheben – gleiche Farbe wie der 💡-Knopf in den Räumen */
     '.dk-start{background:linear-gradient(135deg,#fef3c7,#fde68a);border:3px solid #f59e0b;border-left-width:10px;box-shadow:0 6px 18px rgba(217,119,6,.25)}' +
     '.dk-start h2{color:#78350f;font-size:1.45rem;margin-top:0}.dk-start p{color:#422006}.dk-start .tafel-hinweis-icon svg{color:#b45309;width:52px;height:52px}' +
     '.dk-start button{background:#d97706;border-color:#b45309;color:#fff;font-weight:700;min-height:48px;padding:6px 18px}.dk-start button:hover{background:#b45309}' +
@@ -612,7 +612,7 @@
     t.startKarte = function () {
       var k = original.apply(this, arguments), h = k.querySelector('h2'), p = k.querySelector('p'), b = k.querySelector('button');
       stil(); k.classList.add('dk-start');
-      if (h) h.textContent = L('Was ist eigentlich Docker?', 'Was ist eigentlich Docker?');
+      if (h) h.textContent = L('Wichtige Infos zum Thema Docker', 'Wichtige Infos zum Thema Docker');
       if (p) p.innerHTML = L('In ' + PAKET.tafel.szenen.length + ' kurzen Szenen zum Anklicken siehst du, wie Docker funktioniert: vom Image über den Container bis zu Compose und dem Netzwerk. Daneben steht jeweils eine Erklärung. Du findest die Szenen auch oben unter <b>Tafelbild</b> und in den Räumen 1–4 unter <b>💡</b>.', 'In ' + PAKET.tafel.szenen.length + ' kurzen Szenen siehst du, wie Docker funktioniert. Daneben steht eine Erklärung. Du findest sie auch oben unter <b>Tafelbild</b> und in den Räumen unter <b>💡</b>.');
       if (b) b.lastChild.textContent = ' ' + L('Erklärung ansehen', 'Erklärung ansehen');
       return k;
