@@ -1,6 +1,6 @@
 # Docker-Einführung – Serverraum 0 (SCORM-Lernspiel, LF 9)
 
-**Stand: v0.32** – voller Ausbau, noch vor fachlicher Abnahme und Erprobung. Änderungen zu v0.31 (Regeln aus LF3): jede Runde hat höchstens 4 Aufgaben – die Räume 1–5 je 4 statt 7–8 Aufgaben, im Profi-Weg ersetzen die Tickets Aufgaben, statt dazuzukommen; die Fehler-Sprechstunde hat in beiden Wegen 4 Tickets (Profi 4 statt 6); der Kasten auf der Startseite heißt „Wichtige Infos zum Thema Docker“; Startseite ohne Leiste unten. **Paket:** `lf9-docker-einfuehrung_scorm12.zip` (SCORM 1.2, ohne Internetverbindung lauffähig)
+**Stand: v0.33** – voller Ausbau, noch vor fachlicher Abnahme und Erprobung. v0.33: Logo BS Info München im Kopf (wie in LF3). Änderungen zu v0.31 (Regeln aus LF3): jede Runde hat höchstens 4 Aufgaben – die Räume 1–5 je 4 statt 7–8 Aufgaben, im Profi-Weg ersetzen die Tickets Aufgaben, statt dazuzukommen; die Fehler-Sprechstunde hat in beiden Wegen 4 Tickets (Profi 4 statt 6); der Kasten auf der Startseite heißt „Wichtige Infos zum Thema Docker“; Startseite ohne Leiste unten. **Paket:** `lf9-docker-einfuehrung_scorm12.zip` (SCORM 1.2, ohne Internetverbindung lauffähig)
 
 Die lernende Person ist Auszubildende bei **Hafenblick IT-Service**. Der Sportverein **TSV Lechwiesen** will eine eigene Foto-Cloud. Mit Ausbilderin **Jana Petrov** übt sie im **Serverraum 0** am simulierten Terminal; jeder Raum ist ein Schritt und gehört zu einer Übung in der VM. Am Ende läuft die Foto-Cloud (Immich) – und die Tür geht auf.
 
