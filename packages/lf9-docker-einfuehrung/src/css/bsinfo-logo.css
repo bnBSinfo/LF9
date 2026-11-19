@@ -1,0 +1,5 @@
+/* Logo BS Info München im Kopf (wie in den LF3-Paketen): links auf weißem Feld,
+   weil die schwarze Schrift auf dem dunklen Kopf sonst nicht lesbar ist. */
+.kopf .schullogo{order:-1;position:relative;z-index:1;flex:0 0 auto;height:77px;width:auto;background:#fff;padding:6px 8px;border-radius:var(--r)}
+@media (max-width:640px){.kopf .schullogo{height:59px}}
+@media print{.kopf .schullogo{padding:0}}

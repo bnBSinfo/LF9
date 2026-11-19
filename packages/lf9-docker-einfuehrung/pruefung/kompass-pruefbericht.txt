@@ -7,7 +7,7 @@ Prüfbericht für lf9-docker-einfuehrung_scorm12.zip
 🟢 [Format] Startdatei: index.html.
 🟢 [Format] Alle im Manifest genannten Dateien sind vorhanden.
 🟢 [Format] Alle Dateien sind im Manifest aufgeführt.
-🟢 [Format] Größe: 645 KB (Grenze ByCS: 512 MB).
+🟢 [Format] Größe: 665 KB (Grenze ByCS: 512 MB).
 🟢 [Datenschutz] Keine Verweise auf externe Server.
 🟢 [Datenübergabe] SCORM-Initialisierung (LMSInitialize) wird verwendet.
 🟢 [Datenübergabe] Punktzahl (cmi.core.score.raw) wird verwendet.
@@ -42,7 +42,7 @@ Prüfbericht für lf9-docker-einfuehrung_scorm12.zip
 🟢 [Differenzierung] Profi-Inhalte sind gekennzeichnet (🚀/Profi).
 🟢 [Inhalt] Inhaltsprüfung der Vorlage: keine Fehler.
 🟡 [Inhalt] Hinweis: Tafelbild mit 9 Szenen – für etwa 20 Minuten sind höchstens 6–8 sinnvoll.
-🟢 [Bedienung] Versionsnummer „v0.32“ steht sichtbar in der Kopfzeile.
+🟢 [Bedienung] Versionsnummer „v0.33“ steht sichtbar in der Kopfzeile.
 🟢 [Interaktivität] Jede Station hat eine Szene zum Anfassen.
 🟢 [Interaktivität] Jede Szene hat eine Vorführung („Zeig’s mir“).
 🟢 [Interaktivität] Die Szene steht ohne Scrollen im Blick und ist groß genug.
