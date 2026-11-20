@@ -10,7 +10,7 @@
 (function () {
   'use strict';
   var P = PFAD, N = P.schritte.length;
-  var S = { os: 'linux', shell: 'cmd', sprache: 'standard', seite: 'start', checks: {}, antworten: {} };
+  var S = { os: 'linux', shell: 'cmd', sprache: 'standard', seite: 'start', wsl: false, checks: {}, antworten: {} };
   var LS_KEY = 'lernpfad-' + P.id;
 
   /* ---------- SCORM 1.2 ---------- */
@@ -376,7 +376,18 @@
   /* ---------- Fortschritt ---------- */
   function kontrollListe(k) { return (k.kontrolle.alle || []).concat(O({ linux: k.kontrolle.linux || [], windows: k.kontrolle.windows || [] }) || []); }
   function ckey(n, item) { return n + '|' + item[0]; }
-  function erledigt(n) { var l = kontrollListe(P.schritte[n]); return l.length > 0 && l.every(function (it) { return S.checks[ckey(n, it)]; }); }
+  function erledigtS(s, n) { var l = kontrollListe(s); return l.length > 0 && l.every(function (it) { return S.checks[ckey(n, it)]; }); }
+  function erledigt(n) { return erledigtS(P.schritte[n], n); }
+  /* Seitenfolge: optionaler Schritt 0 (WSL2) nur, wenn zugeschaltet */
+  function seitenListe() { return ['start'].concat(S.wsl && P.wsl ? ['0'] : []).concat(P.schritte.map(function (_, n) { return String(n + 1); })).concat(['ende']); }
+  function seitenName(s) { return s === 'start' ? 'Start' : s === 'ende' ? 'Abschluss' : s === '0' ? 'WSL einrichten' : 'Schritt ' + s; }
+  function wslSchalter(klasse) {
+    var b = E('button', { type: 'button', class: 'wsl-schalter ' + (klasse || '') + (S.wsl ? ' an' : ''), 'aria-pressed': String(S.wsl) }, [
+      E('span', { class: 'ws-box', 'aria-hidden': 'true', text: S.wsl ? '✔' : '' }),
+      E('span', {}, [E('b', { text: '🧩 ' + (EINF() ? 'Mein Windows hat noch kein WSL2' : 'Mein Windows hat noch kein WSL2') }), E('small', { text: S.wsl ? (EINF() ? 'Schritt „WSL“ ist zugeschaltet. Klick: wieder ausblenden.' : 'Zugeschaltet: Der Schritt „🧩 WSL“ steht jetzt vor Schritt 1. Erneut klicken blendet ihn aus.') : (EINF() ? 'Klick: Anleitung für WSL2 zuschalten (optional).' : 'Optional zuschalten: Anleitung zum Einrichten von WSL2 als Schritt vor Schritt 1.') })])]);
+    b.addEventListener('click', function () { S.wsl = !S.wsl; if (!S.wsl && S.seite === '0') S.seite = '1'; speichern(); zeichne(true); });
+    return b;
+  }
   function anzahlErledigt() { var a = 0; for (var n = 0; n < N; n++) if (erledigt(n)) a++; return a; }
 
   /* ---------- Kopf ---------- */
@@ -402,8 +413,11 @@
   }
   function tabs() {
     var t = document.getElementById('tabs'); t.innerHTML = '';
-    var seiten = ['start'].concat(P.schritte.map(function (_, n) { return String(n + 1); })).concat(['ende']);
-    seiten.forEach(function (s) {
+    seitenListe().forEach(function (s) {
+      if (s === '0') {
+        var w = E('button', { type: 'button', class: 'tab wsl' + (S.seite === s ? ' aktiv' : '') + (erledigtS(P.wsl, 'wsl') ? ' fertig' : ''), text: '🧩 WSL' + (erledigtS(P.wsl, 'wsl') ? ' ✔' : ''), 'aria-current': S.seite === s ? 'page' : null, title: 'Optional: ' + P.wsl.titel });
+        w.addEventListener('click', function () { gehe(s); }); t.appendChild(w); return;
+      }
       var n = +s, txt = s === 'start' ? '🏠 Start' : s === 'ende' ? '🏁 Abschluss' : s;
       var b = E('button', { type: 'button', class: 'tab' + (S.seite === s ? ' aktiv' : '') + (n && erledigt(n - 1) ? ' fertig' : ''), text: txt + (n && erledigt(n - 1) ? ' ✔' : ''), 'aria-current': S.seite === s ? 'page' : null, title: n ? P.schritte[n - 1].titel : '' });
       b.addEventListener('click', function () { gehe(s); });
@@ -433,6 +447,7 @@
       g.appendChild(b);
     });
     os.appendChild(g);
+    os.appendChild(wslSchalter('gross'));
     h.appendChild(os);
     var ueb = karte('', [E('h2', { text: EINF() ? 'Dein Weg in 8 Schritten' : 'Dein Weg in 8 Schritten' })]);
     var ol = E('ol', { class: 'weg' });
@@ -448,18 +463,20 @@
     h.appendChild(vorab);
     return h;
   }
-  function seiteSchritt(n) {
-    var s = P.schritte[n], h = E('div');
+  function seiteSchritt(n, s0) {
+    var s = s0 || P.schritte[n], h = E('div');
     CODE = {};
-    h.appendChild(karte('schritt-kopf', [E('div', { class: 'nr', text: 'Schritt ' + (n + 1) + ' von ' + N }), E('h2', { text: s.titel }), E('p', { class: 'kurz', text: T(s.kurz) })]));
+    h.appendChild(karte('schritt-kopf' + (s0 ? ' optional' : ''), [E('div', { class: 'nr', text: s0 ? (EINF() ? 'Optional · vor Schritt 1' : 'Optional · vor Schritt 1 · zählt nicht zum Abschluss') : 'Schritt ' + (n + 1) + ' von ' + N }), E('h2', { text: s.titel }), E('p', { class: 'kurz', text: T(s.kurz) })]));
     h.appendChild(karte('', [sprechblase(T(s.warum))]));
+    if (n === 0 && P.wsl) h.appendChild(karte('wsl-hinweis', [E('p', { class: 'klein', text: EINF() ? 'Windows ohne WSL2? Dann zuerst das hier:' : 'Docker oder Ubuntu fehlen noch, weil dein Windows kein WSL2 hat? Schalte die Anleitung dazu:' }), wslSchalter(),
+      S.wsl ? E('button', { type: 'button', class: 'linkknopf', text: '→ ' + (EINF() ? 'Zu „WSL einrichten“' : 'Zum Schritt „WSL einrichten“'), onclick: function () { gehe('0'); } }) : null]));
     // Bausteine zuerst erzeugen (Registrierung der Codeblöcke für die Szene), Szene davor einhängen
     var bl = E('div');
     s.bloecke.filter(sichtbar).forEach(function (b) {
       if (b.typ === 'text') bl.appendChild(karte('text', [E('p', { html: T(O(b.t) || b.t) })]));
       else if (b.typ === 'befehl') {
         var code = O(b.code); if (!code) return;
-        bl.appendChild(codeBlock({ code: code, titelHtml: '💻 ' + esc(T(b.titel)) + ' <span class="shell">' + shellName() + '</span>', titelText: T(b.titel), erkl: b.erkl, hinweis: b.hinweis ? T(b.hinweis) : null, schluessel: b.id }));
+        bl.appendChild(codeBlock({ code: code, titelHtml: '💻 ' + esc(T(b.titel)) + ' <span class="shell">' + esc(b.shell ? T(b.shell) : shellName()) + '</span>', titelText: T(b.titel), erkl: b.erkl, hinweis: b.hinweis ? T(b.hinweis) : null, schluessel: b.id }));
       } else if (b.typ === 'datei') bl.appendChild(codeBlock({ code: DATEIEN[b.pfad], datei: b.pfad, titelHtml: '📄 ' + esc(b.pfad), titelText: b.pfad, erkl: b.erkl, schluessel: b.pfad }));
       else if (b.typ === 'skripte') bl.appendChild(skripteBlock());
     });
@@ -477,7 +494,7 @@
       kon.appendChild(E('label', { class: 'check' }, [cb, E('span', { text: T(it) })]));
     });
     var st = E('div', { class: 'status', 'aria-live': 'polite' });
-    function status() { var f = erledigt(n); st.textContent = f ? (EINF() ? '✔ Schritt fertig!' : '✔ Schritt erledigt!') : (EINF() ? 'Hake alles ab, wenn du fertig bist.' : 'Hake ab, sobald du es an deinem Rechner geschafft hast.'); st.classList.toggle('ok', f); }
+    function status() { var f = erledigtS(s, n); st.textContent = f ? (EINF() ? '✔ Schritt fertig!' : '✔ Schritt erledigt!') : (EINF() ? 'Hake alles ab, wenn du fertig bist.' : 'Hake ab, sobald du es an deinem Rechner geschafft hast.'); st.classList.toggle('ok', f); }
     status(); kon.appendChild(st);
     h.appendChild(kon);
     // Mitdenken
@@ -536,8 +553,11 @@
   /* ---------- Lernheft ---------- */
   function lernheft() {
     var h = '<div style="display:flex;align-items:center;gap:14px;border-bottom:2px solid #4338ca;padding-bottom:8px;margin-bottom:12px"><img src="css/bsinfo-logo.png" style="height:48px" alt=""><div><div style="font-size:20px;font-weight:700">Lernheft: ' + esc(P.titel) + '</div><div style="color:#555">Mein Weg: ' + (S.os === 'linux' ? 'Linux (Bash)' : 'Windows (' + shellName() + ')') + ' · erledigt: ' + anzahlErledigt() + ' / ' + N + '</div></div></div>';
-    P.schritte.forEach(function (s, n) {
-      h += '<h3 style="margin:14px 0 4px;color:#3730a3">Schritt ' + (n + 1) + ': ' + esc(s.titel) + (erledigt(n) ? ' ✔' : '') + '</h3>';
+    var liste = P.schritte.map(function (s, n) { return [s, n, 'Schritt ' + (n + 1)]; });
+    if (S.wsl && P.wsl) liste.unshift([P.wsl, 'wsl', 'Optional']);
+    liste.forEach(function (x) {
+      var s = x[0], n = x[1];
+      h += '<h3 style="margin:14px 0 4px;color:#3730a3">' + x[2] + ': ' + esc(s.titel) + (erledigtS(s, n) ? ' ✔' : '') + '</h3>';
       h += '<p style="margin:2px 0">' + T(s.kurz) + '</p><ul style="margin:4px 0">';
       kontrollListe(s).forEach(function (it) { h += '<li>' + (S.checks[ckey(n, it)] ? '☑' : '☐') + ' ' + esc(T(it)) + '</li>'; });
       h += '</ul><p style="margin:4px 0"><b>Mitdenken:</b> ' + esc(T(s.mitdenken.frage)) + '</p>';
@@ -583,13 +603,13 @@
   /* ---------- Leiste + Zeichnen ---------- */
   function leiste() {
     var l = document.getElementById('leiste'); l.innerHTML = '';
-    var seiten = ['start'].concat(P.schritte.map(function (_, n) { return String(n + 1); })).concat(['ende']);
+    var seiten = seitenListe();
     var i = seiten.indexOf(S.seite);
-    var zur = i > 0 ? E('button', { type: 'button', class: 'knopf zweit', text: '← ' + (i === 1 ? 'Start' : i === seiten.length - 1 ? 'Schritt ' + N : 'Schritt ' + (i - 1)) }) : E('span');
+    var zur = i > 0 ? E('button', { type: 'button', class: 'knopf zweit', text: '← ' + seitenName(seiten[i - 1]) }) : E('span');
     if (i > 0) zur.addEventListener('click', function () { gehe(seiten[i - 1]); });
     l.appendChild(zur);
     if (i < seiten.length - 1) {
-      var nx = seiten[i + 1], vor = E('button', { type: 'button', class: 'knopf weiter', text: (nx === 'ende' ? (EINF() ? 'Zum Abschluss' : 'Zum Abschluss') : i === 0 ? (EINF() ? 'Los: Schritt 1' : 'Mit Schritt 1 beginnen') : 'Weiter: Schritt ' + nx) + ' →' });
+      var nx = seiten[i + 1], vor = E('button', { type: 'button', class: 'knopf weiter', text: (nx === 'ende' ? 'Zum Abschluss' : nx === '0' ? (EINF() ? 'Los: WSL einrichten' : 'Mit „WSL einrichten“ beginnen') : i === 0 ? (EINF() ? 'Los: Schritt 1' : 'Mit Schritt 1 beginnen') : 'Weiter: Schritt ' + nx) + ' →' });
       vor.addEventListener('click', function () { gehe(nx); });
       l.appendChild(vor);
     }
@@ -601,13 +621,13 @@
     kopf(); tabs();
     var m = document.getElementById('haupt'); m.innerHTML = '';
     var n = +S.seite;
-    m.appendChild(S.seite === 'start' ? seiteStart() : S.seite === 'ende' ? seiteEnde() : (n >= 1 && n <= N ? seiteSchritt(n - 1) : seiteStart()));
+    m.appendChild(S.seite === 'start' ? seiteStart() : S.seite === 'ende' ? seiteEnde() : S.seite === '0' && S.wsl ? seiteSchritt('wsl', P.wsl) : (n >= 1 && n <= N ? seiteSchritt(n - 1) : seiteStart()));
     leiste();
-    document.title = P.titel + (n ? ' – Schritt ' + n : '');
+    document.title = P.titel + (S.seite === '0' ? ' – WSL einrichten' : n ? ' – Schritt ' + n : '');
     if (halten) window.scrollTo(0, y);
   }
 
   laden();
-  if (!/^(start|ende|[1-9])$/.test(S.seite)) S.seite = 'start';
+  if (!/^(start|ende|[0-9])$/.test(S.seite) || (S.seite === '0' && !S.wsl)) S.seite = 'start';
   zeichne();
 })();

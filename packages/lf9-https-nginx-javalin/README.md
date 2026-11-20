@@ -5,6 +5,7 @@ Geführter Lernpfad (SCORM 1.2) zum Praxisleitfaden „Lokales HTTPS mit Nginx u
 - **Zwei Pfade zum Umschalten:** 🐧 Linux (Ubuntu/WSL2, Bash) und 🪟 Windows (CMD oder PowerShell). Befehle, Skripte, Simulator und Fehlerbilder wechseln mit.
 - **Quellcode kopierbar:** In jedem Codeblock gibt es „📋 Kopieren“ und „⬇ Datei“. Zeilen mit ● zeigen beim Antippen eine Erklärung. Am Ende gibt es das ganze Projekt `local-https-demo` als ZIP (Skripte für beide Systeme, `.sh` ausführbar).
 - **Szenen:** Weg einer Anfrage, Git-/Docker-Sicht auf den Ordner, Multi-Stage-Build, Vertrauenskette (mit WSL-Falle), Compose-Start mit Healthcheck, Lebenszyklus-Simulator mit Terminal und Browser, Fehler-Tickets.
+- **Optional zuschaltbar: „🧩 WSL einrichten“** (Startseite oder Schritt 1, „Mein Windows hat noch kein WSL2“): Schritt vor Schritt 1 mit `wsl --install`, Versionsprüfung und – je nach Pfad – Docker in Ubuntu oder Docker Desktop. Zählt nicht zum Abschluss.
 - Je Schritt: Mitdenken-Frage mit Musterantwort, 🚀 Profi-Kasten, Begriffe. Sprachstufen Standard und Einfach. Lernheft als PDF.
 
 ## Aufbau
