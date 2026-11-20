@@ -58,7 +58,7 @@ var PFAD = {
   id: 'lf9-https-nginx-javalin',
   titel: 'Lokales HTTPS mit Nginx und Javalin',
   untertitel: 'Lernpfad · Docker, TLS & Automatisierung',
-  version: '0.1',
+  version: '0.2',
   figur: { name: 'Jana Petrov', rolle: 'Ausbilderin bei Hafenblick IT-Service' },
   leitsituation: [
     'Der TSV Lechwiesen bekommt von uns eine kleine Java-Web-App. Später läuft sie im Internet – natürlich nur über HTTPS. Damit wir genauso testen wie im Betrieb, bauen wir uns lokal denselben Aufbau: Nginx vorne mit Zertifikat, Javalin dahinter. Ich erkläre dir jeden Schritt, du setzt ihn an deinem Rechner um.',
@@ -86,6 +86,8 @@ var PFAD = {
     'Bind Mount': { art: 'der, die Bind Mounts', t: ['Eine Datei oder ein Ordner vom Host wird in den Container eingeblendet. Mit :ro nur lesbar (read-only).', 'Eine Datei vom Rechner erscheint im Container. Mit :ro kann der Container sie nur lesen.'] },
     'Skript': { art: 'das, die Skripte', t: ['Datei mit Befehlen, die nacheinander ausgeführt werden (.sh, .cmd, .ps1).', 'Eine Datei mit Befehlen. Sie laufen nacheinander.'] },
     'Exit-Code': { art: 'der, die Exit-Codes', t: ['Zahl, die ein Programm beim Beenden zurückgibt: 0 = alles gut, sonst Fehler.', '0 heißt: alles gut. Eine andere Zahl heißt: Fehler.'] },
+    'Virtualisierung': { art: 'die, –', t: ['Fähigkeit des Prozessors, virtuelle Maschinen auszuführen. Muss im BIOS/UEFI eingeschaltet sein (Intel VT-x, AMD-V).', 'Damit kann der Rechner virtuelle Rechner starten. Man schaltet sie im BIOS ein.'] },
+    'systemd': { art: 'das, –', t: ['Dienst-Verwaltung von Linux. Startet Hintergrunddienste wie Docker automatisch.', 'Startet in Linux Dienste wie Docker.'] },
     'WSL2': { art: 'das, –', t: ['Windows-Subsystem für Linux: ein echtes Linux (z. B. Ubuntu) unter Windows.', 'Ein Linux, das in Windows läuft.'] }
   },
 
@@ -478,6 +480,75 @@ dir certs`
     begriffe: ['Service-Name', 'Vertrauensspeicher', 'Port-Mapping']
   }
   ],
+
+  /* Optionaler Schritt 0 – nur sichtbar, wenn „Noch kein WSL2“ zugeschaltet ist. Zählt nicht zum Abschluss. */
+  wsl: {
+    titel: 'WSL2 einrichten (optional)',
+    kurz: { linux: ['Windows bekommt ein echtes Ubuntu – mit Docker darin.', 'Windows bekommt ein Ubuntu. Darin läuft Docker.'],
+            windows: ['Docker Desktop braucht WSL2 als Unterbau.', 'Docker Desktop braucht WSL2.'] },
+    warum: {
+      linux: ['Du arbeitest an einem Windows-Rechner, willst aber den Linux-Pfad (Bash-Skripte) gehen. Dafür gibt es <b>WSL2</b>, das Windows-Subsystem für Linux: ein echtes Ubuntu in einer leichten virtuellen Maschine. Darin installierst du Docker, mkcert und curl – danach funktionieren alle Linux-Befehle aus dem Lernpfad. Einmal einrichten genügt.', 'Dein Rechner hat Windows. Du willst aber mit Linux arbeiten. Dafür gibt es <b>WSL2</b>. Damit läuft ein echtes Ubuntu in Windows. In Ubuntu installierst du Docker. Das machst du nur einmal.'],
+      windows: ['Docker Desktop führt Linux-Container unter Windows in einer leichten virtuellen Maschine aus – dem <b>WSL2</b>-Unterbau. Fehlt WSL2, startet Docker Desktop nicht oder fordert dich zur Installation auf. Einmal einrichten genügt; danach arbeitest du normal in CMD oder PowerShell weiter.', 'Docker Desktop braucht <b>WSL2</b>. Ohne WSL2 startet Docker Desktop nicht. Du richtest WSL2 einmal ein. Danach arbeitest du normal in CMD oder PowerShell.']
+    },
+    szene: { typ: 'ablauf', titel: ['Was steckt hinter WSL2?', 'Was ist WSL2?'],
+      knoten: [
+        { id: 'win', icon: '🪟', name: 'Windows', sub: 'dein Rechner' },
+        { id: 'vm', icon: '🧩', name: 'WSL2', sub: 'leichte VM mit Linux-Kernel' },
+        { id: 'ubu', icon: '🐧', name: 'Ubuntu', sub: 'Bash, apt, deine Dateien', nur: 'linux' },
+        { id: 'dd', icon: '🐳', name: 'Docker Desktop', sub: 'nutzt WSL2', nur: 'windows' },
+        { id: 'dock', icon: '📦', name: 'Container', sub: 'Nginx + Javalin' }
+      ],
+      schritte: [
+        { an: ['win', 'vm'], zeile: ['wsl-install', 'wsl --install'], t: ['<code>wsl --install</code> schaltet die nötigen Windows-Funktionen ein und lädt einen echten Linux-Kernel. WSL2 ist eine leichte virtuelle Maschine – deshalb muss die Virtualisierung im BIOS/UEFI aktiv sein.', '<code>wsl --install</code> richtet WSL2 ein. WSL2 ist ein kleiner virtueller Rechner. Dafür muss Virtualisierung an sein.'] },
+        { an: ['vm', 'ubu'], nur: 'linux', t: ['Gleichzeitig wird <b>Ubuntu</b> installiert. Beim ersten Start legst du einen Linux-Benutzer mit Passwort an – unabhängig von deinem Windows-Konto.', 'Dazu kommt <b>Ubuntu</b>. Beim 1. Start legst du einen Benutzer und ein Passwort an.'] },
+        { an: ['ubu', 'dock'], nur: 'linux', zeile: ['docker-install', 'get.docker.com'], t: ['In Ubuntu installierst du Docker Engine mit Compose-Plugin. Die Container laufen dann direkt in deinem Ubuntu.', 'In Ubuntu installierst du Docker. Die Container laufen dann in Ubuntu.'] },
+        { an: ['vm', 'dd'], nur: 'windows', t: ['Docker Desktop richtet in WSL2 eine eigene kleine Linux-Umgebung ein (<code>docker-desktop</code>) – du musst dort nichts selbst tun.', 'Docker Desktop richtet sich in WSL2 selbst ein. Du musst nichts tun.'] },
+        { an: ['dd', 'dock'], nur: 'windows', t: ['Deine <code>docker</code>-Befehle in CMD oder PowerShell gehen an Docker Desktop, die Container laufen in WSL2.', 'Du tippst <code>docker</code> in CMD oder PowerShell. Die Container laufen in WSL2.'] },
+        { an: ['win', 'dock'], t: ['WSL2 leitet Ports an Windows weiter: <code>https://127.0.0.1:8443</code> funktioniert auch im Windows-Browser.', 'Der Windows-Browser erreicht <code>https://127.0.0.1:8443</code>.'] }
+      ]
+    },
+    bloecke: [
+      { typ: 'text', t: ['<b>Voraussetzungen:</b> Windows 11 oder Windows 10 ab Version 2004, Administratorrechte, Virtualisierung im BIOS/UEFI eingeschaltet (im Task-Manager unter Leistung → CPU: „Virtualisierung: Aktiviert“). Auf Schulrechnern fehlen oft die Adminrechte – dann hilft die Systembetreuung.', '<b>Du brauchst:</b> Windows 10 oder 11. Admin-Rechte. Virtualisierung muss an sein. Das siehst du im Task-Manager unter Leistung → CPU. Auf Schulrechnern fragst du die Systembetreuung.'] },
+      { typ: 'befehl', id: 'wsl-install', shell: 'PowerShell als Administrator', titel: ['1) WSL2 installieren', '1) WSL2 installieren'],
+        code: { linux: 'wsl --install', windows: 'wsl --install' },
+        erkl: [['wsl --install', 'Startmenü → „PowerShell“ → Rechtsklick → <b>Als Administrator ausführen</b>. Der Befehl schaltet WSL und die Plattform für virtuelle Computer ein und installiert Ubuntu. Danach <b>Windows neu starten</b>.']] },
+      { typ: 'text', nur: 'linux', t: ['Nach dem Neustart öffnet sich Ubuntu (sonst: Startmenü → „Ubuntu“). Lege einen <b>Linux-Benutzernamen</b> (klein, ohne Leerzeichen) und ein <b>Passwort</b> an. Beim Tippen des Passworts erscheinen keine Zeichen – das ist normal. Du brauchst es später für <code>sudo</code>.', 'Nach dem Neustart öffnet sich Ubuntu. Lege einen Benutzernamen und ein Passwort an. Beim Passwort siehst du keine Zeichen. Das ist normal. Merke dir das Passwort.'] },
+      { typ: 'befehl', shell: 'PowerShell', titel: ['2) Prüfen: läuft WSL in Version 2?', '2) Prüfen: Version 2?'],
+        code: { linux: 'wsl --update\nwsl -l -v', windows: 'wsl --update\nwsl -l -v' },
+        erkl: [['wsl --update', 'Holt die aktuelle WSL-Version.'],
+               ['wsl -l -v', 'Listet alle Linux-Umgebungen. In der Spalte VERSION muss <b>2</b> stehen. Steht dort 1: <code>wsl --set-version Ubuntu 2</code>.']] },
+      { typ: 'befehl', nur: 'linux', id: 'docker-install', titel: ['3) Im Ubuntu-Terminal: Docker installieren', '3) In Ubuntu: Docker installieren'],
+        code: { linux: R`grep -q "systemd=true" /etc/wsl.conf 2>/dev/null || printf '\n[boot]\nsystemd=true\n' | sudo tee -a /etc/wsl.conf
+sudo apt update && sudo apt upgrade -y
+curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker $USER` },
+        erkl: [['grep -q "systemd=true"', 'Docker braucht <b>systemd</b>. Ist es in <code>/etc/wsl.conf</code> noch nicht eingeschaltet, wird es ergänzt. Danach einmal in PowerShell <code>wsl --shutdown</code> und Ubuntu neu öffnen.'],
+               ['sudo apt update', 'Paketlisten aktualisieren und installierte Pakete auf den neuesten Stand bringen.'],
+               ['get.docker.com', 'Offizielles Installationsskript von Docker: Docker Engine und Compose-Plugin aus der Docker-Paketquelle.'],
+               ['usermod -aG docker', 'Dein Benutzer kommt in die Gruppe <code>docker</code> – dann geht <code>docker</code> ohne <code>sudo</code>. Wirkt erst nach Ab- und Anmelden: Ubuntu-Fenster schließen und neu öffnen.']] },
+      { typ: 'text', nur: 'linux', t: ['<b>Alternative:</b> Hast du schon Docker Desktop unter Windows, installiere Docker nicht zusätzlich in Ubuntu. Schalte stattdessen in Docker Desktop unter <i>Settings → Resources → WSL integration</i> „Ubuntu“ ein – dann gibt es den Befehl <code>docker</code> auch im Ubuntu-Terminal.', '<b>Oder:</b> Hast du Docker Desktop schon? Dann schalte dort unter <i>Settings → Resources → WSL integration</i> „Ubuntu“ ein. Installiere Docker nicht noch einmal.'] },
+      { typ: 'befehl', nur: 'linux', titel: ['4) Projektordner im Linux-Dateisystem', '4) Projektordner in Ubuntu'],
+        code: { linux: 'cd ~\nexplorer.exe .' },
+        erkl: [['cd ~', 'Arbeite im Linux-Home (<code>~</code>), <b>nicht</b> unter <code>/mnt/c/…</code>: Dort ist Docker langsamer, <code>chmod +x</code> wirkt nicht zuverlässig und Windows-Editoren hinterlassen schnell CRLF-Zeilenenden.'],
+               ['explorer.exe .', 'Öffnet den aktuellen Ubuntu-Ordner im Windows-Explorer (Pfad <code>\\\\wsl$\\Ubuntu\\home\\…</code>). In VS Code: <code>code .</code> mit der Erweiterung „WSL“.']] },
+      { typ: 'befehl', nur: 'windows', titel: ['3) Docker Desktop installieren', '3) Docker Desktop installieren'],
+        code: { windows: 'winget install Docker.DockerDesktop' },
+        erkl: [['winget install', 'Installiert Docker Desktop (oder von docker.com herunterladen). Beim Einrichten „Use WSL 2 instead of Hyper-V“ bzw. „Use the WSL 2 based engine“ angehakt lassen. Danach ab- und wieder anmelden und Docker Desktop starten.']] }
+    ],
+    kontrolle: {
+      alle: [['wsl -l -v zeigt mindestens eine Linux-Umgebung mit VERSION 2.', 'wsl -l -v zeigt VERSION 2.']],
+      linux: [['Ich kann mich in Ubuntu anmelden und kenne mein Linux-Passwort.', 'Ubuntu startet. Ich kenne mein Passwort.'], ['docker version im Ubuntu-Terminal zeigt Client und Server.', 'docker version in Ubuntu zeigt Client und Server.'], ['Mein Projekt liegt im Linux-Home (~), nicht unter /mnt/c.', 'Mein Projekt liegt in ~, nicht in /mnt/c.']],
+      windows: [['Docker Desktop startet und zeigt „Engine running“.', 'Docker Desktop läuft („Engine running“).']]
+    },
+    mitdenken: {
+      frage: { linux: ['Warum legst du das Projekt in ~ und nicht unter /mnt/c?', 'Warum kommt das Projekt in ~ und nicht in /mnt/c?'], windows: ['Warum braucht Docker Desktop unter Windows überhaupt Linux?', 'Warum braucht Docker Desktop Linux?'] },
+      satz: 'Das liegt daran, dass …',
+      muster: { linux: ['/mnt/c ist das Windows-Laufwerk, über eine Brücke eingebunden: Zugriffe sind langsamer, Linux-Rechte (chmod +x) funktionieren nicht zuverlässig und Windows-Editoren erzeugen CRLF-Zeilenenden. Im Linux-Home gibt es diese Probleme nicht.', '/mnt/c ist Windows. Dort ist Docker langsam. chmod +x geht dort nicht richtig. In ~ gibt es diese Probleme nicht.'],
+                windows: ['Linux-Container nutzen den Kernel des Gastsystems, und das muss ein Linux-Kernel sein. Windows hat keinen – WSL2 liefert ihn in einer leichten VM.', 'Container brauchen einen Linux-Kernel. Windows hat keinen. WSL2 bringt einen mit.'] }
+    },
+    profi: 'Typische Stolpersteine: <code>0x80370102</code> beim Start → Virtualisierung im BIOS/UEFI einschalten. <code>wsl --shutdown</code> beendet alle Linux-Umgebungen (hilft nach Änderungen an <code>/etc/wsl.conf</code>). Speicher und CPU für WSL2 begrenzt du in <code>%UserProfile%\\.wslconfig</code> (Abschnitt <code>[wsl2]</code>, z. B. <code>memory=4GB</code>).<br><b>Knobelfrage:</b> Warum erreicht der Windows-Browser einen Dienst in WSL2 über <code>127.0.0.1</code>, obwohl WSL2 eine eigene virtuelle Maschine mit eigener IP ist?',
+    begriffe: ['WSL2', 'Virtualisierung', 'systemd']
+  },
 
   links: [
     ['Javalin: Maven-Projekt einrichten', 'https://javalin.io/tutorials/maven-setup'],
